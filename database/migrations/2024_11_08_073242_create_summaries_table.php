@@ -19,6 +19,8 @@ return new class extends Migration
             $table->decimal('total_service_cost');
             $table->decimal('total_ppn_cost');
             $table->decimal('total_summary');
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('ppn_id')->references('id')->on('ppns')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

@@ -6,19 +6,19 @@
          <div class="navbar-brand-box">
             <a href="index.html" class="logo logo-dark">
                 <span class="logo-sm">
-                    <img src="assets/images/logo-sm.png" alt="" height="22">
+                    <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="22">
                 </span>
                 <span class="logo-lg">
-                    <img src="assets/images/logo-dark.png" alt="" height="20">
+                    <img src="{{ asset('assets/images/logo-dark.png') }}" alt="" height="20">
                 </span>
             </a>
 
             <a href="index.html" class="logo logo-light">
                 <span class="logo-sm">
-                    <img src="assets/images/logo-sm.png" alt="" height="22">
+                    <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="22">
                 </span>
                 <span class="logo-lg">
-                    <img src="assets/images/logo-light.png" alt="" height="20">
+                    <img src="{{ asset('assets/images/logo-light.png') }}" alt="" height="20">
                 </span>
             </a>
         </div>
@@ -156,7 +156,7 @@
                         </a>
                         <a href="" class="text-reset notification-item">
                             <div class="media">
-                                <img src="assets/images/users/avatar-3.jpg"
+                                <img src="{{ asset('assets/images/users/avatar-3.jpg') }}"
                                     class="me-3 rounded-circle avatar-xs" alt="user-pic">
                                 <div class="media-body">
                                     <h6 class="mt-0 mb-1">James Lemire</h6>

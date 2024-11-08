@@ -12,4 +12,7 @@ class Distribution extends Model
     public function project(){
         return $this->belongsTo(Project::class);
     }
+    public function distributionItems(){
+        return $this->hasMany(Distribution_item::class);
+    }
 }

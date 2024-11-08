@@ -15,4 +15,7 @@ class Item extends Model
     public function TypeItem(){
         return $this->belongsTo(TypeItem::class);
     }
+    public function disttibusiItem(){
+        return $this->hasMany(Distribution_item::class);
+    }
 }

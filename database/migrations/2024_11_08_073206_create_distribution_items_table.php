@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('distribution_id');
             $table->unsignedBigInteger('item_id');
             $table->integer('material_count');
+            $table->foreign('distribution_id')->references('id')->on('distributions')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }
