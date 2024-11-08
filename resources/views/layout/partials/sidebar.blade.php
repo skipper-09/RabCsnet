@@ -76,9 +76,14 @@
                     </ul>
                 </li>
 
-                <li class="menu-title">Components</li>
+                <li class="menu-title">Data Master</li>
 
-
+                <li>
+                    <a href="#" class=" waves-effect">
+                        <i class="dripicons-calendar"></i>
+                        <span>Items</span>
+                    </a>
+                </li>
                 <li>
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
                         <i class="dripicons-suitcase"></i>
