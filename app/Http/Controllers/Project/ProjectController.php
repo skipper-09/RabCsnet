@@ -7,11 +7,12 @@ use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
-    public function index(){
-        $data=[
-            'title'=>'Project'
+    public function index()
+    {
+        $data = [
+            'title' => 'Project'
         ];
 
-        return view('pages.project.index');
+        return view('pages.project.index', $data);
     }
 }

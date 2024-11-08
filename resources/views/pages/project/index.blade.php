@@ -1,7 +1,7 @@
 @extends('layout.base')
 @section('content')
-     <!-- start page title -->
-     <div class="page-title-box">
+    <!-- start page title -->
+    <div class="page-title-box">
         <div class="container-fluid">
             <div class="row align-items-center">
                 <div class="col-sm-6">
@@ -74,8 +74,7 @@
                                         <div class="media dash-main-border pb-2 mt-2">
                                             <div class="avatar-sm mb-3 mt-2">
                                                 <span class="avatar-title rounded-circle bg-white shadow">
-                                                    <i
-                                                        class="mdi mdi-currency-inr text-primary font-size-18"></i>
+                                                    <i class="mdi mdi-currency-inr text-primary font-size-18"></i>
                                                 </span>
                                             </div>
                                             <div class="media-body ps-3">
@@ -97,14 +96,12 @@
                                         <div class="media mt-4 dash-main-border pb-2">
                                             <div class="avatar-sm mb-3 mt-2">
                                                 <span class="avatar-title rounded-circle bg-white shadow">
-                                                    <i
-                                                        class="mdi mdi-credit-card-outline text-primary font-size-18"></i>
+                                                    <i class="mdi mdi-credit-card-outline text-primary font-size-18"></i>
                                                 </span>
                                             </div>
                                             <div class="media-body ps-3">
                                                 <h4 class="font-size-20">$1598</h4>
-                                                <p class="text-muted">To Paid <a href="#"
-                                                        class="text-primary">Pay <i
+                                                <p class="text-muted">To Paid <a href="#" class="text-primary">Pay <i
                                                             class="mdi mdi-arrow-right"></i></a></p>
                                             </div>
                                         </div>
@@ -114,15 +111,14 @@
                                         <div class="media mt-4">
                                             <div class="avatar-sm mb-2 mt-2">
                                                 <span class="avatar-title rounded-circle bg-white shadow">
-                                                    <i
-                                                        class="mdi mdi-eye-outline text-primary font-size-18"></i>
+                                                    <i class="mdi mdi-eye-outline text-primary font-size-18"></i>
                                                 </span>
                                             </div>
                                             <div class="media-body ps-3">
                                                 <h4 class="font-size-20">1230</h4>
                                                 <p class="text-muted mb-0">To Online <a href="#"
-                                                        class="text-primary">View <i
-                                                            class="mdi mdi-arrow-right"></i></a></p>
+                                                        class="text-primary">View <i class="mdi mdi-arrow-right"></i></a>
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -146,8 +142,7 @@
                                         <p class="font-size-16">Orders</p>
                                         <div class="mini-stat-icon mx-auto mb-4 mt-3">
                                             <span class="avatar-title rounded-circle bg-soft-primary">
-                                                <i
-                                                    class="mdi mdi-cart-outline text-primary font-size-20"></i>
+                                                <i class="mdi mdi-cart-outline text-primary font-size-20"></i>
                                             </span>
                                         </div>
                                         <h5 class="font-size-22">58</h5>
@@ -155,9 +150,8 @@
                                         <p class="text-muted">70% Target</p>
 
                                         <div class="progress mt-3" style="height: 4px;">
-                                            <div class="progress-bar progress-bar bg-primary"
-                                                role="progressbar" style="width: 70%" aria-valuenow="70"
-                                                aria-valuemin="0" aria-valuemax="70">
+                                            <div class="progress-bar progress-bar bg-primary" role="progressbar"
+                                                style="width: 70%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="70">
                                             </div>
 
                                         </div>
@@ -175,8 +169,7 @@
                                         <p class="font-size-16">Users</p>
                                         <div class="mini-stat-icon mx-auto mb-4 mt-3">
                                             <span class="avatar-title rounded-circle bg-soft-success">
-                                                <i
-                                                    class="mdi mdi-account-outline text-success font-size-20"></i>
+                                                <i class="mdi mdi-account-outline text-success font-size-20"></i>
                                             </span>
                                         </div>
                                         <h5 class="font-size-22">136</h5>
@@ -184,9 +177,9 @@
                                         <p class="text-muted">80% Target</p>
 
                                         <div class="progress mt-3" style="height: 4px;">
-                                            <div class="progress-bar progress-bar bg-success"
-                                                role="progressbar" style="width: 80%" aria-valuenow="80"
-                                                aria-valuemin="0" aria-valuemax="80">
+                                            <div class="progress-bar progress-bar bg-success" role="progressbar"
+                                                style="width: 80%" aria-valuenow="80" aria-valuemin="0"
+                                                aria-valuemax="80">
                                             </div>
 
                                         </div>
@@ -211,8 +204,8 @@
 
                                     <div class="dropdown">
                                         <button class="btn btn-light btn-sm dropdown-toggle" type="button"
-                                            id="dropdownMenuButton" data-bs-toggle="dropdown"
-                                            aria-haspopup="true" aria-expanded="false">
+                                            id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="false">
                                             Today<i class="mdi mdi-chevron-down ms-1"></i>
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -249,8 +242,8 @@
                                 <li class="activity-list activity-border">
                                     <div class="activity-icon avatar-sm">
 
-                                        <img src="assets/images/users/avatar-7.jpg"
-                                            class="avatar-sm rounded-circle" alt="">
+                                        <img src="assets/images/users/avatar-7.jpg" class="avatar-sm rounded-circle"
+                                            alt="">
 
                                     </div>
                                     <div class="media">
@@ -272,8 +265,7 @@
 
                                 <li class="activity-list activity-border">
                                     <div class="activity-icon avatar-sm">
-                                        <span
-                                            class="avatar-title bg-soft-primary text-primary rounded-circle">
+                                        <span class="avatar-title bg-soft-primary text-primary rounded-circle">
                                             <i class="ti-shopping-cart font-size-16"></i>
                                         </span>
                                     </div>
@@ -297,8 +289,7 @@
 
                                 <li class="activity-list activity-border">
                                     <div class="activity-icon avatar-sm">
-                                        <span
-                                            class="avatar-title bg-soft-success text-success rounded-circle">
+                                        <span class="avatar-title bg-soft-success text-success rounded-circle">
                                             <i class="ti-user font-size-16"></i>
                                         </span>
                                     </div>
@@ -321,8 +312,8 @@
                                 <li class="activity-list activity-border">
                                     <div class="activity-icon avatar-sm">
 
-                                        <img src="assets/images/users/avatar-7.jpg"
-                                            class="avatar-sm rounded-circle" alt="">
+                                        <img src="assets/images/users/avatar-7.jpg" class="avatar-sm rounded-circle"
+                                            alt="">
 
                                     </div>
                                     <div class="media">
@@ -344,8 +335,7 @@
 
                                 <li class="activity-list activity-border">
                                     <div class="activity-icon avatar-sm">
-                                        <span
-                                            class="avatar-title bg-soft-primary text-primary rounded-circle">
+                                        <span class="avatar-title bg-soft-primary text-primary rounded-circle">
                                             <i class="ti-shopping-cart font-size-16"></i>
                                         </span>
                                     </div>
@@ -368,8 +358,7 @@
 
                                 <li class="activity-list">
                                     <div class="activity-icon avatar-sm">
-                                        <span
-                                            class="avatar-title bg-soft-success text-success rounded-circle">
+                                        <span class="avatar-title bg-soft-success text-success rounded-circle">
                                             <i class="ti-user font-size-16"></i>
                                         </span>
                                     </div>
@@ -446,8 +435,7 @@
 
 
 
-                            <div id="carouselExampleIndicators" class="carousel slide"
-                                data-bs-ride="carousel">
+                            <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
                                 <div class="carousel-indicators">
                                     <button type="button" data-bs-target="#carouselExampleIndicators"
                                         data-bs-slide-to="0" class="active" aria-current="true"
@@ -462,8 +450,8 @@
                                     <div class="carousel-item active">
                                         <div class="row align-items-center mb-5">
                                             <div class="col-md-4">
-                                                <img src="assets/images/product/img-3.png"
-                                                    class="img-fluid me-3" alt="">
+                                                <img src="assets/images/product/img-3.png" class="img-fluid me-3"
+                                                    alt="">
                                             </div>
                                             <div class="col-md-7 offset-md-1">
 
@@ -496,8 +484,7 @@
 
                                                         <div class="col-4">
                                                             <div class="mt-4 pt-1">
-                                                                <a href=""
-                                                                    class="btn btn-primary btn-sm">Buy
+                                                                <a href="" class="btn btn-primary btn-sm">Buy
                                                                     Now</a>
                                                             </div>
                                                         </div>
@@ -514,8 +501,8 @@
                                     <div class="carousel-item">
                                         <div class="row align-items-center mb-5">
                                             <div class="col-md-4">
-                                                <img src="assets/images/product/img-5.png"
-                                                    class="img-fluid me-3" alt="">
+                                                <img src="assets/images/product/img-5.png" class="img-fluid me-3"
+                                                    alt="">
                                             </div>
                                             <div class="col-md-7 offset-md-1">
 
@@ -548,8 +535,7 @@
 
                                                         <div class="col-4">
                                                             <div class="mt-4 pt-1">
-                                                                <a href=""
-                                                                    class="btn btn-primary btn-sm">Buy
+                                                                <a href="" class="btn btn-primary btn-sm">Buy
                                                                     Now</a>
                                                             </div>
                                                         </div>
@@ -568,8 +554,8 @@
                                     <div class="carousel-item">
                                         <div class="row align-items-center mb-5">
                                             <div class="col-md-4">
-                                                <img src="assets/images/product/img-1.png"
-                                                    class="img-fluid me-3" alt="">
+                                                <img src="assets/images/product/img-1.png" class="img-fluid me-3"
+                                                    alt="">
                                             </div>
                                             <div class="col-md-7 offset-md-1">
 
@@ -602,8 +588,7 @@
 
                                                         <div class="col-4">
                                                             <div class="mt-4 pt-1">
-                                                                <a href=""
-                                                                    class="btn btn-primary btn-sm">Buy
+                                                                <a href="" class="btn btn-primary btn-sm">Buy
                                                                     Now</a>
                                                             </div>
                                                         </div>
@@ -645,25 +630,22 @@
                             <div class="px-4 py-3 mt-4">
                                 <p class="mb-1">USA <span class="float-right">75%</span></p>
                                 <div class="progress mt-2" style="height: 6px;">
-                                    <div class="progress-bar progress-bar-striped bg-primary"
-                                        role="progressbar" style="width: 75%" aria-valuenow="75"
-                                        aria-valuemin="0" aria-valuemax="75">
+                                    <div class="progress-bar progress-bar-striped bg-primary" role="progressbar"
+                                        style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="75">
                                     </div>
                                 </div>
 
                                 <p class="mt-3 mb-1">Russia <span class="float-right">55%</span></p>
                                 <div class="progress mt-2" style="height: 6px;">
-                                    <div class="progress-bar progress-bar-striped bg-primary"
-                                        role="progressbar" style="width: 55%" aria-valuenow="55"
-                                        aria-valuemin="0" aria-valuemax="55">
+                                    <div class="progress-bar progress-bar-striped bg-primary" role="progressbar"
+                                        style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="55">
                                     </div>
                                 </div>
 
                                 <p class="mt-3 mb-1">Australia <span class="float-right">85%</span></p>
                                 <div class="progress mt-2" style="height: 6px;">
-                                    <div class="progress-bar progress-bar-striped bg-primary"
-                                        role="progressbar" style="width: 85%" aria-valuenow="85"
-                                        aria-valuemin="0" aria-valuemax="85">
+                                    <div class="progress-bar progress-bar-striped bg-primary" role="progressbar"
+                                        style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="85">
                                     </div>
                                 </div>
                             </div>
@@ -716,8 +698,7 @@
                                             <div class="me-3 align-self-center">
                                                 <div class="avatar-sm rounded bg-info align-self-center">
                                                     <span class="avatar-title">
-                                                        <i
-                                                            class="ti-twitter-alt text-white font-size-18"></i>
+                                                        <i class="ti-twitter-alt text-white font-size-18"></i>
                                                     </span>
                                                 </div>
                                             </div>
@@ -746,8 +727,7 @@
                                                 <p class="text-muted mb-0">4.3k Sale - 4.3k Like</p>
                                             </div>
                                             <p class="ms-2 pt-3">
-                                                <i
-                                                    class="mdi mdi-arrow-bottom-right text-danger me-1"></i>30%
+                                                <i class="mdi mdi-arrow-bottom-right text-danger me-1"></i>30%
                                             </p>
                                         </div>
                                     </a>
@@ -822,8 +802,8 @@
                                     <tbody>
                                         <tr>
                                             <td>#2356</td>
-                                            <td><img src="assets/images/product/img-7.png" width="42"
-                                                    class="me-3" alt="">Green Chair</td>
+                                            <td><img src="assets/images/product/img-7.png" width="42" class="me-3"
+                                                    alt="">Green Chair</td>
                                             <td>Kenneth Gittens</td>
                                             <td>$200.00</td>
                                             <td>42</td>
@@ -834,8 +814,8 @@
 
                                         <tr>
                                             <td>#2564</td>
-                                            <td><img src="assets/images/product/img-8.png" width="42"
-                                                    class="me-3" alt="">Office Chair</td>
+                                            <td><img src="assets/images/product/img-8.png" width="42" class="me-3"
+                                                    alt="">Office Chair</td>
                                             <td>Alfred Gordon</td>
                                             <td>$242.00</td>
                                             <td>54</td>
@@ -848,8 +828,8 @@
 
                                         <tr>
                                             <td>#2125</td>
-                                            <td><img src="assets/images/product/img-10.png" width="42"
-                                                    class="me-3" alt="">Gray Chair</td>
+                                            <td><img src="assets/images/product/img-10.png" width="42" class="me-3"
+                                                    alt="">Gray Chair</td>
                                             <td>Keena Reyes</td>
                                             <td>$320.00</td>
                                             <td>65</td>
@@ -860,8 +840,8 @@
 
                                         <tr>
                                             <td>#8587</td>
-                                            <td><img src="assets/images/product/img-11.png" width="42"
-                                                    class="me-3" alt="">Steel Chair</td>
+                                            <td><img src="assets/images/product/img-11.png" width="42" class="me-3"
+                                                    alt="">Steel Chair</td>
                                             <td>Timothy Zuniga</td>
                                             <td>$342.00</td>
                                             <td>52</td>
@@ -872,8 +852,8 @@
 
                                         <tr>
                                             <td>#2354</td>
-                                            <td><img src="assets/images/product/img-12.png" width="42"
-                                                    class="me-3" alt="">Home Chair</td>
+                                            <td><img src="assets/images/product/img-12.png" width="42" class="me-3"
+                                                    alt="">Home Chair</td>
                                             <td>Joann Wiliams</td>
                                             <td>$320.00</td>
                                             <td>25</td>

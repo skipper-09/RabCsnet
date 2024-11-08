@@ -1,19 +1,21 @@
 <?php
 
+use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Project\ProjectController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect()->route('project');
+    return redirect()->route('dashboard');
 });
 
 
 Route::prefix('admin')->group(function () {
 
     Route::get('', function () {
-        return redirect()->route('project');
+        return redirect()->route('dashboard');
     });
 
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::prefix('project')->group(function () {
         Route::get('/', [ProjectController::class, 'index'])->name('project');

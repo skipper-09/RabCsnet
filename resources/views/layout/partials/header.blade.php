@@ -2,26 +2,26 @@
     <div class="navbar-header">
         <div class="d-flex">
 
-               <!-- LOGO -->
-         <div class="navbar-brand-box">
-            <a href="index.html" class="logo logo-dark">
-                <span class="logo-sm">
-                    <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="22">
-                </span>
-                <span class="logo-lg">
-                    <img src="{{ asset('assets/images/logo-dark.png') }}" alt="" height="20">
-                </span>
-            </a>
+            <!-- LOGO -->
+            <div class="navbar-brand-box">
+                <a href="index.html" class="logo logo-dark">
+                    <span class="logo-sm">
+                        <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="22">
+                    </span>
+                    <span class="logo-lg">
+                        <img src="{{ asset('assets/images/logo-dark.png') }}" alt="" height="20">
+                    </span>
+                </a>
 
-            <a href="index.html" class="logo logo-light">
-                <span class="logo-sm">
-                    <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="22">
-                </span>
-                <span class="logo-lg">
-                    <img src="{{ asset('assets/images/logo-light.png') }}" alt="" height="20">
-                </span>
-            </a>
-        </div>
+                <a href="index.html" class="logo logo-light">
+                    <span class="logo-sm">
+                        <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="22">
+                    </span>
+                    <span class="logo-lg">
+                        <img src="{{ asset('assets/images/logo-light.png') }}" alt="" height="20">
+                    </span>
+                </a>
+            </div>
 
             <button type="button" class="btn btn-sm px-3 font-size-24 header-item waves-effect" id="vertical-menu-btn">
                 <i class="mdi mdi-menu"></i>
@@ -55,11 +55,11 @@
                     </li>
                 </ul>
             </div> --}}
-    
+
         </div>
 
-         <!-- Search input -->
-         <div class="search-wrap" id="search-wrap">
+        <!-- Search input -->
+        <div class="search-wrap" id="search-wrap">
             <div class="search-bar">
                 <input class="search-input form-control" placeholder="Search" />
                 <a href="#" class="close-search toggle-search" data-target="#search-wrap">
@@ -109,9 +109,9 @@
             </div> --}}
 
 
-   
 
-   
+
+
 
             <div class="dropdown d-none d-lg-inline-block ms-1">
                 <button type="button" class="btn header-item noti-icon waves-effect" data-toggle="fullscreen">
@@ -120,8 +120,9 @@
             </div>
 
             <div class="dropdown d-inline-block">
-                <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown"
-                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button type="button" class="btn header-item noti-icon waves-effect"
+                    id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
                     <i class="mdi mdi-bell-outline bx-tada"></i>
                     <span class="badge bg-danger rounded-pill">3</span>
                 </button>
@@ -186,8 +187,8 @@
 
                         <a href="" class="text-reset notification-item">
                             <div class="media">
-                                <img src="assets/images/users/avatar-4.jpg"
-                                    class="me-3 rounded-circle avatar-xs" alt="user-pic">
+                                <img src="assets/images/users/avatar-4.jpg" class="me-3 rounded-circle avatar-xs"
+                                    alt="user-pic">
                                 <div class="media-body">
                                     <h6 class="mt-0 mb-1">Salena Layfield</h6>
                                     <div class="font-size-13 text-muted">
@@ -209,28 +210,32 @@
             <div class="dropdown d-inline-block">
                 <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
                     data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <img class="rounded-circle header-profile-user" src="assets/images/users/avatar-7.jpg"
-                        alt="Header Avatar">
+                    <img class="rounded-circle header-profile-user"
+                        src="{{ asset('assets/images/users/avatar-7.jpg') }}" alt="Header Avatar">
                     <span class="d-none d-xl-inline-block ms-1">James</span>
                     <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end">
                     <!-- item-->
-                    <a class="dropdown-item" href="#"><i class="mdi mdi-account-circle-outline font-size-16 align-middle me-1"></i> Profile</a>
-                    <a class="dropdown-item" href="#"><i class="mdi mdi-wallet-outline font-size-16 align-middle me-1"></i> My Wallet</a>
-                    <a class="dropdown-item d-block" href="#"><span class="badge badge-success float-end">11</span><i class="mdi mdi-cog-outline font-size-16 align-middle me-1"></i> Settings</a>
-                    <a class="dropdown-item" href="#"><i class="mdi mdi-lock-open-outline font-size-16 align-middle me-1"></i> Lock screen</a>
+                    <a class="dropdown-item" href="#"><i
+                            class="mdi mdi-account-circle-outline font-size-16 align-middle me-1"></i> Profile</a>
+
+                    <a class="dropdown-item d-block" href="#"><span
+                            class="badge badge-success float-end">11</span><i
+                            class="mdi mdi-cog-outline font-size-16 align-middle me-1"></i> Settings</a>
+
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item text-danger" href="#"><i class="mdi mdi-power font-size-16 align-middle me-1 text-danger"></i> Logout</a>
+                    <a class="dropdown-item text-danger" href="#"><i
+                            class="mdi mdi-power font-size-16 align-middle me-1 text-danger"></i> Logout</a>
                 </div>
             </div>
 
-            <div class="dropdown d-inline-block">
+            {{-- <div class="dropdown d-inline-block">
                 <button type="button" class="btn header-item noti-icon right-bar-toggle waves-effect">
                     <i class="mdi mdi-cog-outline font-size-20"></i>
                 </button>
-            </div>
-    
+            </div> --}}
+
         </div>
     </div>
 </header>
