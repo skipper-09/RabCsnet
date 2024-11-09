@@ -42,7 +42,6 @@ Route::prefix('admin')->group(function () {
             Route::put('/update/{id}', [ItemTypeController::class, 'update'])->name('itemtype.update');
             Route::delete('/delete/{id}', [ItemTypeController::class, 'destroy'])->name('itemtype.delete');
         });
-<<<<<<< HEAD
 
         Route::prefix('company')->group(function () {
             Route::get('/', [CompanyController::class, 'index'])->name('company');
@@ -53,11 +52,7 @@ Route::prefix('admin')->group(function () {
             Route::put('/update/{id}', [CompanyController::class, 'update'])->name('company.update');
             Route::delete('/delete/{id}', [CompanyController::class, 'destroy'])->name('company.delete');
         });
-    });
-});
 
-
-=======
         Route::prefix('unit')->group(function () {
             Route::get('/', [UnitController::class, 'index'])->name('unit');
             Route::get('getData', [UnitController::class, 'getData'])->name('unit.getdata');
@@ -69,4 +64,3 @@ Route::prefix('admin')->group(function () {
         });
     });
 });
->>>>>>> dc7f6f24274bfd20668569e1ed164eaf8c1b3996
