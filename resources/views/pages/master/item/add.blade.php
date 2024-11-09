@@ -33,17 +33,7 @@
                                 class="needs-validation" novalidate>
                                 @csrf
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">Item Code</label>
-                                            <input type="text" name="item_code" class="form-control"
-                                                id="validationCustom01" required>
-                                            <div class="valid-feedback">
-                                                Looks good!
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label">Name</label>
                                             <input type="text" name="name" class="form-control"
@@ -56,8 +46,8 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label">Service Price</label>
-                                            <input type="number" name="service_price" class="form-control"
-                                                id="validationCustom01" required>
+                                            <input type="text" inputmode="numeric" name="service_price"
+                                                class="form-control" id="validationCustom01" required>
                                             <div class="valid-feedback">
                                                 Looks good!
                                             </div>
@@ -66,8 +56,8 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label">Material Price</label>
-                                            <input type="number" name="material_price" class="form-control"
-                                                id="validationCustom01" required>
+                                            <input type="text" inputmode="numeric" name="material_price"
+                                                class="form-control" id="validationCustom01" required>
                                             <div class="valid-feedback">
                                                 Looks good!
                                             </div>
@@ -112,7 +102,8 @@
                                             <label for="validationCustom01" class="form-label">
                                                 Description
                                             </label>
-                                            <textarea id="textarea" name="description" class="form-control" maxlength="225" rows="3" placeholder="Enter Description"></textarea>
+                                            <textarea id="textarea" name="description" class="form-control" maxlength="225" rows="3"
+                                                placeholder="Enter Description"></textarea>
                                             <div class="valid-feedback">
                                                 Looks good!
                                             </div>

@@ -37,16 +37,16 @@
                                 <a href="{{ route('item.add') }}" class="btn btn-primary btn-sm">Tambah
                                     {{ $tittle }}</a>
                             </div>
-                            <table id="datatable" class="table dt-responsive nowrap table-hover" style="width: 100%;">
+                            <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
                                 <thead>
                                     <tr>
-
                                         <th>Item Code</th>
                                         <th>Name</th>
                                         <th>Type</th>
                                         <th>Unit</th>
                                         <th>Material Price</th>
                                         <th>Service Price</th>
+                                        <th>Deskripsi</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -109,6 +109,10 @@
                                     currency: 'IDR'
                                 }).format(data);
                             }
+                        },
+                        {
+                            data: 'description',
+                            name: 'description'
                         },
                         {
                             data: 'action',

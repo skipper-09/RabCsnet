@@ -78,7 +78,6 @@ class ItemController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'type_id' => 'required|exists:type_items,id',
-            'item_code' => 'required|unique:items,item_code',
             'unit_id' => 'required|exists:units,id',
             'material_price' => 'required|numeric',
             'service_price' => 'required|numeric',
@@ -89,7 +88,6 @@ class ItemController extends Controller
         Item::create([
             'name' => $request->name,
             'type_id' => $request->type_id,
-            'item_code' => $request->item_code,
             'unit_id' => $request->unit_id,
             'material_price' => $request->material_price,
             'service_price' => $request->service_price,
@@ -122,7 +120,6 @@ class ItemController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'type_id' => 'required|exists:type_items,id',
-            'item_code' => 'required|unique:items,item_code',
             'unit_id' => 'required|exists:units,id',
             'material_price' => 'required|numeric',
             'service_price' => 'required|numeric',
@@ -134,7 +131,6 @@ class ItemController extends Controller
         $item->update([
             'name' => $request->name,
             'type_id' => $request->type_id,
-            'item_code' => $request->item_code,
             'unit_id' => $request->unit_id,
             'material_price' => $request->material_price,
             'service_price' => $request->service_price,
