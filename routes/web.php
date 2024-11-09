@@ -3,6 +3,7 @@
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Master\CompanyController;
 use App\Http\Controllers\Master\ItemTypeController;
+use App\Http\Controllers\Master\UnitController;
 use App\Http\Controllers\Project\ProjectController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +42,7 @@ Route::prefix('admin')->group(function () {
             Route::put('/update/{id}', [ItemTypeController::class, 'update'])->name('itemtype.update');
             Route::delete('/delete/{id}', [ItemTypeController::class, 'destroy'])->name('itemtype.delete');
         });
+<<<<<<< HEAD
 
         Route::prefix('company')->group(function () {
             Route::get('/', [CompanyController::class, 'index'])->name('company');
@@ -55,3 +57,16 @@ Route::prefix('admin')->group(function () {
 });
 
 
+=======
+        Route::prefix('unit')->group(function () {
+            Route::get('/', [UnitController::class, 'index'])->name('unit');
+            Route::get('getData', [UnitController::class, 'getData'])->name('unit.getdata');
+            Route::get('/tambah', [UnitController::class, 'create'])->name('unit.add');
+            Route::post('store', [UnitController::class, 'store'])->name('unit.store');
+            Route::get('/edit/{id}', [UnitController::class, 'show'])->name('unit.edit');
+            Route::put('/update/{id}', [UnitController::class, 'update'])->name('unit.update');
+            Route::delete('/delete/{id}', [UnitController::class, 'destroy'])->name('unit.delete');
+        });
+    });
+});
+>>>>>>> dc7f6f24274bfd20668569e1ed164eaf8c1b3996
