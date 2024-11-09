@@ -2,9 +2,9 @@
 
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Master\CompanyController;
-use App\Http\Controllers\Master\ItemController;
 use App\Http\Controllers\Master\ItemTypeController;
 use App\Http\Controllers\Master\UnitController;
+use App\Http\Controllers\Master\ItemController;
 use App\Http\Controllers\Project\ProjectController;
 use Illuminate\Support\Facades\Route;
 
@@ -63,6 +63,16 @@ Route::prefix('admin')->group(function () {
             Route::get('/edit/{id}', [UnitController::class, 'show'])->name('unit.edit');
             Route::put('/update/{id}', [UnitController::class, 'update'])->name('unit.update');
             Route::delete('/delete/{id}', [UnitController::class, 'destroy'])->name('unit.delete');
+        });
+
+        Route::prefix('item')->group(function () {
+            Route::get('/', [ItemController::class, 'index'])->name('item');
+            Route::get('getData', [ItemController::class, 'getData'])->name('item.getdata');
+            Route::get('/tambah', [ItemController::class, 'create'])->name('item.add');
+            Route::post('store', [ItemController::class, 'store'])->name('item.store');
+            Route::get('/edit/{id}', [ItemController::class, 'show'])->name('item.edit');
+            Route::put('/update/{id}', [ItemController::class, 'update'])->name('item.update');
+            Route::delete('/delete/{id}', [ItemController::class, 'destroy'])->name('item.delete');
         });
     });
 });

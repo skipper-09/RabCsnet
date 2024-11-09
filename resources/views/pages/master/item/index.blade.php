@@ -17,7 +17,7 @@
                     <div class="page-title">
                         <h4>{{ $tittle }}</h4>
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
                             <li class="breadcrumb-item active">Master</li>
                             <li class="breadcrumb-item active">{{ $tittle }}</li>
                         </ol>
@@ -28,27 +28,25 @@
     </div>
 
     <div class="container-fluid">
-
         <div class="page-content-wrapper">
             <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
                             <div class="mb-3">
-                                <a href="{{ route('itemtype.add') }}" class="btn btn-primary btn-sm">Tambah
+                                <a href="{{ route('item.add') }}" class="btn btn-primary btn-sm">Tambah
                                     {{ $tittle }}</a>
                             </div>
-                            <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
+                            <table id="datatable" class="table dt-responsive nowrap table-hover" style="width: 100%;">
                                 <thead>
                                     <tr>
 
-                                        <th>Kode</th>
+                                        <th>Item Code</th>
                                         <th>Name</th>
                                         <th>Type</th>
-                                        <th>Satuan</th>
-                                        <th>Harga Material</th>
-                                        <th>Harga Jasa</th>
-                                        <th>Deskripsi</th>
+                                        <th>Unit</th>
+                                        <th>Material Price</th>
+                                        <th>Service Price</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -85,8 +83,8 @@
                             name: 'name'
                         },
                         {
-                            data: 'type',
-                            name: 'type'
+                            data: 'type', // Ensure this matches the column name from the server
+                            name: 'type',
                         },
                         {
                             data: 'unit',
@@ -94,15 +92,23 @@
                         },
                         {
                             data: 'material_price',
-                            name: 'material_price'
+                            name: 'material_price',
+                            render: function(data) {
+                                return new Intl.NumberFormat('id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR'
+                                }).format(data);
+                            }
                         },
                         {
                             data: 'service_price',
-                            name: 'service_price'
-                        },
-                        {
-                            data: 'description',
-                            name: 'description'
+                            name: 'service_price',
+                            render: function(data) {
+                                return new Intl.NumberFormat('id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR'
+                                }).format(data);
+                            }
                         },
                         {
                             data: 'action',
