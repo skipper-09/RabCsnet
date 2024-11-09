@@ -8,6 +8,4 @@ class TypeItem extends Model
 {
     protected $primaryKey = 'id';
     protected $fillable = ['name'];
-
-    
 }
