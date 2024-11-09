@@ -10,7 +10,7 @@ class ProjectController extends Controller
     public function index()
     {
         $data = [
-            'title' => 'Project'
+            'tittle' => 'Project'
         ];
 
         return view('pages.project.index', $data);

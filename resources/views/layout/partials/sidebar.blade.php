@@ -46,7 +46,7 @@
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
                         <li><a href="ui-alerts.html">Items</a></li>
-                        <li><a href="ui-alerts.html">Items Type</a></li>
+                        <li><a href="{{ route('itemtype') }}">Items Type</a></li>
                         <li><a href="ui-alerts.html">Unit/Satuan</a></li>
                         <li><a href="ui-buttons.html">Company</a></li>
 

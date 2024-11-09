@@ -1,4 +1,5 @@
 @extends('layout.base')
+@section('tittle',$tittle)
 @section('content')
     <!-- start page title -->
     <div class="page-title-box">

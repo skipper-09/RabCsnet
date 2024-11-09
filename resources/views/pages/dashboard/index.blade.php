@@ -1,4 +1,5 @@
 @extends('layout.base')
+@section('tittle',$tittle)
 @section('content')
     <!-- start page title -->
     <div class="page-title-box">
@@ -14,11 +15,7 @@
                         </ol>
                     </div>
                 </div>
-                {{-- <div class="col-sm-6">
-                    <div class="float-end d-none d-sm-block">
-                        <a href="" class="btn btn-success">Add Widget</a>
-                    </div>
-                </div> --}}
+               
             </div>
         </div>
     </div>
