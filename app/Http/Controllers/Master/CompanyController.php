@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use Exception;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 
@@ -23,13 +24,13 @@ class CompanyController extends Controller
 
     public function getData(Request $request)
     {
-        $datatype = Company::orderByDesc('created_at')->get();
+        $company = Company::orderByDesc('id')->get();
 
-        return DataTables::of($datatype)->addIndexColumn()->addColumn('action', function ($data) {
+        return DataTables::of($company)->addIndexColumn()->addColumn('action', function ($data) {
             $button = '';
-            $button .= ' <a href="' . route('itemtype.edit', ['id' => $data->id]) . '" class="btn btn-sm btn-success action mr-1" data-id=' . $data->id . ' data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data"><i
+            $button .= ' <a href="' . route('company.edit', ['id' => $data->id]) . '" class="btn btn-sm btn-success action mr-1" data-id=' . $data->id . ' data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data"><i
             class="fas fa-pencil-alt"></i></a>';
-            $button .= ' <button  class="btn btn-sm btn-danger  action" data-id=' . $data->id . ' data-type="delete" data-route="' . route('itemtype.delete', ['id' => $data->id]) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data"><i
+            $button .= ' <button  class="btn btn-sm btn-danger  action" data-id=' . $data->id . ' data-type="delete" data-route="' . route('company.delete', ['id' => $data->id]) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data"><i
                                                             class="fas fa-trash-alt "></i></button>';
             return '<div class="d-flex gap-2">' . $button . '</div>';
         })->rawColumns(['action'])->make(true);
@@ -50,45 +51,64 @@ class CompanyController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request,Company $company)
+    public function store(Request $request, Company $company)
     {
         $request->validate([
-            'name'=>'required',
-            'address'=>'required',
-            'phone'=>'required',
+            'name' => 'required',
+            'address' => 'required',
+            'phone' => 'required',
         ]);
 
         $company->insert([
-            'name'=>$request->name,
-            'address'=>$request->address,
-            'phone'=>$request->phone,
+            'name' => $request->name,
+            'address' => $request->address,
+            'phone' => $request->phone,
         ]);
 
-        return redirect()->route('company');  
+        return redirect()->route('company');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $data = [
+            'tittle' => 'Company',
+            'company' => Company::find($id)
+        ];
+
+        return view('pages.master.company.edit', $data);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            $request->validate([
+                'name' => 'required',
+                'address' => 'required',
+                'phone' => 'required',
+            ]);
+            $company = Company::find($id);
+
+            $company->update([
+                'name' => $request->name,
+                'address' => $request->address,
+                'phone' => $request->phone,
+            ]);
+
+            return redirect()->route('company');
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'trace' => $e->getTrace(),
+            ]);
+        }
     }
 
     /**
@@ -96,6 +116,21 @@ class CompanyController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $data = Company::findOrFail($id);
+            $data->delete();
+
+            //return response
+            return response()->json([
+                'status' => 'success',
+                'success' => true,
+                'message' => 'Data Company Berhasil Dihapus!.',
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Menghapus Data Company!',
+                'trace' => $e->getTrace()
+            ]);
+        }
     }
 }

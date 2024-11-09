@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Master\CompanyController;
+use App\Http\Controllers\Master\ItemController;
 use App\Http\Controllers\Master\ItemTypeController;
 use App\Http\Controllers\Master\UnitController;
 use App\Http\Controllers\Project\ProjectController;
@@ -43,6 +44,7 @@ Route::prefix('admin')->group(function () {
             Route::delete('/delete/{id}', [ItemTypeController::class, 'destroy'])->name('itemtype.delete');
         });
 
+        //route company master
         Route::prefix('company')->group(function () {
             Route::get('/', [CompanyController::class, 'index'])->name('company');
             Route::get('getData', [CompanyController::class, 'getData'])->name('company.getdata');

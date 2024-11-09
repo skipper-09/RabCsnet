@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('name');
             $table->unsignedBigInteger('type_id');
             $table->unsignedBigInteger('unit_id');
-            $table->string('item_code');
-            $table->integer('material_price');
-            $table->integer('service_price');
+            $table->string('item_code')->unique()->nullable(false);
+            $table->string('material_price');
+            $table->string('service_price');
             $table->longText('description');
             $table->foreign('type_id')->references('id')->on('type_items')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade')->onUpdate('cascade');

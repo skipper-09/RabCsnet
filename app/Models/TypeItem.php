@@ -9,5 +9,8 @@ class TypeItem extends Model
     protected $primaryKey = 'id';
     protected $fillable = ['name'];
 
-    
+    public function items()
+    {
+        return $this->hasMany(Item::class);
+    }
 }

@@ -24,7 +24,7 @@ class UnitController extends Controller
 
     public function getData(Request $request)
     {
-        $dataType = Unit::orderByDesc('created_at')->get();
+        $dataType = Unit::orderByDesc('id')->get();
 
         return DataTables::of($dataType)->addIndexColumn()->addColumn('action', function ($data) {
             $button = '';
@@ -54,11 +54,11 @@ class UnitController extends Controller
     public function store(Request $request, Unit $unit)
     {
         $request->validate([
-            'name'=> 'required',
+            'name' => 'required',
         ]);
 
         $unit->insert([
-            'name'=> $request->name,
+            'name' => $request->name,
         ]);
 
         return redirect()->route('unit');
@@ -83,13 +83,13 @@ class UnitController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name'=> 'required',
+            'name' => 'required',
         ]);
 
         $unit = Unit::find($id);
 
         $unit->update([
-            'name'=> $request->name,
+            'name' => $request->name,
         ]);
 
         return redirect()->route('unit');
@@ -103,7 +103,7 @@ class UnitController extends Controller
         try {
             $data = Unit::findOrFail($id);
             $data->delete();
-            
+
             //return response
             return response()->json([
                 'status' => 'success',

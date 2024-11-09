@@ -25,7 +25,7 @@ class ItemTypeController extends Controller
 
     public function getData(Request $request)
     {
-        $datatype = TypeItem::orderByDesc('created_at')->get();
+        $datatype = TypeItem::orderByDesc('id')->get();
 
         return DataTables::of($datatype)->addIndexColumn()->addColumn('action', function ($data) {
             $button = '';
@@ -55,11 +55,11 @@ class ItemTypeController extends Controller
     public function store(Request $request, TypeItem $typeItem)
     {
         $request->validate([
-            'name'=>'required',
+            'name' => 'required',
         ]);
 
         $typeItem->insert([
-            'name'=>$request->name
+            'name' => $request->name
         ]);
 
         return redirect()->route('itemtype');
@@ -72,27 +72,27 @@ class ItemTypeController extends Controller
     {
         $data = [
             'tittle' => 'Item Type',
-            'itemtype'=>TypeItem::find($id),
+            'itemtype' => TypeItem::find($id),
         ];
 
         return view('pages.master.itemtype.edit', $data);
     }
 
-    
+
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
         $request->validate([
-            'name'=>'required',
+            'name' => 'required',
         ]);
 
         $typeItem = TypeItem::find($id);
 
         $typeItem->update([
-            'name'=>$request->name
+            'name' => $request->name
         ]);
 
         return redirect()->route('itemtype');
@@ -106,7 +106,7 @@ class ItemTypeController extends Controller
         try {
             $data = TypeItem::findOrFail($id);
             $data->delete();
-            
+
             //return response
             return response()->json([
                 'status' => 'success',

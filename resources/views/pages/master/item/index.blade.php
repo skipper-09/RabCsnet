@@ -15,15 +15,11 @@
             <div class="row align-items-center">
                 <div class="col-sm-6">
                     <div class="page-title">
-                        <h4>
-                            {{ $tittle }}
-                        </h4>
+                        <h4>{{ $tittle }}</h4>
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
                             <li class="breadcrumb-item active">Master</li>
-                            <li class="breadcrumb-item active">
-                                {{ $tittle }}
-                            </li>
+                            <li class="breadcrumb-item active">{{ $tittle }}</li>
                         </ol>
                     </div>
                 </div>
@@ -39,14 +35,20 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="mb-3">
-                                <a href="{{ route('unit.add') }}" class="btn btn-primary btn-sm">Tambah
+                                <a href="{{ route('itemtype.add') }}" class="btn btn-primary btn-sm">Tambah
                                     {{ $tittle }}</a>
                             </div>
                             <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
+
+                                        <th>Kode</th>
                                         <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Satuan</th>
+                                        <th>Harga Material</th>
+                                        <th>Harga Jasa</th>
+                                        <th>Deskripsi</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -66,23 +68,41 @@
         <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
         {{-- custom swetaert --}}
         <script src="{{ asset('assets/js/custom.js') }}"></script>
+
         <script>
             $(document).ready(function() {
                 // Initialize DataTable
                 $("#datatable").DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: '{{ route('unit.getdata') }}',
+                    ajax: '{{ route('item.getdata') }}',
                     columns: [{
-                            data: 'DT_RowIndex',
-                            orderable: false,
-                            searchable: false,
-                            class: 'text-center',
-                            width: '40px'
+                            data: 'item_code',
+                            name: 'item_code'
                         },
                         {
                             data: 'name',
                             name: 'name'
+                        },
+                        {
+                            data: 'type',
+                            name: 'type'
+                        },
+                        {
+                            data: 'unit',
+                            name: 'unit'
+                        },
+                        {
+                            data: 'material_price',
+                            name: 'material_price'
+                        },
+                        {
+                            data: 'service_price',
+                            name: 'service_price'
+                        },
+                        {
+                            data: 'description',
+                            name: 'description'
                         },
                         {
                             data: 'action',
@@ -95,8 +115,6 @@
 
 
                 $(".dataTables_length select").addClass("form-select form-select-sm");
-
-
             });
         </script>
     @endpush
