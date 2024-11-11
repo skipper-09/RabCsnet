@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Master\CompanyController;
 use App\Http\Controllers\Master\ItemTypeController;
@@ -12,7 +13,9 @@ Route::get('/', function () {
     return redirect()->route('dashboard');
 });
 
-
+Route::prefix('auth')->group(function () {
+    Route::get('login', [AuthController::class, 'index'])->name('login');
+});
 
 Route::prefix('admin')->group(function () {
     Route::get('', function () {
