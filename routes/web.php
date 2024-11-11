@@ -6,6 +6,7 @@ use App\Http\Controllers\Master\ItemTypeController;
 use App\Http\Controllers\Master\UnitController;
 use App\Http\Controllers\Master\ItemController;
 use App\Http\Controllers\Project\ProjectController;
+use App\Http\Controllers\Settings\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -73,6 +74,19 @@ Route::prefix('admin')->group(function () {
             Route::get('/edit/{id}', [ItemController::class, 'show'])->name('item.edit');
             Route::put('/update/{id}', [ItemController::class, 'update'])->name('item.update');
             Route::delete('/delete/{id}', [ItemController::class, 'destroy'])->name('item.delete');
+        });
+    });
+
+    Route::prefix('settings')->group(function () {
+
+        Route::prefix('user')->group(function () {
+            Route::get('/', [UserController::class, 'index'])->name('user');
+            Route::get('getData', [UserController::class, 'getData'])->name('user.getdata');
+            Route::get('/tambah', [UserController::class, 'create'])->name('user.add');
+            Route::post('store', [UserController::class, 'store'])->name('user.store');
+            Route::get('/edit/{id}', [UserController::class, 'show'])->name('user.edit');
+            Route::put('/update/{id}', [UserController::class, 'update'])->name('user.update');
+            Route::delete('/delete/{id}', [UserController::class, 'destroy'])->name('user.delete');
         });
     });
 });

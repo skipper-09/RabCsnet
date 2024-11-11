@@ -104,7 +104,7 @@ class ItemController extends Controller
     {
         $data = [
             'tittle' => 'Item',
-            'item' => Item::findOrFail($id),
+            'item' => Item::find($id),
             'units' => Unit::all(),
             'types' => TypeItem::all()
         ];
@@ -126,7 +126,7 @@ class ItemController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $item = Item::findOrFail($id);
+        $item = Item::find($id);
 
         $item->update([
             'name' => $request->name,
