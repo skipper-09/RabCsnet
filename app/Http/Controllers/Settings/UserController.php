@@ -36,9 +36,9 @@ class UserController extends Controller
             $button .= ' <button  class="btn btn-sm btn-danger  action" data-id=' . $data->id . ' data-type="delete" data-route="' . route('user.delete', ['id' => $data->id]) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data"><i
                                                             class="fas fa-trash-alt "></i></button>';
             return '<div class="d-flex gap-2">' . $button . '</div>';
-        })->addColumn('role',function($data){
+        })->addColumn('role', function ($data) {
             return $data->roles[0]->name;
-        })->rawColumns(['action','role'])->make(true);
+        })->rawColumns(['action', 'role'])->make(true);
     }
 
     /**
@@ -49,7 +49,7 @@ class UserController extends Controller
         $data = [
             'tittle' => 'User',
             // 'role'=>Role::where('name', '!=', 'Developer')->get(),
-            'role'=>Role::all()
+            'role' => Role::all()
         ];
 
         return view('pages.settings.user.add', $data);
@@ -69,13 +69,13 @@ class UserController extends Controller
             'email' => 'required|string|unique:users,email|max:255',
             'password' => 'required|string|min:6|max:255|confirmed',
             'password_confirmation' => 'required|string|min:6|max:255',
-            'is_block' => 'required|boolean', 
-            'role'=> 'required'
+            'is_block' => 'required|boolean',
+            'role' => 'required'
         ]);
 
         // Create the user
         User::create([
-            'username'=> $request->username,
+            'username' => $request->username,
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -89,9 +89,13 @@ class UserController extends Controller
      */
     public function show($id)
     {
+        $user = User::find($id);
+
         $data = [
             'tittle' => 'User',
-            'user' => User::find($id),
+            'user' => $user,
+            'role' => Role::all(),
+            'userRoles' => $user->roles->pluck('name')->toArray(), // Get current user roles
         ];
 
         return view('pages.settings.user.edit', $data);
@@ -102,24 +106,43 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $user = User::find($id);
+
+        // Validate the request data
+        $rules = [
             'username' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'email' => 'required|string|unique:users,email|max:255',
-            'password' => 'required|string|min:6|max:255|confirmed',
-            'password_confirmation' => 'required|string|min:6|max:255',
-            'is_block' => 'required|boolean', 
-        ]);
+            'is_block' => 'required|boolean',
+            'role' => 'required|exists:roles,name' // Ensure role exists
+        ];
 
-        $user = User::find($id);
+        // Only validate password if it's being updated
+        if ($request->filled('password')) {
+            $rules['password'] = 'required|string|min:6|confirmed';
+            $rules['password_confirmation'] = 'required|string|min:6';
+        }
 
-        $user->update([
-            'username'=> $request->username,
+        $request->validate($rules);
+
+        // Prepare update data
+        $updateData = [
+            'username' => $request->username,
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
             'is_block' => $request->is_block,
-        ]);
+        ];
+
+        // Only update password if provided
+        if ($request->filled('password')) {
+            $updateData['password'] = Hash::make($request->password);
+        }
+
+        // Update user
+        $user->update($updateData);
+
+        // Sync roles
+        $user->syncRoles($request->role);
 
         return redirect()->route('user');
     }
