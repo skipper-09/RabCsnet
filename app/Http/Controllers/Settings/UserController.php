@@ -89,7 +89,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::find($id);
 
         $data = [
             'tittle' => 'User',
@@ -106,7 +106,7 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::find($id);
 
         // Validate the request data
         $rules = [
