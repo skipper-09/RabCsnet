@@ -106,46 +106,42 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = User::find($id);
+        // Temukan user berdasarkan ID
+        $user = User::findOrFail($id);
 
-        // Validate the request data
+        // Aturan validasi
         $rules = [
-            'username' => 'required|string|max:255',
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|unique:users,email|max:255',
-            'is_block' => 'required|boolean',
-            'role' => 'required|exists:roles,name' // Ensure role exists
+            'username' => 'nullable|string|max:255',
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|string|email|unique:users,email,' . $user->id . '|max:255',
+            'is_block' => 'nullable|boolean',
+            'role' => 'nullable|exists:roles,name',
+            'password' => 'nullable|string|min:6|confirmed'
         ];
 
-        // Only validate password if it's being updated
-        if ($request->filled('password')) {
-            $rules['password'] = 'required|string|min:6|confirmed';
-            $rules['password_confirmation'] = 'required|string|min:6';
-        }
-
+        // Validasi request data
         $request->validate($rules);
 
-        // Prepare update data
-        $updateData = [
-            'username' => $request->username,
-            'name' => $request->name,
-            'email' => $request->email,
-            'is_block' => $request->is_block,
-        ];
+        // Persiapkan data untuk update
+        $updateData = $request->only(['username', 'name', 'email', 'is_block']);
 
-        // Only update password if provided
+        // Update password jika diberikan
         if ($request->filled('password')) {
             $updateData['password'] = Hash::make($request->password);
         }
 
-        // Update user
+        // Lakukan pembaruan data pada user
         $user->update($updateData);
 
-        // Sync roles
-        $user->syncRoles($request->role);
+        // Sync role jika ada
+        if ($request->has('role')) {
+            $user->syncRoles($request->role);
+        }
 
-        return redirect()->route('user');
+        // Redirect dengan pesan sukses
+        return redirect()->route('user')->with('success', 'User updated successfully');
     }
+
 
     /**
      * Remove the specified resource from storage.

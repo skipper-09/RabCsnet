@@ -44,7 +44,7 @@
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label">Username</label>
                                             <input type="text" name="username" class="form-control"
-                                                value="{{ $user->username }}" id="validationCustom01" required>
+                                                value="{{ $user->username }}" id="validationCustom01">
                                             <div class="valid-feedback">
                                                 Looks good!
                                             </div>
@@ -54,7 +54,7 @@
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label">Nama</label>
                                             <input type="text" name="name" class="form-control"
-                                                value="{{ $user->name }}" id="validationCustom01" required>
+                                                value="{{ $user->name }}" id="validationCustom01">
                                             <div class="valid-feedback">
                                                 Looks good!
                                             </div>
@@ -64,7 +64,7 @@
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label">Email</label>
                                             <input type="email" name="email" class="form-control"
-                                                value="{{ $user->email }}" id="validationCustom01" required>
+                                                value="{{ $user->email }}" id="validationCustom01">
                                             <div class="valid-feedback">
                                                 Looks good!
                                             </div>
@@ -74,7 +74,7 @@
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label">Password</label>
                                             <input type="password" name="password" class="form-control"
-                                                value="{{ $user->password }}" id="validationCustom01" required>
+                                                id="validationCustom01">
                                             <div class="valid-feedback">
                                                 Looks good!
                                             </div>
@@ -84,7 +84,7 @@
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label">Confirm Password</label>
                                             <input type="password" name="password_confirmation" class="form-control"
-                                                id="validationCustom01" required>
+                                                id="validationCustom01">
                                             <div class="valid-feedback">
                                                 Looks good!
                                             </div>
