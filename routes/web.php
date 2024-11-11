@@ -7,6 +7,7 @@ use App\Http\Controllers\Master\ItemTypeController;
 use App\Http\Controllers\Master\UnitController;
 use App\Http\Controllers\Master\ItemController;
 use App\Http\Controllers\Project\ProjectController;
+use App\Http\Controllers\Settings\SettingAplicationController;
 use App\Http\Controllers\Settings\UserController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
@@ -93,6 +94,12 @@ Route::prefix('admin')->middleware('auth')->group(function () {
             Route::get('/edit/{id}', [UserController::class, 'show'])->name('user.edit');
             Route::put('/update/{id}', [UserController::class, 'update'])->name('user.update');
             Route::delete('/delete/{id}', [UserController::class, 'destroy'])->name('user.delete');
+        });
+
+        //setting aplication
+        Route::prefix('application')->group(function () {
+            Route::get('/{id}', [SettingAplicationController::class, 'index'])->name('aplication');
+            Route::put('/update/{id}', [SettingAplicationController::class, 'update'])->name('aplication.update');
         });
     });
 });
