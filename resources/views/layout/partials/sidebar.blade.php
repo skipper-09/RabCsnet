@@ -64,7 +64,7 @@
                         <span>Setting</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="true">
-                        <li><a href="javascript: void(0);">User</a></li>
+                        <li><a href="{{ route('user') }}">User</a></li>
                         <li><a href="javascript: void(0);">Role</a></li>
                         <li><a href="javascript: void(0);">Setting Aplikasi</a></li>
                         <li><a href="javascript: void(0);">Log Aplikasi</a></li>

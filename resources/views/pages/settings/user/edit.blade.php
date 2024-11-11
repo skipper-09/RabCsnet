@@ -11,7 +11,7 @@
                         <h4>Edit {{ $tittle }}</h4>
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('company') }}">{{ $tittle }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('user') }}">{{ $tittle }}</a></li>
                             <li class="breadcrumb-item active">Edit {{ $tittle }}</li>
                         </ol>
                     </div>
@@ -29,16 +29,16 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <form action="{{ route('company.update', ['id' => $company->id]) }}" method="POST"
+                            <form action="{{ route('user.update', ['id' => $user->id]) }}" method="POST"
                                 enctype="multipart/form-data" class="needs-validation" novalidate>
                                 @csrf
                                 @method('PUT')
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">Nama Perusahaan</label>
+                                            <label for="validationCustom01" class="form-label">Nama</label>
                                             <input type="text" name="name" class="form-control"
-                                                value="{{ $company->name }}" id="validationCustom01" required>
+                                                value="{{ $user->name }}" id="validationCustom01" required>
                                             <div class="valid-feedback">
                                                 Looks good!
                                             </div>
@@ -46,20 +46,31 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">No Telepon</label>
-                                            <input type="text" name="phone" class="form-control"
-                                                value="{{ $company->phone }}" id="validationCustom01" required
-                                                inputmode="numeric">
+                                            <label for="validationCustom01" class="form-label">Email</label>
+                                            <input type="email" name="email" class="form-control"
+                                                value="{{ $user->email }}" id="validationCustom01" required>
                                             <div class="valid-feedback">
                                                 Looks good!
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-12">
+                                    <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label>Alamat</label>
-                                            <div>
-                                                <textarea required class="form-control" name="address" rows="5" placeholder="Alamat Perusahaan">{{ $company->address }}</textarea>
+                                            <label for="validationCustom01" class="form-label">Password</label>
+                                            <input type="password" name="password" class="form-control"
+                                                value="{{ $user->password }}" id="validationCustom01" required>
+                                            <div class="valid-feedback">
+                                                Looks good!
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="validationCustom01" class="form-label">Confirm Password</label>
+                                            <input type="password" name="password_confirmation" class="form-control" id="validationCustom01"
+                                                required>
+                                            <div class="valid-feedback">
+                                                Looks good!
                                             </div>
                                         </div>
                                     </div>

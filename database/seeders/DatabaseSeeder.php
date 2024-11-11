@@ -21,7 +21,8 @@ class DatabaseSeeder extends Seeder
             UnitSeeder::class,
             CompanySeeder::class,
             ItemSeeder::class,
-            ProjectSeeder::class
+            ProjectSeeder::class,
+            UserSeeder::class,
         ]);
     }
 }
