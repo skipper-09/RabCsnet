@@ -44,6 +44,7 @@
                                         <th>No</th>
                                         <th>Name</th>
                                         <th>Email</th>
+                                        <th>Role</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -77,7 +78,6 @@
                             orderable: false,
                             searchable: false,
                             class: 'text-center',
-
                         },
                         {
                             data: 'name',
@@ -87,6 +87,10 @@
                         {
                             data: 'email',
                             name: 'email'
+                        },
+                        {
+                            data: 'role',
+                            name: 'role'
                         },
                         {
                             data: 'action',

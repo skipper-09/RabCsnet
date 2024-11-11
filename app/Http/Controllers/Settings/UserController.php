@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Spatie\Permission\Models\Role;
 use Yajra\DataTables\DataTables;
 
 class UserController extends Controller
@@ -35,7 +36,9 @@ class UserController extends Controller
             $button .= ' <button  class="btn btn-sm btn-danger  action" data-id=' . $data->id . ' data-type="delete" data-route="' . route('user.delete', ['id' => $data->id]) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data"><i
                                                             class="fas fa-trash-alt "></i></button>';
             return '<div class="d-flex gap-2">' . $button . '</div>';
-        })->rawColumns(['action'])->make(true);
+        })->addColumn('role',function($data){
+            return $data->roles[0]->name;
+        })->rawColumns(['action','role'])->make(true);
     }
 
     /**
@@ -45,6 +48,8 @@ class UserController extends Controller
     {
         $data = [
             'tittle' => 'User',
+            // 'role'=>Role::where('name', '!=', 'Developer')->get(),
+            'role'=>Role::all()
         ];
 
         return view('pages.settings.user.add', $data);
@@ -65,6 +70,7 @@ class UserController extends Controller
             'password' => 'required|string|min:6|max:255|confirmed',
             'password_confirmation' => 'required|string|min:6|max:255',
             'is_block' => 'required|boolean', 
+            'role'=> 'required'
         ]);
 
         // Create the user
@@ -74,7 +80,7 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'is_block' => $request->is_block,
-        ]);
+        ])->assignRole($request->role);
 
         return redirect()->route('user');
     }

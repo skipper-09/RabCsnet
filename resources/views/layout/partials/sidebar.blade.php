@@ -10,8 +10,8 @@
                     <span class="avatar-online bg-success"></span>
                 </div>
                 <div class="user-info">
-                    <h5 class="mt-3 font-size-16 text-white">James Raphael</h5>
-                    <span class="font-size-13 text-white-50">Administrator</span>
+                    <h5 class="mt-3 font-size-16 text-white">{{ Auth::user()->name }}</h5>
+                    <span class="font-size-13 text-white-50">{{ Auth::user()->roles[0]->name }}</span>
                 </div>
             </div>
         </div>

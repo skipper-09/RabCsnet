@@ -3,6 +3,8 @@
 
 @push('css')
     <link href="assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
 @endpush
 
 @section('content')
@@ -95,6 +97,24 @@
                                             <select name="is_block" class="form-control select2" aria-label="Default select example">
                                                 <option value="0">Not Blocked</option>
                                                 <option value="1">Blocked</option>
+                                            </select>
+                                            </select>
+                                            <div class="valid-feedback">
+                                                Looks good!
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="validationCustom01" class="form-label">
+                                                Role User
+                                            </label>
+                                            <select name="role" class="form-control select2" aria-label="Default select example">
+                                                <option value="">Piih Role User</option>
+                                                @foreach ($role as $item)
+                                                    
+                                                <option value="{{ $item->name }}">{{ $item->name }}</option>
+                                                @endforeach
                                             </select>
                                             </select>
                                             <div class="valid-feedback">

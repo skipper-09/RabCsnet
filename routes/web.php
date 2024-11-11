@@ -8,6 +8,7 @@ use App\Http\Controllers\Master\UnitController;
 use App\Http\Controllers\Master\ItemController;
 use App\Http\Controllers\Project\ProjectController;
 use App\Http\Controllers\Settings\UserController;
+use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -15,7 +16,7 @@ Route::get('/', function () {
 });
 
 Route::prefix('auth')->group(function () {
-    Route::get('login', [AuthController::class, 'index'])->name('login');
+    Route::get('login', [AuthController::class, 'index'])->name('login')->middleware('guest');
     Route::post('signin', [AuthController::class, 'signin'])->name('auth.signin');
     Route::get('signout', [AuthController::class, 'signout'])->name('auth.signout');
 });
