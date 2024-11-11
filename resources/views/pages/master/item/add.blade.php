@@ -1,6 +1,10 @@
 @extends('layout.base')
 @section('tittle', $tittle)
 
+@push('css')
+    <link href="assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+@endpush
+
 @section('content')
     <!-- start page title -->
     <div class="page-title-box">
@@ -70,7 +74,7 @@
                                             <label for="validationCustom01" class="form-label">
                                                 Item Type
                                             </label>
-                                            <select name="type_id" class="form-select" aria-label="Default select example">
+                                            <select name="type_id" class="form-control select2" aria-label="Default select example">
                                                 <option selected>Select Item Type</option>
                                                 @foreach ($types as $type)
                                                     <option value="{{ $type->id }}">{{ $type->name }}</option>
@@ -86,7 +90,7 @@
                                             <label for="validationCustom01" class="form-label">
                                                 Item Unit
                                             </label>
-                                            <select name="unit_id" class="form-select" aria-label="Default select example">
+                                            <select name="unit_id" class="form-control select2" aria-label="Default select example">
                                                 <option selected>Select Item Unit</option>
                                                 @foreach ($units as $unit)
                                                     <option value="{{ $unit->id }}">{{ $unit->name }}</option>
@@ -132,5 +136,7 @@
         <script src="{{ asset('assets/libs/node-waves/waves.min.js') }}"></script>
         <script src="{{ asset('assets/libs/parsleyjs/parsley.min.js') }}"></script>
         <script src="{{ asset('assets/js/pages/form-validation.init.js') }}"></script>
+        <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
+        <script src="{{ asset('assets/js/pages/form-advanced.init.js') }}"></script>
     @endpush
 @endsection

@@ -59,17 +59,21 @@ class UserController extends Controller
 
         // Validate the request data
         $request->validate([
+            'username' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'email' => 'required|string|unique:users,email|max:255',
             'password' => 'required|string|min:6|max:255|confirmed',
             'password_confirmation' => 'required|string|min:6|max:255',
+            'is_block' => 'required|boolean', 
         ]);
 
         // Create the user
-        User::insert([
+        User::create([
+            'username'=> $request->username,
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'is_block' => $request->is_block,
         ]);
 
         return redirect()->route('user');
@@ -93,18 +97,22 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'username' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'email' => 'required|string|unique:users,email|max:255',
             'password' => 'required|string|min:6|max:255|confirmed',
             'password_confirmation' => 'required|string|min:6|max:255',
+            'is_block' => 'required|boolean', 
         ]);
 
         $user = User::find($id);
 
         $user->update([
+            'username'=> $request->username,
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'is_block' => $request->is_block,
         ]);
 
         return redirect()->route('user');

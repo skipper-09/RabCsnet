@@ -1,6 +1,10 @@
 @extends('layout.base')
 @section('tittle', $tittle)
 
+@push('css')
+    <link href="assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+@endpush
+
 @section('content')
     <!-- start page title -->
     <div class="page-title-box">
@@ -36,6 +40,15 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
+                                            <label for="validationCustom01" class="form-label">Username</label>
+                                            <input type="text" name="username" class="form-control" value="{{ $user->username }}"  id="validationCustom01" required>
+                                            <div class="valid-feedback">
+                                                Looks good!
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
                                             <label for="validationCustom01" class="form-label">Nama</label>
                                             <input type="text" name="name" class="form-control"
                                                 value="{{ $user->name }}" id="validationCustom01" required>
@@ -67,8 +80,23 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label">Confirm Password</label>
-                                            <input type="password" name="password_confirmation" class="form-control" id="validationCustom01"
-                                                required>
+                                            <input type="password" name="password_confirmation" class="form-control"
+                                                id="validationCustom01" required>
+                                            <div class="valid-feedback">
+                                                Looks good!
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="validationCustom01" class="form-label">
+                                                User Access
+                                            </label>
+                                            <select name="is_block" class="form-control select2" aria-label="Default select example">
+                                                <option value="0">Not Blocked</option>
+                                                <option value="1">Blocked</option>
+                                            </select>
+                                            </select>
                                             <div class="valid-feedback">
                                                 Looks good!
                                             </div>
@@ -97,5 +125,7 @@
         <script src="{{ asset('assets/libs/node-waves/waves.min.js') }}"></script>
         <script src="{{ asset('assets/libs/parsleyjs/parsley.min.js') }}"></script>
         <script src="{{ asset('assets/js/pages/form-validation.init.js') }}"></script>
+        <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
+        <script src="{{ asset('assets/js/pages/form-advanced.init.js') }}"></script>
     @endpush
 @endsection
