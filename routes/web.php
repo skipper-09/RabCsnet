@@ -11,14 +11,16 @@ use App\Http\Controllers\Settings\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect()->route('dashboard');
+    return redirect()->route('login');
 });
 
 Route::prefix('auth')->group(function () {
     Route::get('login', [AuthController::class, 'index'])->name('login');
+    Route::post('signin', [AuthController::class, 'signin'])->name('auth.signin');
+    Route::get('signout', [AuthController::class, 'signout'])->name('auth.signout');
 });
 
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('', function () {
         return redirect()->route('dashboard');
     });

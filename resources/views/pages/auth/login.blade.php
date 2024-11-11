@@ -20,23 +20,24 @@
                                     <h5 class="text-primary mb-2 mt-4">Welcome Back !</h5>
                                     <p class="text-muted">Sign in to continue to Morvin.</p>
                                 </div>
-                                <form class="form-horizontal mt-4 pt-2" action="#">
+                                <form class="form-horizontal mt-4 pt-2" method="POST" action="{{ route('auth.signin') }}" enctype="multipart/form-data">
+                                    @csrf
 
                                     <div class="mb-3">
                                         <label for="username">Username</label>
-                                        <input type="text" class="form-control" id="username"
+                                        <input type="text" name="username" class="form-control" id="username" required
                                             placeholder="Enter username">
                                     </div>
 
                                     <div class="mb-3">
                                         <label for="userpassword">Password</label>
-                                        <input type="password" class="form-control" id="userpassword"
+                                        <input type="password" name="password" class="form-control" id="userpassword" required
                                             placeholder="Enter password">
                                     </div>
 
                                     <div class="mb-3">
                                             <div class="form-check">
-                                                <input type="checkbox" class="form-check-input"
+                                                <input type="checkbox" name="remember_me" class="form-check-input"
                                                     id="customControlInline">
                                                 <label class="form-label"
                                                     for="customControlInline">Remember me</label>
