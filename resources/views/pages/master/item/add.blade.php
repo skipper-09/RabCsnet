@@ -3,6 +3,8 @@
 
 @push('css')
     <link href="assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
 @endpush
 
 @section('content')
@@ -74,7 +76,8 @@
                                             <label for="validationCustom01" class="form-label">
                                                 Item Type
                                             </label>
-                                            <select name="type_id" class="form-control select2" aria-label="Default select example">
+                                            <select name="type_id" class="form-control select2"
+                                                aria-label="Default select example">
                                                 <option selected>Select Item Type</option>
                                                 @foreach ($types as $type)
                                                     <option value="{{ $type->id }}">{{ $type->name }}</option>
@@ -90,7 +93,8 @@
                                             <label for="validationCustom01" class="form-label">
                                                 Item Unit
                                             </label>
-                                            <select name="unit_id" class="form-control select2" aria-label="Default select example">
+                                            <select name="unit_id" class="form-control select2"
+                                                aria-label="Default select example">
                                                 <option selected>Select Item Unit</option>
                                                 @foreach ($units as $unit)
                                                     <option value="{{ $unit->id }}">{{ $unit->name }}</option>
