@@ -18,7 +18,7 @@
                         <h4>{{ $tittle }}</h4>
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                            
+
                             <li class="breadcrumb-item active">{{ $tittle }}</li>
                         </ol>
                     </div>
@@ -67,14 +67,23 @@
         <script src="{{ asset('assets/js/custom.js') }}"></script>
 
         <script>
+            @if (Session::has('message'))
+                Swal.fire({
+                    title: `{{ Session::get('status') }}`,
+                    text: `{{ Session::get('message') }}`,
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+                // Swal.fire(`{{ Session::get('status') }}`, `{{ Session::get('message') }}`, "success");
+            @endif
             $(document).ready(function() {
                 // Initialize DataTable
                 $("#datatable").DataTable({
                     processing: true,
                     serverSide: true,
                     ajax: '{{ route('vendor.getdata') }}',
-                    columns: [
-                        {
+                    columns: [{
                             data: 'DT_RowIndex',
                             orderable: false,
                             searchable: false,
@@ -101,7 +110,7 @@
                             data: 'user',
                             name: 'user'
                         },
-                       
+
                         {
                             data: 'action',
                             name: 'action',

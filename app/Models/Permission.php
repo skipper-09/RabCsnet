@@ -17,7 +17,6 @@ class Permission extends SpatiePermission
         parent::boot();
 
         static::creating(function ($model) {
-            \Log::info('Creating event triggered for model:', $model->toArray());
             if (empty($model->id)) {
                 $model->id = (string) Str::uuid(); // Generate UUID
             }

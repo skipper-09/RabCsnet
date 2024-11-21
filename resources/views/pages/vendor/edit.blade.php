@@ -36,14 +36,15 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <form action="{{ route('vendor.store') }}" method="POST" enctype="multipart/form-data"
-                                class="">
+                            <form action="{{ route('vendor.update', ['id' => $vendor->id]) }}" method="POST"
+                                enctype="multipart/form-data" class="">
                                 @csrf
+                                @method('PUT')
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label required">Nama</label>
-                                            <input type="text" name="name"
+                                            <input type="text" name="name" value="{{ $vendor->name }}"
                                                 class="form-control @error('name') is-invalid @enderror"
                                                 id="validationCustom01">
                                             @error('name')
@@ -57,7 +58,7 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label required">Email</label>
-                                            <input type="email" name="email"
+                                            <input type="email" name="email" value="{{ $vendor->email }}"
                                                 class="form-control @error('email') is-invalid @enderror"
                                                 id="validationCustom01">
                                             @error('email')
@@ -71,6 +72,7 @@
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label required">No Telepon</label>
                                             <input type="text" inputmode="numeric" name="phone"
+                                                value="{{ $vendor->phone }}"
                                                 class="form-control @error('phone') is-invalid @enderror"
                                                 id="validationCustom01">
                                             @error('phone')
@@ -85,7 +87,7 @@
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label">Website</label>
                                             <input type="text" name="website" class="form-control"
-                                                id="validationCustom01">
+                                                value="{{ $vendor->website }}" id="validationCustom01">
 
                                         </div>
                                     </div>
@@ -98,8 +100,10 @@
                                                 class="form-control select2 @error('status') is-invalid @enderror"
                                                 aria-label="Default select example">
                                                 <option selected value="">Pilih Status</option>
-                                                <option value="1">Aktif</option>
-                                                <option value="0">Tidak Aktif</option>
+                                                <option value="1" {{ $vendor->status == 1 ? 'selected' : '' }}>Aktif
+                                                </option>
+                                                <option value="0" {{ $vendor->status == 0 ? 'selected' : '' }}>Tidak
+                                                    Aktif</option>
                                             </select>
                                             @error('status')
                                                 <div class="invalid-feedback">
@@ -119,7 +123,9 @@
                                                 aria-label="Default select example">
                                                 <option selected value="">Pilih User</option>
                                                 @foreach ($user as $item)
-                                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                    <option value="{{ $item->id }}"
+                                                        {{ $vendor->user_id === $item->id ? 'selected' : '' }}>
+                                                        {{ $item->name }}</option>
                                                 @endforeach
                                             </select>
                                             @error('user_id')
@@ -137,7 +143,7 @@
                                             Alamat
                                         </label>
                                         <textarea id="textarea" name="address" class="form-control @error('address') is-invalid @enderror" maxlength="225"
-                                            rows="3"></textarea>
+                                            rows="3">{{ $vendor->address }}</textarea>
                                         @error('address')
                                             <div class="invalid-feedback">
                                                 {{ $message }}
