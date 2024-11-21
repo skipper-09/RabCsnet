@@ -13,7 +13,7 @@ class ProjectSeeder extends Seeder
      */
     public function run(): void
     {
-        Project::insert([
+        Project::create([
             'id'=>'e571fb18-ccbb-4424-aae9-00c59e1144ad',
             'name'=>'Project Testing',
             'company_id'=>'3c795b1b-9354-46db-8ad0-156dc52159e4',

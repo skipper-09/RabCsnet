@@ -11,7 +11,7 @@ class Item extends Model
 {
     use HasUuids;
     protected $primaryKey = 'id';
-    protected $fillable = ['name', 'type_id', 'item_code', 'unit_id', 'material_price', 'service_price', 'description'];
+    protected $fillable = ['name', 'type_id', 'item_code', 'unit_id', 'material_price', 'service_price', 'description','status'];
     protected static function boot()
     {
         parent::boot();
@@ -52,8 +52,9 @@ class Item extends Model
     {
         return $this->belongsTo(TypeItem::class);
     }
-    public function disttibusiItem()
+    public function detailitemproject()
     {
-        return $this->hasMany(Distribution_item::class);
+        return $this->hasMany(DetailItemProject::class);
     }
+    
 }

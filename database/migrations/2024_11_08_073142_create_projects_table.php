@@ -13,14 +13,16 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name');
-            // $table->uuid('company_id');
-            $table->string('responsible_person');
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->longText('description');
-            $table->boolean('status')->default(1);
             $table->foreignUuid('company_id')->references('id')->on('companies')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignUuid('vendor_id')->nullable()->references('id')->on('vendors')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('code')->unique();
+            $table->string('name');
+            $table->string('responsible_person');
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->longText('description');
+            $table->decimal('amount',10,2)->default(0)->nullable();
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }

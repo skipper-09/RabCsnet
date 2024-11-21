@@ -12,13 +12,18 @@ class Project extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['name','company_id','responsible_person','start_date','end_date','description','status'];
+    protected $fillable = ['name','company_id','responsible_person','start_date','end_date','description','status','code','amount'];
 
 
     protected static function boot()
     {
         parent::boot();
-
+        static::creating(function ($item) {
+            // Generate item_code if it's not already set
+            if (empty($item->code)) {
+                $item->code = self::generateItemCode();
+            }
+        });
         static::creating(function ($model) {
             if (empty($model->id)) {
                 $model->id = (string) Str::uuid(); // Generate UUID
@@ -26,15 +31,39 @@ class Project extends Model
         });
     }
 
+    public static function generateItemCode()
+    {
 
+        $lastItem = self::orderBy('id', 'desc')->first();
+        $lastCode = $lastItem ? $lastItem->code : null;
+
+        if ($lastCode) {
+            $lastNumber = (int) substr($lastCode, 5);
+        } else {
+            $lastNumber = 0;
+        }
+
+        $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
+        return 'PRJ-' . $newNumber;
+    }
 
     public function company(){
         return $this->belongsTo(Company::class);
     }
-    public function distribusi(){
-        return $this->hasMany(Distribution::class);
-    }
+    
     public function summary(){
         return $this->hasMany(Summary::class);
     }
+
+
+    public function projectlisence(){
+        return $this->hasMany(ProjectLisence::class);
+    }
+    public function Projectfile(){
+        return $this->hasOne(ProjectFile::class);
+    }
+    public function detailproject(){
+        return $this->hasMany(DetailProject::class);
+    }
+    
 }

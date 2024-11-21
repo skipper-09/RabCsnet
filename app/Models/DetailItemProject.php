@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class Distribution extends Model
+class DetailItemProject extends Model
 {
     use HasUuids;
     protected $primaryKey = 'id';
-    protected $fillable = ['project_id','name','code','description'];
-
+    public $incrementing = false;
+    protected $keyType = 'string';
+    protected $fillable = ['detail_id','item_id','quantity'];
     protected static function boot()
     {
         parent::boot();
@@ -22,10 +23,11 @@ class Distribution extends Model
             }
         });
     }
-    public function project(){
-        return $this->belongsTo(Project::class);
+
+    public function detail(){
+        return $this->belongsTo(DetailProject::class);
     }
-    public function distributionItems(){
-        return $this->hasMany(Distribution_item::class);
+    public function item(){
+        return $this->belongsTo(Item::class);
     }
 }

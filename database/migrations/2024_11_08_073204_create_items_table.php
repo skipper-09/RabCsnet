@@ -14,14 +14,13 @@ return new class extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
-            // $table->unsignedBigInteger('type_id');
-            // $table->unsignedBigInteger('unit_id');
+            $table->foreignUuid('type_id')->references('id')->on('type_items')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignUuid('unit_id')->references('id')->on('units')->onDelete('cascade')->onUpdate('cascade');
             $table->string('item_code')->unique()->nullable(false);
             $table->string('material_price');
             $table->string('service_price');
             $table->longText('description');
-            $table->foreignUuid('type_id')->references('id')->on('type_items')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignUuid('unit_id')->references('id')->on('units')->onDelete('cascade')->onUpdate('cascade');
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

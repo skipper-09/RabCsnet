@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('distribution_items', function (Blueprint $table) {
+        Schema::create('detail_item_projects', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            // $table->unsignedBigInteger('distribution_id');
-            // $table->unsignedBigInteger('item_id');
-            $table->integer('material_count');
-            $table->foreignUuid('distribution_id')->references('id')->on('distributions')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignUuid('detail_id')->references('id')->on('detail_projects')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignUuid('item_id')->references('id')->on('items')->onDelete('cascade')->onUpdate('cascade');
+            $table->integer('quantity')->default(0);
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('distribution_items');
+        Schema::dropIfExists('detail_item_projects');
     }
 };

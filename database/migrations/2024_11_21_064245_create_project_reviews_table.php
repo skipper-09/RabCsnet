@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('distributions', function (Blueprint $table) {
+        Schema::create('project_reviews', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name');
-            $table->string('code');
-            $table->longText('description')->nullable();
             $table->foreignUuid('project_id')->references('id')->on('projects')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignUuid('reviewer_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->longText('review_note');
+            $table->date('review_date');
+            $table->enum('status',['pending','approved'])->default('pending');
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('distributions');
+        Schema::dropIfExists('project_reviews');
     }
 };

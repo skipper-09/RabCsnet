@@ -6,12 +6,14 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class Distribution_item extends Model
+class Vendor extends Model
 {
     use HasUuids;
-    protected $primaryKey = 'id';
-    protected $fillable = ['distribution_id','item_id','material_count'];
 
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+    protected $fillable = ['name','phone','email','address','website','status'];
     protected static function boot()
     {
         parent::boot();
@@ -21,11 +23,5 @@ class Distribution_item extends Model
                 $model->id = (string) Str::uuid(); // Generate UUID
             }
         });
-    }
-    public function distribution(){
-        return $this->belongsTo(Distribution::class,'distribution_id','id');
-    }
-    public function item(){
-        return $this->belongsTo(Item::class,'item_id','id');
     }
 }
