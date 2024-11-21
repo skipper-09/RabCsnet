@@ -12,16 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('items', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name');
-            $table->unsignedBigInteger('type_id');
-            $table->unsignedBigInteger('unit_id');
+            // $table->unsignedBigInteger('type_id');
+            // $table->unsignedBigInteger('unit_id');
             $table->string('item_code')->unique()->nullable(false);
             $table->string('material_price');
             $table->string('service_price');
             $table->longText('description');
-            $table->foreign('type_id')->references('id')->on('type_items')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignUuid('type_id')->references('id')->on('type_items')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignUuid('unit_id')->references('id')->on('units')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

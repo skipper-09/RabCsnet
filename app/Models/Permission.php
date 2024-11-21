@@ -1,32 +1,26 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Permission as SpatiePermission;
 
-class Company extends Model
+class Permission extends SpatiePermission
 {
+    use HasFactory;
     use HasUuids;
-    public $incrementing = false;
-    protected $keyType = 'string';
     protected $primaryKey = 'id';
-    protected $fillable = ['name', 'address', 'phone'];
-
 
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($model) {
+            \Log::info('Creating event triggered for model:', $model->toArray());
             if (empty($model->id)) {
                 $model->id = (string) Str::uuid(); // Generate UUID
             }
         });
-    }
-    public function project()
-    {
-        return $this->hasMany(Project::class);
     }
 }

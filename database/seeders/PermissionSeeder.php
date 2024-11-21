@@ -4,7 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Str;
+use App\Models\Permission;
 
 class PermissionSeeder extends Seeder
 {
@@ -20,8 +21,10 @@ class PermissionSeeder extends Seeder
         $permissions = collect($arrayOfPermissionNames)->map(function ($permission) {
             return ['name' => $permission, 'guard_name' => 'web'];
         });
-
-        Permission::insert($permissions->toArray());
+        
+        foreach ($permissions as $permission) {
+            Permission::create($permission);
+        }
     }
     
 }

@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 
 class Item extends Model
 {
+    use HasUuids;
     protected $primaryKey = 'id';
     protected $fillable = ['name', 'type_id', 'item_code', 'unit_id', 'material_price', 'service_price', 'description'];
     protected static function boot()
@@ -16,6 +19,12 @@ class Item extends Model
             // Generate item_code if it's not already set
             if (empty($item->item_code)) {
                 $item->item_code = self::generateItemCode();
+            }
+        });
+
+        static::creating(function ($model) {
+            if (empty($model->id)) {
+                $model->id = (string) Str::uuid(); // Generate UUID
             }
         });
     }

@@ -13,7 +13,7 @@ class SettingAplicationSeeder extends Seeder
      */
     public function run(): void
     {
-        SettingAplication::insert([
+        SettingAplication::create([
             'name' => 'Csnet',
             'logo' => 'logocsnet.png',
             'description' => 'testing'

@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('distribution_items', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('distribution_id');
-            $table->unsignedBigInteger('item_id');
+            $table->uuid('id')->primary();
+            // $table->unsignedBigInteger('distribution_id');
+            // $table->unsignedBigInteger('item_id');
             $table->integer('material_count');
-            $table->foreign('distribution_id')->references('id')->on('distributions')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignUuid('distribution_id')->references('id')->on('distributions')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignUuid('item_id')->references('id')->on('items')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

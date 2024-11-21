@@ -15,9 +15,10 @@ class ItemSeeder extends Seeder
     {
         Item::create(
             [
+                'id'=>'26dc6575-6dfe-41a1-a3ac-b08bcb632480',
                 'name' => 'AC-OF-SM-12C',
-                'type_id' => 1,
-                'unit_id' => 1,
+                'type_id' => '26dc6575-6dfe-41a1-a3ac-b08bcb632480',
+                'unit_id' => 'b051e8ea-a0f8-4483-93c9-6352b72f8f45',
                 'material_price' => 9000,
                 'service_price' => 4100,
                 'description' => 'Cable Aerial Fiber Optik Single Mode 12 Core G.652 D',

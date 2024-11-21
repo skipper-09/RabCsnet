@@ -14,9 +14,12 @@ class UnitSeeder extends Seeder
     public function run(): void
     {
         Unit::insert([
-            ['name' => 'Pcs'],
-            ['name' => 'Meter'],
-            ['name' => 'Core'],
+            [
+                'id' => 'b051e8ea-a0f8-4483-93c9-6352b72f8f45',
+                'name' => 'Pcs'
+            ],
+            ['id' => 'b051e8ea-a0f8-4483-93c9-6352b72f8f69', 'name' => 'Meter'],
+            ['id' => 'b051e8ea-a0f8-4483-93c9-6352b72f8f29', 'name' => 'Core'],
         ]);
     }
 }
