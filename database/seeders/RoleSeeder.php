@@ -22,8 +22,13 @@ class RoleSeeder extends Seeder
         ]);
 
         $admin = Role::create(['name' => 'Andministrator']);
+        $vendor = Role::create(['name' => 'Vendor']);
         
         $admin->givePermissionTo([
+            'read-dashboard',
+            'read-users','create-users','update-users','delete-users',
+        ]);
+        $vendor->givePermissionTo([
             'read-dashboard',
             'read-users','create-users','update-users','delete-users',
         ]);

@@ -13,7 +13,7 @@ class Vendor extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['name','phone','email','address','website','status'];
+    protected $fillable = ['name','phone','email','address','website','status','user_id'];
     protected static function boot()
     {
         parent::boot();
@@ -23,5 +23,9 @@ class Vendor extends Model
                 $model->id = (string) Str::uuid(); // Generate UUID
             }
         });
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class);
     }
 }

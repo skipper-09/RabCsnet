@@ -31,12 +31,23 @@
                     </a>
                 </li>
 
-                <li>
+                <li class="{{ request()->is('admin/project') ? 'mm-activate' : '' }}">
                     <a href="{{ route('project') }}" class=" waves-effect">
                         <i class="dripicons-calendar"></i>
                         <span>Project</span>
                     </a>
                 </li>
+                
+
+                <li >
+                    <a href="{{ route('vendor') }}" class="waves-effect">
+                        <i class="dripicons-device-desktop"></i>
+                        {{-- <span
+                            class="badge rounded-pill bg-info float-end">3</span> --}}
+                        <span>Vendor</span>
+                    </a>
+                </li>
+                
 
                 <li class="menu-title">Data Master</li>
                 <li>

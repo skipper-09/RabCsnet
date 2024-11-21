@@ -23,7 +23,7 @@
 </head>
 
 
-<body>
+<body >
     {{-- spinner loading --}}
     <div id="preloader">
         <div id="status">

@@ -9,6 +9,7 @@ use App\Http\Controllers\Master\ItemController;
 use App\Http\Controllers\Project\ProjectController;
 use App\Http\Controllers\Settings\SettingAplicationController;
 use App\Http\Controllers\Settings\UserController;
+use App\Http\Controllers\Vendor\VendorController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 
@@ -39,6 +40,15 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::get('/edit/{id}', [ProjectController::class, 'show'])->name('project.edit');
         Route::put('/update/{id}', [ProjectController::class, 'update'])->name('project.update');
         Route::delete('/delete/{id}', [ProjectController::class, 'destroy'])->name('project.delete');
+    });
+    Route::prefix('vendor')->group(function () {
+        Route::get('/', [VendorController::class, 'index'])->name('vendor');
+        Route::get('getData', [VendorController::class, 'getData'])->name('vendor.getdata');
+        Route::get('/tambah', [VendorController::class, 'create'])->name('vendor.add');
+        Route::post('store', [VendorController::class, 'store'])->name('vendor.store');
+        Route::get('/edit/{id}', [VendorController::class, 'show'])->name('vendor.edit');
+        Route::put('/update/{id}', [VendorController::class, 'update'])->name('vendor.update');
+        Route::delete('/delete/{id}', [VendorController::class, 'destroy'])->name('vendor.delete');
     });
 
     Route::prefix('master')->group(function () {

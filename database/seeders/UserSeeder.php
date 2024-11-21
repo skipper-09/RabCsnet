@@ -21,5 +21,13 @@ class UserSeeder extends Seeder
             'email' => 'root@gmail.com',
             'password' => Hash::make('root'),
         ])->assignRole('Developer'); 
+
+        User::create([
+            'id'=>'b05fab3f-2399-453b-b6f6-bbd2f1054781',
+            'name' => 'Vendor',
+            'username' => 'vendor',
+            'email' => 'vendor@gmail.com',
+            'password' => Hash::make('vendor'),
+        ])->assignRole('Vendor'); 
     }
 }
