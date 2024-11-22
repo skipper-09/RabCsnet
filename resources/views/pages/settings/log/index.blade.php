@@ -4,7 +4,8 @@
 
 @push('css')
     <!-- DataTables CSS -->
-    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet"
+        type="text/css" />
     <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endpush
 
@@ -37,15 +38,14 @@
                                     <i class="fas fa-trash-alt me-1"></i>Clear Log
                                 </button>
                             </div>
-                            <table id="datatable" class="table table-bordered table-hover dt-responsive nowrap" style="width: 100%;">
+                            <table id="datatable" class="table table-bordered table-hover dt-responsive nowrap"
+                                style="width: 100%;">
                                 <thead>
                                     <tr>
-                                        <th width="5%">No</th>
+                                        <th>No</th>
+                                        <th>Pengguna</th>
                                         <th>Waktu</th>
-                                        <th>User</th>
-                                        <th>Module</th>
-                                        <th>Action</th>
-                                        <th>Description</th>
+                                        <th>Deskripsi</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -70,7 +70,6 @@
                     processing: true,
                     serverSide: true,
                     ajax: '{{ route('log.getdata') }}',
-                    order: [[1, 'desc']], // Sort by waktu/created_at
                     columns: [{
                             data: 'DT_RowIndex',
                             orderable: false,
@@ -78,30 +77,18 @@
                             class: 'text-center'
                         },
                         {
+                            data: 'causer',
+                            name: 'causer'
+                        },
+                        {
                             data: 'created_at',
                             name: 'created_at'
                         },
                         {
-                            data: 'user',
-                            name: 'user'
-                        },
-                        {
-                            data: 'module',
-                            name: 'module'
-                        },
-                        {
-                            data: 'action',
-                            name: 'action'
-                        },
-                        {
                             data: 'description',
                             name: 'description'
-                        }
+                        },
                     ],
-                    columnDefs: [{
-                        targets: -1, // Last column
-                        className: 'text-wrap' // Allow text wrapping for description
-                    }]
                 });
 
                 $(".dataTables_length select").addClass("form-select form-select-sm");
