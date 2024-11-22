@@ -34,15 +34,16 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="mb-3">
-                                <a href="{{ route('project.add') }}" class="btn btn-primary btn-sm">Tambah
+                                <a href="{{ route('projectdetail.add',['id'=>$project->id]) }}" class="btn btn-primary btn-sm">Tambah
                                     {{ $tittle }}</a>
                             </div>
                             <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Name</th>
-                                        <th>Perusahaan</th>
+                                        <th>Nama</th>
+                                        <th>Tipe</th>                                    
+                                        <th>Deskripsi</th>                                    
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -75,27 +76,31 @@
                 // Swal.fire(`{{ Session::get('status') }}`, `{{ Session::get('message') }}`, "success");
             @endif
             $(document).ready(function() {
-                // Initialize DataTable
+                var id = @json($project->id);
                 $("#datatable").DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: '{{ route('project.getdata') }}',
+                    ajax: '{{ route('projectdetail.getdata', ['id' => ':id']) }}'.replace(':id', id),
                     columns: [
                         {
                             data: 'DT_RowIndex',
                             orderable: false,
                             searchable: false,
                             class: 'text-center',
-
                         },
                         {
                             data: 'name',
-                            name: 'name'
+                            name:'name'
                         },
                         {
-                            data: 'company',
-                            name: 'company'
+                            data: 'tipe',
+                            name:'tipe'
                         },
+                        {
+                            data: 'description',
+                            name:'description'
+                        },
+                      
                         {
                             data: 'action',
                             name: 'action',

@@ -7,6 +7,7 @@ use App\Http\Controllers\Master\ItemTypeController;
 use App\Http\Controllers\Master\ProjectTypeController;
 use App\Http\Controllers\Master\UnitController;
 use App\Http\Controllers\Master\ItemController;
+use App\Http\Controllers\Project\DetailProjectController;
 use App\Http\Controllers\Project\ProjectController;
 use App\Http\Controllers\Settings\SettingAplicationController;
 use App\Http\Controllers\Settings\UserController;
@@ -41,9 +42,20 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::get('/tambah', [ProjectController::class, 'create'])->name('project.add');
         Route::post('store', [ProjectController::class, 'store'])->name('project.store');
         Route::get('/edit/{id}', [ProjectController::class, 'show'])->name('project.edit');
-        Route::get('/detail/{id}', [ProjectController::class, 'detail'])->name('project.detail');
+        // Route::get('/detail/{id}', [ProjectController::class, 'detail'])->name('project.detail');
         Route::put('/update/{id}', [ProjectController::class, 'update'])->name('project.update');
         Route::delete('/delete/{id}', [ProjectController::class, 'destroy'])->name('project.delete');
+    });
+
+    Route::prefix('detail/{id}')->group(function () {
+        Route::get('/', [ProjectController::class, 'detail'])->name('project.detail');
+        Route::get('getData', [DetailProjectController::class, 'getData'])->name('projectdetail.getdata');
+        Route::get('/tambah', [DetailProjectController::class, 'create'])->name('projectdetail.add');
+        Route::post('store', [DetailProjectController::class, 'store'])->name('projectdetail.store');
+        // Route::get('/edit/{id}', [DetailProjectController::class, 'show'])->name('projectdetail.edit');
+        // Route::get('/detail/{id}', [DetailProjectController::class, 'detail'])->name('projectdetail.detail');
+        // Route::put('/update/{id}', [DetailProjectController::class, 'update'])->name('projectdetail.update');
+        Route::delete('/delete/{iddetail}', [DetailProjectController::class, 'destroy'])->name('projectdetail.delete');
     });
 
     //route vendor

@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             RoleSeeder::class,
             UserSeeder::class,
+            VendorSeeder::class,
             ProjectTypeSeeder::class,
             SettingAplicationSeeder::class,
         ]);

@@ -24,7 +24,7 @@ class ProjectController extends Controller
     public function getData(Request $request)
     {
         $dataType = Project::with(['company', ])
-            ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->get();
 
         return DataTables::of($dataType)
@@ -49,10 +49,12 @@ class ProjectController extends Controller
     }
 
 
-    public function detail()
+    public function detail($id)
     {
+        
         $data = [
-            'tittle' => 'Project'
+            'tittle' => 'Detail Project',
+            'project'=>Project::find($id),
         ];
 
         return view('pages.project.detail', $data);
@@ -80,7 +82,7 @@ class ProjectController extends Controller
             'name.required' => 'Nama wajib diisi.',
         ]);
 
-        Project::create($request->all());
-        return redirect()->route('projecttype')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Project!']);
+        $project = Project::create($request->all());
+        return redirect()->route('project.detail',['id'=>$project->id])->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Project!']);
     }
 }

@@ -25,7 +25,7 @@ class DetailItemProject extends Model
     }
 
     public function detail(){
-        return $this->belongsTo(DetailProject::class);
+        return $this->belongsTo(DetailProject::class,'detail_id','id');
     }
     public function item(){
         return $this->belongsTo(Item::class);
