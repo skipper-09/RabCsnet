@@ -76,7 +76,7 @@
                     </a>
                     <ul class="sub-menu" aria-expanded="true">
                         <li><a href="{{ route('user') }}">User</a></li>
-                        <li><a href="javascript: void(0);">Role</a></li>
+                        <li><a href="{{ route('role') }}">Role</a></li>
                         <li><a href="{{ route('aplication',['id'=>1]) }}">Setting Aplikasi</a></li>
                         <li><a href="javascript: void(0);">Log Aplikasi</a></li>
 

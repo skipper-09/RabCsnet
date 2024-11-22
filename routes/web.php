@@ -10,6 +10,7 @@ use App\Http\Controllers\Project\ProjectController;
 use App\Http\Controllers\Settings\SettingAplicationController;
 use App\Http\Controllers\Settings\UserController;
 use App\Http\Controllers\Vendor\VendorController;
+use App\Http\Controllers\Settings\RoleController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 
@@ -95,6 +96,16 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     });
 
     Route::prefix('settings')->group(function () {
+
+        Route::prefix('role')->group(function () {
+            Route::get('/', [RoleController::class, 'index'])->name('role');
+            Route::get('getData', [RoleController::class, 'getData'])->name('role.getdata');
+            Route::get('/tambah', [RoleController::class, 'create'])->name('role.add');
+            Route::post('store', [RoleController::class, 'store'])->name('role.store');
+            Route::get('/edit/{id}', [RoleController::class, 'show'])->name('role.edit');
+            Route::put('/update/{id}', [RoleController::class, 'update'])->name('role.update');
+            Route::delete('/delete/{id}', [RoleController::class, 'destroy'])->name('role.delete');
+        });
 
         Route::prefix('user')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('user');
