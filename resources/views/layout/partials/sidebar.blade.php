@@ -60,6 +60,7 @@
                         <li><a href="{{ route('itemtype') }}">Items Type</a></li>
                         <li><a href="{{ route('unit') }}">Unit/Satuan</a></li>
                         <li><a href="{{ route('company') }}">Company</a></li>
+                        <li><a href="{{ route('projecttype') }}">Tipe Project</a></li>
 
 
                     </ul>

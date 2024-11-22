@@ -54,6 +54,9 @@ class Project extends Model
     public function summary(){
         return $this->hasMany(Summary::class);
     }
+    public function responsibleperson(){
+        return $this->belongsTo(User::class,'responsible_person','id');
+    }
 
 
     public function projectlisence(){

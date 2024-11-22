@@ -21,10 +21,11 @@ class DatabaseSeeder extends Seeder
             UnitSeeder::class,
             CompanySeeder::class,
             ItemSeeder::class,
-            ProjectSeeder::class,
+            // ProjectSeeder::class,
             PermissionSeeder::class,
             RoleSeeder::class,
             UserSeeder::class,
+            ProjectTypeSeeder::class,
             SettingAplicationSeeder::class,
         ]);
     }
