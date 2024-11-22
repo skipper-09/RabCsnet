@@ -55,13 +55,13 @@ class UnitController extends Controller
     {
         $request->validate([
             'name' => 'required',
+        ], [
+            'name.required' => 'Nama Unit Tidak Boleh Kosong',
         ]);
 
-        $unit->insert([
-            'name' => $request->name,
-        ]);
+        $unit->create($request->all());
 
-        return redirect()->route('unit');
+        return redirect()->route('unit')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Unit']);
     }
 
     /**
@@ -84,15 +84,15 @@ class UnitController extends Controller
     {
         $request->validate([
             'name' => 'required',
+        ], [
+            'name.required' => 'Nama Unit Tidak Boleh Kosong',
         ]);
 
         $unit = Unit::find($id);
 
-        $unit->update([
-            'name' => $request->name,
-        ]);
+        $unit->update($request->all());
 
-        return redirect()->route('unit');
+        return redirect()->route('unit')->with(['status' => 'Success', 'message' => 'Berhasil Mengubah Unit']);
     }
 
     /**

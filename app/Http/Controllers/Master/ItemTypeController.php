@@ -56,13 +56,13 @@ class ItemTypeController extends Controller
     {
         $request->validate([
             'name' => 'required',
+        ], [
+            'name.required' => 'Nama wajib diisi.',
         ]);
 
-        $typeItem->insert([
-            'name' => $request->name
-        ]);
+        $typeItem->create($request->all());
 
-        return redirect()->route('itemtype');
+        return redirect()->route('itemtype')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Item Type']);
     }
 
     /**
@@ -87,15 +87,15 @@ class ItemTypeController extends Controller
     {
         $request->validate([
             'name' => 'required',
+        ], [
+            'name.required' => 'Nama wajib diisi.',
         ]);
 
         $typeItem = TypeItem::find($id);
 
-        $typeItem->update([
-            'name' => $request->name
-        ]);
+        $typeItem->update($request->all());
 
-        return redirect()->route('itemtype');
+        return redirect()->route('itemtype')->with(['status' => 'Success', 'message' => 'Berhasil Mengubah Item Type']);
     }
 
     /**
