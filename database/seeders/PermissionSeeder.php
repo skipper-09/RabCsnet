@@ -17,6 +17,7 @@ class PermissionSeeder extends Seeder
         $arrayOfPermissionNames = [
             'read-dashboard',
             'read-users','create-users','update-users','delete-users',
+            'read-roles','create-roles','update-roles','delete-roles',
         ];
         $permissions = collect($arrayOfPermissionNames)->map(function ($permission) {
             return ['name' => $permission, 'guard_name' => 'web'];
