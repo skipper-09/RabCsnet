@@ -15,11 +15,11 @@
             <div class="row align-items-center">
                 <div class="col-sm-6">
                     <div class="page-title">
-                        <h4>Tambah {{ $tittle }}</h4>
+                        <h4>Edit {{ $tittle }}</h4>
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('item') }}">{{ $tittle }}</a></li>
-                            <li class="breadcrumb-item active">Tambah {{ $tittle }}</li>
+                            <li class="breadcrumb-item active">Edit {{ $tittle }}</li>
                         </ol>
                     </div>
                 </div>
@@ -86,9 +86,13 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label">Website</label>
-                                            <input type="text" name="website" class="form-control"
+                                            <input type="text" name="website" class="form-control @error('website') is-invalid @enderror"
                                                 value="{{ $vendor->website }}" id="validationCustom01">
-
+                                                @error('website')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">

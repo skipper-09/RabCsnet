@@ -43,9 +43,11 @@
                                         <th>No</th>
                                         <th>Nama</th>
                                         <th>Telepon</th>
+                                        <th>Email</th>
                                         <th>Alamat</th>
                                         <th>Website</th>
                                         <th>User</th>
+                                        <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -99,6 +101,10 @@
                             name: 'phone'
                         },
                         {
+                            data: 'email',
+                            name: 'email'
+                        },
+                        {
                             data: 'address',
                             name: 'address'
                         },
@@ -109,6 +115,10 @@
                         {
                             data: 'user',
                             name: 'user'
+                        },
+                        {
+                            data: 'status',
+                            name: 'status'
                         },
 
                         {

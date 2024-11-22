@@ -20,7 +20,7 @@ class ProjectController extends Controller
 
     public function getData(Request $request)
     {
-        $dataType = Project::with(['company', 'distribusi'])
+        $dataType = Project::with(['company', ])
             ->orderByDesc('created_at')
             ->get();
 

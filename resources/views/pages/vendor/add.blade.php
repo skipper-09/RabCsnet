@@ -43,7 +43,7 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label required">Nama</label>
-                                            <input type="text" name="name"
+                                            <input type="text" name="name" value="{{ old('name') }}"
                                                 class="form-control @error('name') is-invalid @enderror"
                                                 id="validationCustom01">
                                             @error('name')
@@ -57,7 +57,7 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label required">Email</label>
-                                            <input type="email" name="email"
+                                            <input type="email" name="email" value="{{ old('email') }}"
                                                 class="form-control @error('email') is-invalid @enderror"
                                                 id="validationCustom01">
                                             @error('email')
@@ -70,7 +70,7 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label required">No Telepon</label>
-                                            <input type="text" inputmode="numeric" name="phone"
+                                            <input type="text" inputmode="numeric" name="phone" value="{{ old('phone') }}"
                                                 class="form-control @error('phone') is-invalid @enderror"
                                                 id="validationCustom01">
                                             @error('phone')
@@ -84,9 +84,13 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label">Website</label>
-                                            <input type="text" name="website" class="form-control"
-                                                id="validationCustom01">
-
+                                            <input type="text" name="website" class="form-control @error('website') is-invalid @enderror"
+                                                id="validationCustom01" value="{{ old('website') }}">
+                                                @error('website')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">

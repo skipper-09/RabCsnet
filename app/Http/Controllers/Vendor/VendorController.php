@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Vendor;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Yajra\DataTables\DataTables;
 
 class VendorController extends Controller
@@ -43,8 +44,26 @@ class VendorController extends Controller
                 return '<div class="d-flex gap-2">' . $button . '</div>';
             })->editColumn('user', function ($data) {
                 return $data->user->name;
+            })->editColumn('website', function ($data) {
+                $button = '';
+                if ($data->website != null) {
+                    $button = '<a href="' . $data->website . '" target="_blank">
+                                    <button type="button" class="btn btn-link waves-effect">Lihat Web</button>
+                               </a>';
+                } else {
+                    $button = 'Tidak Ada';
+                }
+                return $button;
+            })->editColumn('status', function ($data) {
+                $button = '';
+                if ($data->status == 1) {
+                    $button = '<button type="button" class="btn btn-sm btn-primary waves-effect waves-light">Aktif</button>';
+                } else {
+                    $button = '<button type="button" class="btn btn-sm btn-secondary waves-effect waves-light">Tidak Aktif</button>';
+                }
+                return $button;
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action', 'website', 'status'])
             ->make(true);
     }
     /**
@@ -73,6 +92,7 @@ class VendorController extends Controller
             'phone' => 'required|numeric',
             'address' => 'required',
             'status' => 'required',
+            'website' => 'nullable|url',
             'user_id' => 'required|exists:users,id',
         ], [
             'name.required' => 'Nama wajib diisi.',
@@ -85,6 +105,7 @@ class VendorController extends Controller
             'status.required' => 'Status wajib diisi.',
             'user_id.required' => 'User wajib diisi.',
             'user_id.exists' => 'User tidak valid.',
+            'website.url' => 'Hanya Menerima input Url valid',
         ]);
         Vendor::create($request->all());
         return redirect()->route('vendor')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Vendor']);
@@ -107,19 +128,39 @@ class VendorController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('vendors', 'email')->ignore($id),
+            ],
+            'phone' => 'required|numeric',
+            'address' => 'required',
+            'status' => 'required',
+            'user_id' => 'required|exists:users,id',
+            'website' => 'nullable|url',
+        ], [
+            'name.required' => 'Nama wajib diisi.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah digunakan. Silakan gunakan email lain.',
+            'phone.required' => 'Nomor telepon wajib diisi.',
+            'phone.numeric' => 'Nomor telepon harus berupa angka.',
+            'address.required' => 'Alamat wajib diisi.',
+            'status.required' => 'Status wajib diisi.',
+            'user_id.required' => 'User wajib diisi.',
+            'user_id.exists' => 'User tidak valid.',
+            'website.url' => 'Hanya Menerima input Url valid',
+        ]);
+
+        $vendor = Vendor::find($id);
+        $vendor->update($request->all());
+        return redirect()->route('vendor')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Vendor']);
     }
 
     /**
