@@ -23,82 +23,72 @@ class LogController extends Controller
     }
     public function getData()
     {
-        $activity = Activity::with('causer')->orderBy('created_at', 'desc')->get();
+        $activity = Activity::with('causer')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return DataTables::of($activity)
             ->addIndexColumn()
-            ->editColumn('causer', function ($data) {
-                return $data->causer == null ? '-' : $data->causer->name;
+            ->editColumn('user', function ($data) {
+                return $data->causer ? $data->causer->name : 'System';
             })
-            ->editColumn('created_at', function ($data) {
-                return Carbon::createFromFormat('Y-m-d H:i:s', $data->created_at)
-                    ->setTimezone(config('app.timezone'))
-                    ->format('Y-m-d H:i:s');
+            ->editColumn('action', function ($data) {
+                return $this->getActionLabel($data->event);
+            })
+            ->editColumn('module', function ($data) {
+                return $this->getModuleName($data->subject_type);
             })
             ->editColumn('description', function ($data) {
-                return $this->generateAuditDescription($data);
+                return $this->generateDescription($data);
             })
-            ->rawColumns(['causer', 'created_at', 'description'])
+            ->editColumn('created_at', function ($data) {
+                return Carbon::parse($data->created_at)->format('d/m/Y H:i:s');
+            })
+            ->rawColumns(['description'])
             ->make(true);
     }
-    
-    private function generateAuditDescription($data)
-{
-    // Mengabaikan log jika causer adalah developer
-    if ($data->causer_type === 'developer') {
-        return null; // Tidak perlu menampilkan log
-    }
 
-    $properties = json_decode($data->properties, true);
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        return 'Error decoding properties';
-    }
-
-    $old = $properties['old'] ?? [];
-    $new = $properties['attributes'] ?? [];
-
-    $descriptions = [];
-    foreach ($new as $key => $newValue) {
-        $oldValue = $old[$key] ?? null;
-
-        // Periksa apakah field adalah boolean dan ubah value-nya menjadi 'Aktif' atau 'Tidak Aktif'
-        if (in_array($key, ['is_active', 'status'])) {
-            $newValue = $newValue == 1 ? 'Aktif' : 'Tidak Aktif';
-            $oldValue = $oldValue == 1 ? 'Aktif' : ($oldValue === null ? 'N/A' : 'Tidak Aktif');
-        } else {
-            // Jika bukan boolean, atur nilai default untuk N/A
-            $newValue = $newValue ?? 'N/A';
-            $oldValue = $oldValue ?? 'N/A';
-        }
-
-        $fieldLabel = ucwords(str_replace('_', ' ', $key));
-
-        if ($data->event === 'updated') {
-            if ($this->hasValueChanged($oldValue, $newValue)) {
-                $descriptions[] = "$data->log_name $fieldLabel diubah dari <strong>$oldValue</strong> menjadi <strong>$newValue</strong>";
-            }
-        } elseif ($data->event === 'created') {
-            $descriptions[] = "$data->log_name $fieldLabel dibuat dengan nilai <strong>$newValue</strong>";
-        } elseif ($data->event === 'deleted') {
-            if ($oldValue !== 'N/A') {
-                $descriptions[] = "$data->log_name $fieldLabel dihapus dengan nilai <strong>$oldValue</strong>";
-            }
-        }
-    }
-
-    if (!empty($descriptions)) {
-        return implode('<br>', $descriptions);
-    }
-
-    return 'Tidak ada perubahan yang terdeteksi';
-}
-
-    
-    private function hasValueChanged($oldValue, $newValue)
+    private function getActionLabel($event)
     {
-        $oldValueString = is_array($oldValue) ? json_encode($oldValue) : (string)$oldValue;
-        $newValueString = is_array($newValue) ? json_encode($newValue) : (string)$newValue;
-    
-        return $oldValueString !== $newValueString;
+        return match ($event) {
+            'created' => 'Tambah',
+            'updated' => 'Update',
+            'deleted' => 'Hapus',
+            'login' => 'Login',
+            'logout' => 'Logout',
+            default => ucfirst($event)
+        };
+    }
+
+    private function getModuleName($type)
+    {
+        if (!$type) return 'System';
+
+        // Ambil nama class terakhir dari namespace
+        $parts = explode('\\', $type);
+        return end($parts);
+    }
+
+    private function generateDescription($data)
+    {
+        $user = $data->causer ? $data->causer->name : 'System';
+        $action = $this->getActionLabel($data->event);
+        $module = $this->getModuleName($data->subject_type);
+
+        // Untuk event login/logout
+        if (in_array($data->event, ['login', 'logout'])) {
+            return "User <strong>$user</strong> melakukan $action ke sistem";
+        }
+
+        // Untuk event CRUD
+        $properties = json_decode($data->properties, true);
+        $attributes = $properties['attributes'] ?? [];
+
+        // Jika ada nama/identifikasi dari item yang dimodifikasi
+        $itemName = $attributes['name'] ?? $attributes['username'] ?? $attributes['email'] ?? '';
+        $itemInfo = $itemName ? " ($itemName)" : '';
+
+        return "User <strong>$user</strong> melakukan $action pada $module$itemInfo";
     }
 
 
