@@ -12,6 +12,7 @@ use App\Http\Controllers\Settings\SettingAplicationController;
 use App\Http\Controllers\Settings\UserController;
 use App\Http\Controllers\Vendor\VendorController;
 use App\Http\Controllers\Settings\RoleController;
+use App\Http\Controllers\Settings\LogController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 
@@ -139,6 +140,13 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::prefix('application')->group(function () {
             Route::get('/{id}', [SettingAplicationController::class, 'index'])->name('aplication');
             Route::put('/update/{id}', [SettingAplicationController::class, 'update'])->name('aplication.update');
+        });
+
+        // Log Activity
+        Route::prefix('log')->group(function () {
+            Route::get('/', [LogController::class, 'index'])->name('log');
+            Route::get('getData', [LogController::class, 'getData'])->name('log.getdata');
+            Route::get('clean', [LogController::class, 'cleanLogs'])->name('log.clean');
         });
     });
 });
