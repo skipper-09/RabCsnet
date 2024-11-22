@@ -74,13 +74,19 @@ class UserController extends Controller
         ]);
 
         // Create the user
-        User::create([
+        $user = User::create([
             'username' => $request->username,
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'is_block' => $request->is_block,
         ])->assignRole($request->role);
+
+        // Log the activity of creating a user (without using `auth()->user()`)
+        activity()
+            ->performedOn($user) // Log which model is being affected (User in this case)
+            ->withProperties(['attributes' => $user->toArray()])
+            ->log('User created: ' . $user->name); // Custom message for activity
 
         return redirect()->route('user');
     }
@@ -137,6 +143,12 @@ class UserController extends Controller
         if ($request->has('role')) {
             $user->syncRoles($request->role);
         }
+
+        // Log the activity of updating the user
+        activity()
+            ->performedOn($user) // Log the affected user
+            ->withProperties(['attributes' => $user->toArray()])
+            ->log('User updated: ' . $user->name); // Custom message for activity
 
         // Redirect dengan pesan sukses
         return redirect()->route('user')->with('success', 'User updated successfully');

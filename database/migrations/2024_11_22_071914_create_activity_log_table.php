@@ -12,10 +12,17 @@ class CreateActivityLogTable extends Migration
             $table->bigIncrements('id');
             $table->string('log_name')->nullable();
             $table->text('description');
-            $table->nullableMorphs('subject', 'subject');
-            $table->nullableMorphs('causer', 'causer');
+            
+            // Modify the 'subject' and 'causer' to support UUID
+            $table->uuid('subject_id')->nullable(); // Use UUID for subject_id
+            $table->string('subject_type')->nullable(); // Morphs type for subject
+
+            $table->uuid('causer_id')->nullable(); // Use UUID for causer_id
+            $table->string('causer_type')->nullable(); // Morphs type for causer
+            
             $table->json('properties')->nullable();
             $table->timestamps();
+
             $table->index('log_name');
         });
     }
