@@ -1,63 +1,67 @@
 @extends('layout.base')
-@section('tittle',$tittle)
-    
+@section('tittle', $tittle)
+
 @section('content')
-<!-- start page title -->
-<div class="page-title-box">
-    <div class="container-fluid">
-     <div class="row align-items-center">
-         <div class="col-sm-6">
-             <div class="page-title">
-                 <h4>Tambah {{ $tittle }}</h4>
-                     <ol class="breadcrumb m-0">
-                         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                         <li class="breadcrumb-item"><a href="{{ route('itemtype') }}">{{ $tittle }}</a></li>
-                         <li class="breadcrumb-item active">Tambah {{ $tittle }}</li>
-                     </ol>
-             </div>
-         </div>
-         
-     </div>
+    <!-- start page title -->
+    <div class="page-title-box">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-sm-6">
+                    <div class="page-title">
+                        <h4>Tambah {{ $tittle }}</h4>
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('itemtype') }}">{{ $tittle }}</a></li>
+                            <li class="breadcrumb-item active">Tambah {{ $tittle }}</li>
+                        </ol>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
- </div>
- <!-- end page title -->    
+    <!-- end page title -->
 
 
-<div class="container-fluid">
-    <div class="page-content-wrapper">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-body">
-                        <form action="{{ route('itemtype.store') }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
-                            @csrf  
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="validationCustom01" class="form-label">Nama Tipe Item</label>
-                                        <input type="text" name="name" class="form-control" id="validationCustom01"
-                                             required>
-                                        <div class="valid-feedback">
-                                            Looks good!
+    <div class="container-fluid">
+        <div class="page-content-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <form action="{{ route('itemtype.store') }}" method="POST" enctype="multipart/form-data"
+                                class="needs-validation" novalidate>
+                                @csrf
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="validationCustom01" class="form-label required">Nama Tipe
+                                                Item</label>
+                                            <input type="text" name="name"
+                                                class="form-control @error('name') is-invalid @enderror"
+                                                id="validationCustom01">
+                                            @error('name')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div>
-                                <button class="btn btn-primary" type="submit">Submit</button>
-                            </div>
-                        </form>
+                                <div>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
+            <!-- end row -->
+
         </div>
-        <!-- end row -->
-
     </div>
-</div>
 
-@push('js')
-    
+    @push('js')
         <!-- JAVASCRIPT -->
         <script src="{{ asset('assets/libs/jquery/jquery.min.js') }}"></script>
         <script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
@@ -66,5 +70,5 @@
         <script src="{{ asset('assets/libs/node-waves/waves.min.js') }}"></script>
         <script src="{{ asset('assets/libs/parsleyjs/parsley.min.js') }}"></script>
         <script src="{{ asset('assets/js/pages/form-validation.init.js') }}"></script>
-@endpush
+    @endpush
 @endsection

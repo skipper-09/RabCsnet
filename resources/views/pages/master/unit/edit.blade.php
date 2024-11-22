@@ -36,12 +36,15 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">Nama Unit</label>
+                                            <label for="validationCustom01" class="form-label required">Nama Unit</label>
                                             <input type="text" name="name" value="{{ $unit->name }}"
-                                                class="form-control" id="validationCustom01" required>
-                                            <div class="valid-feedback">
-                                                Looks good!
-                                            </div>
+                                                class="form-control @error('name') is-invalid @enderror"
+                                                id="validationCustom01">
+                                            @error('name')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
                                         </div>
                                     </div>
                                 </div>
@@ -65,9 +68,7 @@
         <script src="{{ asset('assets/libs/metismenu/metisMenu.min.js') }}"></script>
         <script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
         <script src="{{ asset('assets/libs/node-waves/waves.min.js') }}"></script>
-
         <script src="{{ asset('assets/libs/parsleyjs/parsley.min.js') }}"></script>
-
         <script src="{{ asset('assets/js/pages/form-validation.init.js') }}"></script>
     @endpush
 @endsection

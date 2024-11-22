@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('item_code')->unique()->nullable(false);
             $table->string('material_price');
             $table->string('service_price');
-            $table->longText('description');
+            $table->longText('description')->nullable();
             $table->boolean('status')->default(true);
             $table->timestamps();
         });

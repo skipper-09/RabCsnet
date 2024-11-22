@@ -56,16 +56,17 @@ class CompanyController extends Controller
         $request->validate([
             'name' => 'required',
             'address' => 'required',
-            'phone' => 'required',
+            'phone' => 'required|numeric',
+        ], [
+            'name.required' => 'Nama wajib diisi.',
+            'address.required' => 'Alamat wajib diisi.',
+            'phone.required' => 'Nomor telepon wajib diisi.',
+            'phone.numeric' => 'Nomor telepon harus berupa angka.',
         ]);
 
-        $company->insert([
-            'name' => $request->name,
-            'address' => $request->address,
-            'phone' => $request->phone,
-        ]);
+        $company->create($request->all());
 
-        return redirect()->route('company');
+        return redirect()->route('company')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Company']);
     }
 
     /**
@@ -89,20 +90,23 @@ class CompanyController extends Controller
     public function update(Request $request, $id)
     {
         try {
+
             $request->validate([
                 'name' => 'required',
                 'address' => 'required',
-                'phone' => 'required',
+                'phone' => 'required|numeric',
+            ], [
+                'name.required' => 'Nama wajib diisi.',
+                'address.required' => 'Alamat wajib diisi.',
+                'phone.required' => 'Nomor telepon wajib diisi.',
+                'phone.numeric' => 'Nomor telepon harus berupa angka.',
             ]);
+
             $company = Company::find($id);
 
-            $company->update([
-                'name' => $request->name,
-                'address' => $request->address,
-                'phone' => $request->phone,
-            ]);
+            $company->update($request->all());
 
-            return redirect()->route('company');
+            return redirect()->route('company')->with(['status' => 'Success', 'message' => 'Berhasil Mengubah Company']);
         } catch (Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),

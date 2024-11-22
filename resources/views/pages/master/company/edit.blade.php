@@ -36,31 +36,43 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">Nama Perusahaan</label>
-                                            <input type="text" name="name" class="form-control"
-                                                value="{{ $company->name }}" id="validationCustom01" required>
-                                            <div class="valid-feedback">
-                                                Looks good!
-                                            </div>
+                                            <label for="validationCustom01" class="form-label required">Nama
+                                                Perusahaan</label>
+                                            <input type="text" name="name"
+                                                class="form-control @error('name') is-invalid @enderror"
+                                                value="{{ $company->name }}" id="validationCustom01">
+                                            @error('name')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">No Telepon</label>
-                                            <input type="text" name="phone" class="form-control"
-                                                value="{{ $company->phone }}" id="validationCustom01" required
-                                                inputmode="numeric">
-                                            <div class="valid-feedback">
-                                                Looks good!
-                                            </div>
+                                            <label for="validationCustom01" class="form-label required">No Telepon</label>
+                                            <input type="text" name="phone"
+                                                class="form-control @error('phone') is-invalid @enderror"
+                                                value="{{ $company->phone }}" id="validationCustom01" inputmode="numeric">
+                                            @error('phone')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label>Alamat</label>
+                                            <label for="validationCustom01" class="form-label required">Alamat</label>
                                             <div>
-                                                <textarea required class="form-control" name="address" rows="5" placeholder="Alamat Perusahaan">{{ $company->address }}</textarea>
+                                                <textarea class="form-control @error('address') is-invalid @enderror" name="address" rows="5"
+                                                    placeholder="Alamat Perusahaan">{{ $company->address }}</textarea>
                                             </div>
+                                            @error('address')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
                                         </div>
                                     </div>
                                 </div>

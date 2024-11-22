@@ -67,6 +67,16 @@
 
 
         <script>
+            @if (Session::has('message'))
+                Swal.fire({
+                    title: `{{ Session::get('status') }}`,
+                    text: `{{ Session::get('message') }}`,
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+                // Swal.fire(`{{ Session::get('status') }}`, `{{ Session::get('message') }}`, "success");
+            @endif
             $(document).ready(function() {
                 // Initialize DataTable
                 $("#datatable").DataTable({

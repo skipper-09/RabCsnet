@@ -82,19 +82,22 @@ class ItemController extends Controller
             'material_price' => 'required|numeric',
             'service_price' => 'required|numeric',
             'description' => 'nullable|string',
+        ], [
+            'name.required' => 'Nama wajib diisi.',
+            'type_id.required' => 'Tipe wajib diisi.',
+            'type_id.exists' => 'Tipe tidak valid.',
+            'unit_id.required' => 'Satuan wajib diisi.',
+            'unit_id.exists' => 'Satuan tidak valid.',
+            'material_price.required' => 'Harga material wajib diisi.',
+            'material_price.numeric' => 'Harga material harus berupa angka.',
+            'service_price.required' => 'Harga jasa wajib diisi.',
+            'service_price.numeric' => 'Harga jasa harus berupa angka.',
         ]);
 
         // Simpan data item
-        Item::create([
-            'name' => $request->name,
-            'type_id' => $request->type_id,
-            'unit_id' => $request->unit_id,
-            'material_price' => $request->material_price,
-            'service_price' => $request->service_price,
-            'description' => $request->description,
-        ]);
+        Item::create($request->all());
 
-        return redirect()->route('item');
+        return redirect()->route('item')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Item']);
     }
 
     /**
@@ -124,20 +127,23 @@ class ItemController extends Controller
             'material_price' => 'required|numeric',
             'service_price' => 'required|numeric',
             'description' => 'nullable|string',
+        ], [
+            'name.required' => 'Nama wajib diisi.',
+            'type_id.required' => 'Tipe wajib diisi.',
+            'type_id.exists' => 'Tipe tidak valid.',
+            'unit_id.required' => 'Satuan wajib diisi.',
+            'unit_id.exists' => 'Satuan tidak valid.',
+            'material_price.required' => 'Harga material wajib diisi.',
+            'material_price.numeric' => 'Harga material harus berupa angka.',
+            'service_price.required' => 'Harga jasa wajib diisi.',
+            'service_price.numeric' => 'Harga jasa harus berupa angka.',
         ]);
 
         $item = Item::find($id);
 
-        $item->update([
-            'name' => $request->name,
-            'type_id' => $request->type_id,
-            'unit_id' => $request->unit_id,
-            'material_price' => $request->material_price,
-            'service_price' => $request->service_price,
-            'description' => $request->description,
-        ]);
+        $item->update($request->all());
 
-        return redirect()->route('item');
+        return redirect()->route('item')->with(['status' => 'Success', 'message' => 'Berhasil Mengubah Item']);
     }
 
     /**

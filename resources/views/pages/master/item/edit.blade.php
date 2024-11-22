@@ -43,68 +43,89 @@
 
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">Name</label>
+                                            <label for="validationCustom01" class="form-label required">Name</label>
                                             <input type="text" name="name" value="{{ $item->name }}"
-                                                class="form-control" id="validationCustom01" required>
-                                            <div class="valid-feedback">
-                                                Looks good!
-                                            </div>
+                                                class="form-control @error('name') is-invalid @enderror"
+                                                id="validationCustom01">
+                                            @error('name')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">Service Price</label>
+                                            <label for="validationCustom01" class="form-label required">Service
+                                                Price</label>
                                             <input type="text" inputmode="numeric" name="service_price"
-                                                value="{{ $item->service_price }}" class="form-control"
-                                                id="validationCustom01" required>
-                                            <div class="valid-feedback">
-                                                Looks good!
-                                            </div>
+                                                value="{{ $item->service_price }}"
+                                                class="form-control @error('service_price') is-invalid @enderror"
+                                                id="validationCustom01">
+                                            @error('service_price')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">Material Price</label>
+                                            <label for="validationCustom01" class="form-label required">Material
+                                                Price</label>
                                             <input type="text" inputmode="numeric" name="material_price"
-                                                value="{{ $item->material_price }}" class="form-control"
-                                                id="validationCustom01" required>
-                                            <div class="valid-feedback">
-                                                Looks good!
-                                            </div>
+                                                value="{{ $item->material_price }}"
+                                                class="form-control @error('material_price') is-invalid @enderror"
+                                                id="validationCustom01">
+                                            @error('material_price')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">
+                                            <label for="validationCustom01" class="form-label required">
                                                 Item Type
                                             </label>
-                                            <select name="type_id" class="form-control select2"
+                                            <select name="type_id"
+                                                class="form-control select2 @error('type_id') is-invalid @enderror"
                                                 aria-label="Default select example">
                                                 @foreach ($types as $type)
-                                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                                    <option value="{{ $type->id }}"
+                                                        {{ $item->type_id == $type->id ? 'selected' : '' }}>
+                                                        {{ $type->name }}</option>
                                                 @endforeach
                                             </select>
-                                            <div class="valid-feedback">
-                                                Looks good!
-                                            </div>
+                                            @error('type_id')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">
+                                            <label for="validationCustom01" class="form-label required">
                                                 Item Unit
                                             </label>
-                                            <select name="unit_id" class="form-control select2"
+                                            <select name="unit_id"
+                                                class="form-control select2 @error('unit_id') is-invalid @enderror"
                                                 aria-label="Default select example">
                                                 @foreach ($units as $unit)
-                                                    <option value="{{ $unit->id }}">{{ $unit->name }}</option>
+                                                    <option value="{{ $unit->id }}"
+                                                        {{ $item->unit_id == $unit->id ? 'selected' : '' }}>
+                                                        {{ $unit->name }}</option>
                                                 @endforeach
                                             </select>
-                                            <div class="valid-feedback">
-                                                Looks good!
-                                            </div>
+                                            @error('unit_id')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-12">
@@ -112,11 +133,13 @@
                                             <label for="validationCustom01" class="form-label">
                                                 Description
                                             </label>
-                                            <textarea id="textarea" name="description" class="form-control" maxlength="225" rows="3"
-                                                placeholder="Enter Description">{{ $item->description }}</textarea>
-                                            <div class="valid-feedback">
-                                                Looks good!
-                                            </div>
+                                            <textarea id="textarea" name="description" class="form-control @error('description') is-invalid @enderror"
+                                                maxlength="225" rows="3" placeholder="Enter Description">{{ $item->description }}</textarea>
+                                            @error('description')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
                                         </div>
                                     </div>
                                 </div>
