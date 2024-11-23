@@ -46,6 +46,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::get('/edit/{id}', [ProjectController::class, 'show'])->name('project.edit');
         Route::put('/update/{id}', [ProjectController::class, 'update'])->name('project.update');
         Route::delete('/delete/{id}', [ProjectController::class, 'destroy'])->name('project.delete');
+        Route::get('/proses/{id}', [ProjectController::class, 'ProsesProject'])->name('project.proses');
     });
 
     Route::prefix('detail/{id}')->group(function () {

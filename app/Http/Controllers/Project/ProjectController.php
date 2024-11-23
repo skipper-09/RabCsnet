@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Project;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\DetailProject;
 use App\Models\Project;
 use App\Models\User;
 use App\Models\Vendor;
@@ -32,6 +33,9 @@ class ProjectController extends Controller
             ->addIndexColumn()
             ->addColumn('action', function ($data) {
                 $button = '';
+                $button .= '<a href="' . route('project.proses', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
+                <i class="fas fa-upload"></i> Proses Pengajuan
+            </a>';
                 $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
                 <i class="fas fa-pencil-alt"></i>
             </a>';
@@ -142,5 +146,53 @@ class ProjectController extends Controller
                 'trace' => $e->getTrace()
             ]);
         }
+    }
+
+
+
+
+
+
+    public function ProsesProject($id)
+    {
+        $project = Project::find($id);
+        $detailProjects = DetailProject::with(['detailitemporject'])->where('project_id', $id)->get();
+        $ppnRate = 0.11;
+        // Olah data untuk menghitung total biaya material dan service
+        $detailData = $detailProjects->map(function ($detail) use($ppnRate) {
+            $totalMaterial = 0;
+            $totalService = 0;
+
+            
+            foreach ($detail->detailitemporject as $detailItem) {
+                // Ambil biaya material dan service dari item terkait
+                $totalMaterial += $detailItem->cost_material;
+                $totalService += $detailItem->cost_service;
+            }
+
+            $subTotal = $totalMaterial + $totalService;
+            $ppn = $subTotal * $ppnRate;
+            $totalWithPpn = $subTotal + $ppn;
+
+            return [
+                'distribusi' => $detail->name,
+                'total_material' => $totalMaterial,
+                'total_service' => $totalService,
+                'total'=>$subTotal,
+                'ppn' => $ppn,
+                'total_with_ppn' => $totalWithPpn,
+            ];
+        });
+
+        
+
+
+
+        $data = [
+            'tittle' => $project->name,
+            'project' => $detailProjects,
+            'details' => $detailData,
+        ];
+        return view('pages.project.proses', $data);
     }
 }
