@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\Project;
 use App\Models\User;
 use App\Models\Vendor;
+use Illuminate\Support\Facades\Auth;
 use Exception;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
@@ -89,6 +90,13 @@ class ProjectController extends Controller
         ]);
 
         $project = Project::create($request->all());
+
+        activity()
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($project) // The entity being changed
+            ->event('created') // Event of the action
+            ->log('Project dibuat dengan nama ' . $project->name);
+
         return redirect()->route('project.detail', ['id' => $project->id])->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Project!']);
     }
 
@@ -120,6 +128,15 @@ class ProjectController extends Controller
             'company_id.exists' => 'Perusahaan tidak valid.',
         ]);
         $project->update($request->all());
+
+        activity()
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($project) // The entity being changed
+            ->event('updated') // Event of the action
+            ->withProperties([
+                'attributes' => $project->toArray() // The data before deletion
+            ])
+            ->log('Project di update dengan nama ' . $project->name);
         return redirect()->route('project')->with(['status' => 'Success', 'message' => 'Berhasil Mengubah Project!']);
     }
 
@@ -127,8 +144,19 @@ class ProjectController extends Controller
     public function destroy(string $id)
     {
         try {
-            $data = Project::find($id);
-            $data->delete();
+            $project = Project::find($id);
+            $projectData = $project->toArray();
+
+            $project->delete();
+
+            activity()
+                ->causedBy(Auth::user()) // Logs who performed the action
+                ->performedOn($project) // The entity being changed
+                ->event('deleted') // Event of the action
+                ->withProperties([
+                    'attributes' => $projectData // The data before deletion
+                ])
+                ->log('Project dihapus dengan nama ' . $project->name);
 
             //return response
             return response()->json([
