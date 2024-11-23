@@ -156,9 +156,9 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
         // Log Activity
         Route::prefix('log')->group(function () {
-            Route::get('/', [LogController::class, 'index'])->name('log');
+            Route::get('/', [LogController::class, 'index'])->name('log')-> middleware('can:read-logs');
             Route::get('getData', [LogController::class, 'getData'])->name('log.getdata');
-            Route::post('clean', [LogController::class, 'cleanlog'])->name('log.clean');
+            Route::post('clean', [LogController::class, 'cleanlog'])->name('log.clean')->middleware('can:clean-logs');
         });
     });
 });
