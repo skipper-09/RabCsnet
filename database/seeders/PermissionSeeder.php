@@ -21,6 +21,7 @@ class PermissionSeeder extends Seeder
             'read-itemtypes', 'create-itemtypes', 'update-itemtypes', 'delete-itemtypes',
             'read-projecttypes', 'create-projecttypes', 'update-projecttypes', 'delete-projecttypes',
             'read-units', 'create-units', 'update-units', 'delete-units',
+            'read-reportvendors', 'create-reportvendors', 'update-reportvendors', 'delete-reportvendors',
             'read-users','create-users','update-users','delete-users',
             'read-roles','create-roles','update-roles','delete-roles',
             'read-logs','clean-logs',

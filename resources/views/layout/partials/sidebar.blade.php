@@ -37,9 +37,9 @@
                         <span>Project</span>
                     </a>
                 </li>
-                
 
-                <li >
+
+                <li>
                     <a href="{{ route('vendor') }}" class="waves-effect">
                         <i class="dripicons-device-desktop"></i>
                         {{-- <span
@@ -47,7 +47,7 @@
                         <span>Vendor</span>
                     </a>
                 </li>
-                
+
 
                 <li class="menu-title">Data Master</li>
                 <li>
@@ -65,7 +65,14 @@
 
                     </ul>
                 </li>
+
                 <li class="menu-title">Laporan</li>
+                <li class="{{ request()->is('admin/report') ? 'mm-activate' : '' }}">
+                    <a href="{{ route('report') }}" class=" waves-effect">
+                        <i class="dripicons-to-do"></i>
+                        <span>Report</span>
+                    </a>
+                </li>
 
 
                 <li class="menu-title">SETTING</li>
@@ -78,7 +85,7 @@
                     <ul class="sub-menu" aria-expanded="true">
                         <li><a href="{{ route('user') }}">User</a></li>
                         <li><a href="{{ route('role') }}">Role</a></li>
-                        <li><a href="{{ route('aplication',['id'=>1]) }}">Setting Aplikasi</a></li>
+                        <li><a href="{{ route('aplication', ['id' => 1]) }}">Setting Aplikasi</a></li>
                         <li><a href="{{ route('log') }}">Log Aplikasi</a></li>
 
                     </ul>

@@ -12,7 +12,7 @@ class ReportVendor extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['project_id','vendor_id','tittle','description','image'];
+    protected $fillable = ['project_id', 'vendor_id', 'title', 'description', 'image'];
     protected static function boot()
     {
         parent::boot();
@@ -22,5 +22,14 @@ class ReportVendor extends Model
                 $model->id = (string) Str::uuid(); // Generate UUID
             }
         });
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class);
     }
 }

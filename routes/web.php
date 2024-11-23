@@ -9,6 +9,7 @@ use App\Http\Controllers\Master\UnitController;
 use App\Http\Controllers\Master\ItemController;
 use App\Http\Controllers\Project\DetailProjectController;
 use App\Http\Controllers\Project\ProjectController;
+use App\Http\Controllers\Report\ReportVendorController;
 use App\Http\Controllers\Settings\SettingAplicationController;
 use App\Http\Controllers\Settings\UserController;
 use App\Http\Controllers\Vendor\VendorController;
@@ -126,6 +127,16 @@ Route::prefix('admin')->middleware('auth')->group(function () {
             Route::put('/update/{id}', [ProjectTypeController::class, 'update'])->name('projecttype.update');
             Route::delete('/delete/{id}', [ProjectTypeController::class, 'destroy'])->name('projecttype.delete')->middleware('can:delete-projecttypes');
         });
+    });
+
+    Route::prefix('report')->group(function () {
+        Route::get('/', [ReportVendorController::class, 'index'])->name('report');
+        Route::get('getData', [ReportVendorController::class, 'getData'])->name('report.getdata');
+        Route::get('/tambah', [ReportVendorController::class, 'create'])->name('report.add');
+        Route::post('store', [ReportVendorController::class, 'store'])->name('report.store');
+        Route::get('/edit/{id}', [ReportVendorController::class, 'show'])->name('report.edit');
+        Route::put('/update/{id}', [ReportVendorController::class, 'update'])->name('report.update');
+        Route::delete('/delete/{id}', [ReportVendorController::class, 'destroy'])->name('report.delete');
     });
 
     Route::prefix('settings')->group(function () {
