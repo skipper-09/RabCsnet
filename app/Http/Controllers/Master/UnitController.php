@@ -68,6 +68,16 @@ class UnitController extends Controller
 
         $unit->create($request->all());
 
+        // Log activity for unit creation
+        activity()
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($unit) // The entity being changed
+            ->event('created') // Event of the action
+            ->withProperties([
+                'attributes' => $unit->toArray() // The data before deletion
+            ])
+            ->log('Unit dibuat dengan nama ' . $unit->name);
+
         return redirect()->route('unit')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Unit']);
     }
 
@@ -99,6 +109,16 @@ class UnitController extends Controller
 
         $unit->update($request->all());
 
+        // Log activity for unit update
+        activity()
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($unit) // The entity being changed
+            ->event('updated') // Event of the action
+            ->withProperties([
+                'attributes' => $unit->toArray() // The data before deletion
+            ])
+            ->log('Unit ' . $unit->name . ' diperbarui');
+
         return redirect()->route('unit')->with(['status' => 'Success', 'message' => 'Berhasil Mengubah Unit']);
     }
 
@@ -108,8 +128,20 @@ class UnitController extends Controller
     public function destroy($id)
     {
         try {
-            $data = Unit::findOrFail($id);
-            $data->delete();
+            $unit = Unit::findOrFail($id);
+            $unitData = $unit->toArray();
+
+            $unit->delete();
+
+            // Log activity for unit deletion
+            activity()
+                ->causedBy(Auth::user()) // Logs who performed the action
+                ->performedOn($unit) // The entity being changed
+                ->event('deleted') // Event of the action
+                ->withProperties([
+                    'attributes' => $unitData // The data before deletion
+                ])
+                ->log('Unit ' . $unit->name . ' dihapus');
 
             //return response
             return response()->json([

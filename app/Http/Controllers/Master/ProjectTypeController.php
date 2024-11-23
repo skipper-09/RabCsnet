@@ -66,7 +66,17 @@ class ProjectTypeController extends Controller
             'name.required' => 'Nama wajib diisi.',
         ]);
 
-        ProjectType::create($request->all());
+        $projectType = ProjectType::create($request->all());
+
+        //  Log activity for Project Type creation
+        activity()
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($projectType) // The entity being changed
+            ->event('created') // Event of the action
+            ->withProperties([
+                'attributes' => $projectType->toArray() // The data before deletion
+            ])
+            ->log('Project Tipe dibuat dengan nama ' . $projectType->name);
         return redirect()->route('projecttype')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Tipe Project']);
     }
 
@@ -95,6 +105,17 @@ class ProjectTypeController extends Controller
         ]);
         $projecttype = ProjectType::find($id);
         $projecttype->update($request->all());
+
+        // Log activity for Project Type update
+        activity()
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($projecttype) // The entity being changed
+            ->event('updated') // Event of the action
+            ->withProperties([
+                'attributes' => $projecttype->toArray() // The data before deletion
+            ])
+            ->log('Project Tipe ' . $projecttype->name . ' diperbarui');
+
         return redirect()->route('projecttype')->with(['status' => 'Success', 'message' => 'Berhasil Update Tipe Project']);
     }
 
@@ -104,8 +125,20 @@ class ProjectTypeController extends Controller
     public function destroy(string $id)
     {
         try {
-            $data = ProjectType::findOrFail($id);
-            $data->delete();
+            $projectType = ProjectType::findOrFail($id);
+            $projectTypeData = $projectType->toArray();
+
+            $projectType->delete();
+
+            // Log activity for Project Type deletion
+            activity()
+                ->causedBy(Auth::user()) // Logs who performed the action
+                ->performedOn($projectType) // The entity being changed
+                ->event('deleted') // Event of the action
+                ->withProperties([
+                    'attributes' => $projectTypeData // The data before deletion
+                ])
+                ->log('Project Tipe ' . $projectType->name . ' dihapus');
 
             //return response
             return response()->json([
