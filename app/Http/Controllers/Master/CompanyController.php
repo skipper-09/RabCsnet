@@ -81,7 +81,7 @@ class CompanyController extends Controller
             ->withProperties([
                 'attributes' => $company->toArray() // The data that was created
             ])
-            ->log('Company created');
+            ->log('Company dibuat dengan nama ' . $company->name);
 
         return redirect()->route('company')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Company']);
     }
@@ -130,7 +130,7 @@ class CompanyController extends Controller
                     'old' => $oldCompany, // The data before update
                     'attributes' => $company->toArray() // The updated data
                 ])
-                ->log('Company updated');
+                ->log('Company di update dengan nama ' . $company->name);
 
             return redirect()->route('company')->with(['status' => 'Success', 'message' => 'Berhasil Mengubah Company']);
         } catch (Exception $e) {
@@ -160,7 +160,7 @@ class CompanyController extends Controller
                 ->withProperties([
                     'attributes' => $companyData // The data before deletion
                 ])
-                ->log('Company deleted');
+                ->log('Company dihapus dengan nama ' . $company->name);
 
             return response()->json([
                 'status' => 'success',
