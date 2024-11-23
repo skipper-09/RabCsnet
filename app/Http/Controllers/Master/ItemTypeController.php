@@ -68,6 +68,16 @@ class ItemTypeController extends Controller
 
         $typeItem->create($request->all());
 
+        // Log activity for Item Type creation
+        activity()
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($typeItem) // The entity being changed
+            ->event('created') // Event of the action
+            ->withProperties([
+                'attributes' => $typeItem->toArray() // The data before deletion
+            ])
+            ->log('Item Type dibuat dengan nama ' . $typeItem->name);
+
         return redirect()->route('itemtype')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Item Type']);
     }
 
@@ -101,6 +111,16 @@ class ItemTypeController extends Controller
 
         $typeItem->update($request->all());
 
+        // Log activity for Item Type update
+        activity()
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($typeItem) // The entity being changed
+            ->event('updated') // Event of the action
+            ->withProperties([
+                'attributes' => $typeItem->toArray() // The data before deletion
+            ])
+            ->log('Item Type ' . $typeItem->name . ' diperbarui');
+
         return redirect()->route('itemtype')->with(['status' => 'Success', 'message' => 'Berhasil Mengubah Item Type']);
     }
 
@@ -110,8 +130,20 @@ class ItemTypeController extends Controller
     public function destroy($id)
     {
         try {
-            $data = TypeItem::findOrFail($id);
-            $data->delete();
+            $typeItem = TypeItem::findOrFail($id);
+            $typeItemData = $typeItem->toArray();
+
+            $typeItem->delete();
+
+            // Log activity for Item Type deletion
+            activity()
+                ->causedBy(Auth::user()) // Logs who performed the action
+                ->performedOn($typeItem) // The entity being changed
+                ->event('deleted') // Event of the action
+                ->withProperties([
+                    'attributes' => $typeItemData // The data before deletion
+                ])
+                ->log('Item Type ' . $typeItem->name . ' dihapus');
 
             //return response
             return response()->json([

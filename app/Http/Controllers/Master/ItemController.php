@@ -99,7 +99,17 @@ class ItemController extends Controller
         ]);
 
         // Simpan data item
-        Item::create($request->all());
+        $item = Item::create($request->all());
+
+        // Log activity for company creation
+        activity()
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($item) // The entity being changed
+            ->event('created') // Event of the action
+            ->withProperties([
+                'attributes' => $item->toArray() // The data that was created
+            ])
+            ->log('Item dibuat dengan nama ' . $item->name);
 
         return redirect()->route('item')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Item']);
     }
@@ -144,8 +154,20 @@ class ItemController extends Controller
         ]);
 
         $item = Item::find($id);
+        $oldItem = $item->toArray();
 
         $item->update($request->all());
+
+        // Log activity for company update
+        activity()
+        ->causedBy(Auth::user()) // Logs who performed the action
+        ->performedOn($item) // The entity being changed
+        ->event('updated') // Event of the action
+        ->withProperties([
+            'old' => $oldItem, // The data before update
+            'attributes' => $item->toArray() // The updated data
+        ])
+        ->log('Company di update dengan nama ' . $item->name);
 
         return redirect()->route('item')->with(['status' => 'Success', 'message' => 'Berhasil Mengubah Item']);
     }
@@ -156,8 +178,20 @@ class ItemController extends Controller
     public function destroy($id)
     {
         try {
-            $data = Item::findOrFail($id);
-            $data->delete();
+            $item = Item::findOrFail($id);
+            $itemData = $item->toArray(); // Capture the data before deletion
+
+            $item->delete();
+
+            // Log activity for d$data deletion
+            activity()
+                ->causedBy(Auth::user()) // Logs who performed the action
+                ->performedOn($item) // The entity being changed
+                ->event('deleted') // Event of the action
+                ->withProperties([
+                    'attributes' => $itemData // The data before deletion
+                ])
+                ->log('Item dihapus dengan nama ' . $item->name);
 
             //return response
             return response()->json([
