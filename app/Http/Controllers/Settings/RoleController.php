@@ -57,19 +57,18 @@ class RoleController extends Controller
         $role = Role::create($request->only(['name']));
         $role->givePermissionTo($request->permissions);
 
-        // Enhanced activity logging
+        // Enhanced activity logging for creation
         activity()
-            ->causedBy(Auth::user())
-            ->performedOn($role)
-            ->event('created')
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($role) // The entity being changed
+            ->event('created') // Event of the action
             ->withProperties([
                 'attributes' => [
                     'name' => $role->name,
                     'permissions' => $request->permissions,
                 ],
-                'description' => "Created new role: {$role->name} with " . count($request->permissions) . " permission(s)"
             ])
-            ->log('role_created');
+            ->log("Created new role: {$role->name} with " . count($request->permissions) . " permission(s)"); // Log entry for role creation
 
         return redirect()->route('role')->with(['status' => 'Success!', 'message' => 'Berhasil Menambahkan Role!']);
     }
@@ -115,9 +114,9 @@ class RoleController extends Controller
         }
 
         activity()
-            ->causedBy(Auth::user())
-            ->performedOn($role)
-            ->event('updated')
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($role) // The entity being changed
+            ->event('updated') // Event of the action
             ->withProperties([
                 'changes' => $changes,
                 'old' => [
@@ -127,10 +126,9 @@ class RoleController extends Controller
                 'new' => [
                     'name' => $request->name,
                     'permissions' => $request->permissions,
-                ],
-                'description' => "Updated role: {$role->name} with changes: " . implode(', ', $changes)
+                ]
             ])
-            ->log('role_updated');
+            ->log("Updated role: {$role->name} with changes: " . implode(', ', $changes)); // Log entry for role update
 
         return redirect()->route('role')->with(['status' => 'Success!', 'message' => 'Berhasil Mengubah Role!']);
     }
@@ -145,13 +143,16 @@ class RoleController extends Controller
 
             // Log activity for role deletion
             activity()
-                ->causedBy(Auth::user())
-                ->performedOn($role)
-                ->event('deleted')
+                ->causedBy(Auth::user()) // Logs who performed the action
+                ->performedOn($role) // The entity being changed
+                ->event('deleted') // Event of the action
                 ->withProperties([
-                    'description' => "Deleted role: {$roleName}"
+                    'attributes' => [
+                        'name' => $roleName,
+                        'permissions' => $role->permissions->pluck('name')->toArray(),
+                    ]
                 ])
-                ->log('role_deleted');
+                ->log("Deleted role: {$roleName}"); // Log entry for role deletion
 
             return response()->json([
                 'status' => 'success',

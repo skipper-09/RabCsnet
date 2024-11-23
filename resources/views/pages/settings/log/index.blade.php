@@ -38,8 +38,7 @@
                                     <i class="fas fa-trash-alt me-1"></i>Clear Log
                                 </button>
                             </div>
-                            <table id="datatable" class="table table-bordered table-hover dt-responsive nowrap"
-                                style="width: 100%;">
+                            <table id="datatable" class="table table-responsive table-hover" style="width: 100%;">
                                 <thead>
                                     <tr>
                                         <th>No</th>

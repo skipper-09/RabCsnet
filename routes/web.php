@@ -32,7 +32,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         return redirect()->route('dashboard');
     });
 
-    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('can:read-dashboard');
 
 
 //route project
@@ -72,80 +72,80 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     //route master group
     Route::prefix('master')->group(function () {
         Route::prefix('item-type')->group(function () {
-            Route::get('/', [ItemTypeController::class, 'index'])->name('itemtype');
+            Route::get('/', [ItemTypeController::class, 'index'])->name('itemtype')->middleware('can:read-itemtypes');
             Route::get('getData', [ItemTypeController::class, 'getData'])->name('itemtype.getdata');
-            Route::get('/tambah', [ItemTypeController::class, 'create'])->name('itemtype.add');
+            Route::get('/tambah', [ItemTypeController::class, 'create'])->name('itemtype.add')->middleware('can:create-itemtypes');
             Route::post('store', [ItemTypeController::class, 'store'])->name('itemtype.store');
-            Route::get('/edit/{id}', [ItemTypeController::class, 'show'])->name('itemtype.edit');
+            Route::get('/edit/{id}', [ItemTypeController::class, 'show'])->name('itemtype.edit')->middleware('can:update-itemtypes');
             Route::put('/update/{id}', [ItemTypeController::class, 'update'])->name('itemtype.update');
-            Route::delete('/delete/{id}', [ItemTypeController::class, 'destroy'])->name('itemtype.delete');
+            Route::delete('/delete/{id}', [ItemTypeController::class, 'destroy'])->name('itemtype.delete')->middleware('can:delete-itemtypes');
         });
 
         //route company master
         Route::prefix('company')->group(function () {
-            Route::get('/', [CompanyController::class, 'index'])->name('company');
+            Route::get('/', [CompanyController::class, 'index'])->name('company')->middleware('can:read-companies');
             Route::get('getData', [CompanyController::class, 'getData'])->name('company.getdata');
-            Route::get('/tambah', [CompanyController::class, 'create'])->name('company.add');
+            Route::get('/tambah', [CompanyController::class, 'create'])->name('company.add')->middleware('can:create-companies');
             Route::post('store', [CompanyController::class, 'store'])->name('company.store');
-            Route::get('/edit/{id}', [CompanyController::class, 'show'])->name('company.edit');
+            Route::get('/edit/{id}', [CompanyController::class, 'show'])->name('company.edit')->middleware('can:update-companies');
             Route::put('/update/{id}', [CompanyController::class, 'update'])->name('company.update');
-            Route::delete('/delete/{id}', [CompanyController::class, 'destroy'])->name('company.delete');
+            Route::delete('/delete/{id}', [CompanyController::class, 'destroy'])->name('company.delete')->middleware('can:delete-companies');
         });
 
         //route unit
         Route::prefix('unit')->group(function () {
-            Route::get('/', [UnitController::class, 'index'])->name('unit');
+            Route::get('/', [UnitController::class, 'index'])->name('unit')->middleware('can:read-units');
             Route::get('getData', [UnitController::class, 'getData'])->name('unit.getdata');
-            Route::get('/tambah', [UnitController::class, 'create'])->name('unit.add');
+            Route::get('/tambah', [UnitController::class, 'create'])->name('unit.add')->middleware('can:create-units');
             Route::post('store', [UnitController::class, 'store'])->name('unit.store');
-            Route::get('/edit/{id}', [UnitController::class, 'show'])->name('unit.edit');
-            Route::put('/update/{id}', [UnitController::class, 'update'])->name('unit.update');
-            Route::delete('/delete/{id}', [UnitController::class, 'destroy'])->name('unit.delete');
+            Route::get('/edit/{id}', [UnitController::class, 'show'])->name('unit.edit')->middleware('can:update-units');
+            Route::put('/update/{id}', [UnitController::class, 'update'])->name('unit.update'); 
+            Route::delete('/delete/{id}', [UnitController::class, 'destroy'])->name('unit.delete')->middleware('can:delete-units');
         });
 
         //route item
         Route::prefix('item')->group(function () {
-            Route::get('/', [ItemController::class, 'index'])->name('item');
+            Route::get('/', [ItemController::class, 'index'])->name('item')->middleware('can:read-items');
             Route::get('getData', [ItemController::class, 'getData'])->name('item.getdata');
-            Route::get('/tambah', [ItemController::class, 'create'])->name('item.add');
+            Route::get('/tambah', [ItemController::class, 'create'])->name('item.add')->middleware('can:create-items');
             Route::post('store', [ItemController::class, 'store'])->name('item.store');
-            Route::get('/edit/{id}', [ItemController::class, 'show'])->name('item.edit');
+            Route::get('/edit/{id}', [ItemController::class, 'show'])->name('item.edit')->middleware('can:update-items');
             Route::put('/update/{id}', [ItemController::class, 'update'])->name('item.update');
-            Route::delete('/delete/{id}', [ItemController::class, 'destroy'])->name('item.delete');
+            Route::delete('/delete/{id}', [ItemController::class, 'destroy'])->name('item.delete')->middleware('can:delete-items');
         });
 
         //route project type
         Route::prefix('project-type')->group(function () {
-            Route::get('/', [ProjectTypeController::class, 'index'])->name('projecttype');
+            Route::get('/', [ProjectTypeController::class, 'index'])->name('projecttype')->middleware('can:read-projecttypes');
             Route::get('getData', [ProjectTypeController::class, 'getData'])->name('projecttype.getdata');
-            Route::get('/tambah', [ProjectTypeController::class, 'create'])->name('projecttype.add');
+            Route::get('/tambah', [ProjectTypeController::class, 'create'])->name('projecttype.add')->middleware('can:create-projecttypes');
             Route::post('store', [ProjectTypeController::class, 'store'])->name('projecttype.store');
-            Route::get('/edit/{id}', [ProjectTypeController::class, 'show'])->name('projecttype.edit');
+            Route::get('/edit/{id}', [ProjectTypeController::class, 'show'])->name('projecttype.edit')->middleware('can:update-projecttypes');
             Route::put('/update/{id}', [ProjectTypeController::class, 'update'])->name('projecttype.update');
-            Route::delete('/delete/{id}', [ProjectTypeController::class, 'destroy'])->name('projecttype.delete');
+            Route::delete('/delete/{id}', [ProjectTypeController::class, 'destroy'])->name('projecttype.delete')->middleware('can:delete-projecttypes');
         });
     });
 
     Route::prefix('settings')->group(function () {
 
         Route::prefix('role')->group(function () {
-            Route::get('/', [RoleController::class, 'index'])->name('role');
+            Route::get('/', [RoleController::class, 'index'])->name('role')->middleware('can:read-roles');
             Route::get('getData', [RoleController::class, 'getData'])->name('role.getdata');
-            Route::get('/tambah', [RoleController::class, 'create'])->name('role.add');
+            Route::get('/tambah', [RoleController::class, 'create'])->name('role.add')->middleware('can:create-roles');
             Route::post('store', [RoleController::class, 'store'])->name('role.store');
-            Route::get('/edit/{id}', [RoleController::class, 'show'])->name('role.edit');
+            Route::get('/edit/{id}', [RoleController::class, 'show'])->name('role.edit')->middleware('can:update-roles');
             Route::put('/update/{id}', [RoleController::class, 'update'])->name('role.update');
-            Route::delete('/delete/{id}', [RoleController::class, 'destroy'])->name('role.delete');
+            Route::delete('/delete/{id}', [RoleController::class, 'destroy'])->name('role.delete')->middleware('can:delete-roles');
         });
 
         Route::prefix('user')->group(function () {
-            Route::get('/', [UserController::class, 'index'])->name('user');
+            Route::get('/', [UserController::class, 'index'])->name('user')->middleware('can:read-users');
             Route::get('getData', [UserController::class, 'getData'])->name('user.getdata');
-            Route::get('/tambah', [UserController::class, 'create'])->name('user.add');
+            Route::get('/tambah', [UserController::class, 'create'])->name('user.add')->middleware('can:create-users');
             Route::post('store', [UserController::class, 'store'])->name('user.store');
-            Route::get('/edit/{id}', [UserController::class, 'show'])->name('user.edit');
+            Route::get('/edit/{id}', [UserController::class, 'show'])->name('user.edit')->middleware('can:update-users');
             Route::put('/update/{id}', [UserController::class, 'update'])->name('user.update');
-            Route::delete('/delete/{id}', [UserController::class, 'destroy'])->name('user.delete');
+            Route::delete('/delete/{id}', [UserController::class, 'destroy'])->name('user.delete')->middleware('can:delete-users');
         });
 
         //setting aplication
@@ -156,9 +156,9 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
         // Log Activity
         Route::prefix('log')->group(function () {
-            Route::get('/', [LogController::class, 'index'])->name('log');
+            Route::get('/', [LogController::class, 'index'])->name('log')-> middleware('can:read-logs');
             Route::get('getData', [LogController::class, 'getData'])->name('log.getdata');
-            Route::post('clean', [LogController::class, 'cleanlog'])->name('log.clean');
+            Route::post('clean', [LogController::class, 'cleanlog'])->name('log.clean')->middleware('can:clean-logs');
         });
     });
 });

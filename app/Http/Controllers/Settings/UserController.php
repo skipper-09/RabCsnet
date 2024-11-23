@@ -81,24 +81,15 @@ class UserController extends Controller
 
         $user->assignRole($request->role);
 
-        // Improved activity logging
+        // Log activity for User creation
         activity()
-            ->causedBy(Auth::user())
-            ->performedOn($user)
-            ->event('created')
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($user) // The entity being changed
+            ->event('created') // Event of the action
             ->withProperties([
-                'attributes' => [
-                    'name' => $user->name,
-                    'role' => $request->role,
-                    'email' => $user->email,
-                    'username' => $user->username,
-                    'is_block' => $user->is_block
-                ],
-                'old' => [],
-                'created_at' => $user->created_at,
-                'description' => "Created new user: {$user->name} with role {$request->role}"
+                'attributes' => $user->toArray() // The data that was created
             ])
-            ->log('user_created');
+            ->log('User dibuat dengan nama ' . $user->name);
 
         return redirect()->route('user')->with(['status' => 'Success!', 'message' => 'User created successfully!']);
     }
@@ -123,8 +114,7 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
-        $oldRole = $user->roles->first()->name ?? 'none';
-        $oldAttributes = $user->getAttributes();
+        $oldUser = $user->toArray();
 
         $rules = [
             'username' => 'nullable|string|max:255',
@@ -149,41 +139,17 @@ class UserController extends Controller
             $user->syncRoles($request->role);
         }
 
-        // Improved activity logging for update
-        $changes = [];
-        $updatedAttributes = $user->getAttributes();
-
-        foreach ($updateData as $key => $value) {
-            if ($oldAttributes[$key] !== $updatedAttributes[$key]) {
-                if ($key !== 'password') {
-                    $changes[$key] = [
-                        'old' => $oldAttributes[$key],
-                        'new' => $updatedAttributes[$key]
-                    ];
-                }
-            }
-        }
-
-        if ($request->has('role') && $oldRole !== $request->role) {
-            $changes['role'] = [
-                'old' => $oldRole,
-                'new' => $request->role
-            ];
-        }
-
+        // Log activity for user update
         activity()
-            ->causedBy(Auth::user())
-            ->performedOn($user)
-            ->event('updated')
-            ->withProperties([
-                'changes' => $changes,
-                'old_attributes' => $oldAttributes,
-                'new_attributes' => $updatedAttributes,
-                'created_at' => $user->updated_at,
-                'description' => "Updated user: {$user->name}"
-            ])
-            ->log('user_updated');
-
+        ->causedBy(Auth::user()) // Logs who performed the action
+        ->performedOn($user) // The entity being changed
+        ->event('updated') // Event of the action
+        ->withProperties([
+            'old' => $oldUser, // The data before update
+            'attributes' => $user->toArray() // The updated data
+        ])
+        ->log('User di update dengan nama ' . $user->name);
+    
         return redirect()->route('user')->with(['status' => 'Success!', 'message' => 'User updated successfully!']);
     }
 
@@ -194,23 +160,19 @@ class UserController extends Controller
     {
         try {
             $user = User::findOrFail($id);
-            $userData = $user->getAttributes();
-            $userName = $user->name;
+            $userData = $user->toArray(); // Capture the data before deletion
 
             $user->delete();
 
-            // Improved activity logging for deletion
             activity()
-                ->causedBy(Auth::user())
-                ->performedOn($user)
-                ->event('deleted')
+                ->causedBy(Auth::user()) // Logs who performed the action
+                ->performedOn($user) // The entity being changed
+                ->event('deleted') // Event of the action
                 ->withProperties([
-                    'deleted_attributes' => $userData,
-                    'created_at' => now(),
-                    'description' => "Deleted user: {$userName}"
+                    'attributes' => $userData // The data before deletion
                 ])
-                ->log('user_deleted');
-
+                ->log('User dihapus dengan nama ' . $user->name);
+            
             return response()->json([
                 'status' => 'success',
                 'success' => true,
