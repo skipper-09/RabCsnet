@@ -21,7 +21,7 @@ class ProjectSeeder extends Seeder
             'start_date'=>now(),
             'end_date'=>now(),
             'description'=>'testing',
-            'status'=>1,
+            'status'=>'pending'
         ]);
     }
 }
