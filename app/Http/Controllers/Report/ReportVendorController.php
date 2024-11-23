@@ -101,6 +101,12 @@ class ReportVendorController extends Controller
             'image' => $filename,
         ]);
 
+        activity()
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($reportVendor) // The entity being changed
+            ->event('created') // Event of the action
+            ->log('Report Vendor dibuat dengan judul ' . $reportVendor->title);
+
         return redirect()->route('report')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Report!']);
     }
 
@@ -159,6 +165,12 @@ class ReportVendorController extends Controller
             'image' => $filename,
         ]);
 
+        activity()
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($reportVendor) // The entity being changed
+            ->event('updated') // Event of the action
+            ->log('Report Vendor diubah dengan judul ' . $reportVendor->title);
+
         return redirect()->route('report')->with(['status' => 'Success', 'message' => 'Berhasil Mengubah Report!']);
     }
 
@@ -178,7 +190,7 @@ class ReportVendorController extends Controller
                 ->withProperties([
                     'attributes' => $reportVendorData // The data before deletion
                 ])
-                ->log('Item dihapus dengan nama ' . $reportVendor->name);
+                ->log('Report Vendor dihapus dengan judul ' . $reportVendor->title);
 
             //return response
             return response()->json([

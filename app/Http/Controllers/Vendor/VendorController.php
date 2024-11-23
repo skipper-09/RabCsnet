@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Vendor;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Yajra\DataTables\DataTables;
@@ -107,7 +108,16 @@ class VendorController extends Controller
             'user_id.exists' => 'User tidak valid.',
             'website.url' => 'Hanya Menerima input Url valid',
         ]);
-        Vendor::create($request->all());
+        
+
+        $vendor = Vendor::create($request->all());
+
+        activity()
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($vendor) // The entity being changed
+            ->event('created') // Event of the action
+            ->log('Vendor dibuat dengan nama ' . $vendor->name);
+
         return redirect()->route('vendor')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Vendor']);
     }
 
@@ -160,6 +170,13 @@ class VendorController extends Controller
 
         $vendor = Vendor::find($id);
         $vendor->update($request->all());
+
+        activity()
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($vendor) // The entity being changed
+            ->event('updated') // Event of the action
+            ->log('Vendor diupdate dengan nama ' . $vendor->name);
+
         return redirect()->route('vendor')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Vendor']);
     }
 
@@ -169,8 +186,20 @@ class VendorController extends Controller
     public function destroy(string $id)
     {
         try {
-            $data = Vendor::findOrFail($id);
-            $data->delete();
+            $vendor = Vendor::findOrFail($id);
+            $vendorData = $vendor->toArray(); // Capture the data before deletion
+
+            $vendor->delete();
+
+            // Log activity for deletion
+            activity()
+                ->causedBy(Auth::user()) // Logs who performed the action
+                ->performedOn($vendor) // The entity being changed
+                ->event('deleted') // Event of the action
+                ->withProperties([
+                    'attributes' => $vendorData // The data before deletion
+                ])
+                ->log('Vendor dihapus dengan nama ' . $vendor->name);
 
             //return response
             return response()->json([
