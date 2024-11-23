@@ -86,10 +86,13 @@ class DetailProjectController extends Controller
             $quantities = $request->quantity;
     
             foreach ($items as $index => $itemId) {
+                $itemall = Item::find($itemId);
                 DetailItemProject::create([
                     'detail_id' => $project->id,
                     'item_id' => $itemId,
                     'quantity' => $quantities[$index],
+                    'cost_material'=>$itemall->material_price * $quantities[$index],
+                    'cost_service'=>$itemall->service_price * $quantities[$index]
                 ]);
             }
     
@@ -158,10 +161,13 @@ class DetailProjectController extends Controller
         $quantities = $request->quantity;
 
         foreach ($items as $index => $itemId) {
+            $itemall = Item::find($itemId);
             DetailItemProject::create([
                 'detail_id' => $detailProject->id,
                 'item_id' => $itemId,
                 'quantity' => $quantities[$index],
+                'cost_material'=>$itemall->material_price * $quantities[$index],
+                'cost_service'=>$itemall->service_price * $quantities[$index]
             ]);
         }
 

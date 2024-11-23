@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignUuid('detail_id')->references('id')->on('detail_projects')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignUuid('item_id')->references('id')->on('items')->onDelete('cascade')->onUpdate('cascade');
             $table->integer('quantity')->default(0);
+            $table->decimal('cost_material',10,2)->default(0);
+            $table->decimal('cost_service',10,2)->default(0);
             $table->timestamps();
         });
     }
