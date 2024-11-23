@@ -43,6 +43,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::post('store', [ProjectController::class, 'store'])->name('project.store');
         Route::get('/edit/{id}', [ProjectController::class, 'show'])->name('project.edit');
         // Route::get('/detail/{id}', [ProjectController::class, 'detail'])->name('project.detail');
+        Route::get('/edit/{id}', [ProjectController::class, 'show'])->name('project.edit');
         Route::put('/update/{id}', [ProjectController::class, 'update'])->name('project.update');
         Route::delete('/delete/{id}', [ProjectController::class, 'destroy'])->name('project.delete');
     });

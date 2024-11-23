@@ -24,7 +24,7 @@ class ProjectController extends Controller
 
     public function getData(Request $request)
     {
-        $dataType = Project::with(['company', ])
+        $dataType = Project::with(['company',])
             ->orderByDesc('id')
             ->get();
 
@@ -43,19 +43,19 @@ class ProjectController extends Controller
             </button>';
                 return '<div class="d-flex gap-2">' . $button . '</div>';
             })
-            ->editColumn('company',function($data){
+            ->editColumn('company', function ($data) {
                 return $data->company->name;
-            })->rawColumns(['action','company'])
+            })->rawColumns(['action', 'company'])
             ->make(true);
     }
 
 
     public function detail($id)
     {
-        
+
         $data = [
             'tittle' => 'Detail Project',
-            'project'=>Project::find($id),
+            'project' => Project::find($id),
         ];
 
         return view('pages.project.detail', $data);
@@ -65,26 +65,62 @@ class ProjectController extends Controller
     {
         $data = [
             'tittle' => 'Project',
-            'company'=>Company::all(),
-            'user'=> User::whereDoesntHave('roles', function ($query) {
-                $query->where('name', 'Developer')->orwhere('name','Vendor');
+            'company' => Company::all(),
+            'user' => User::whereDoesntHave('roles', function ($query) {
+                $query->where('name', 'Developer')->orwhere('name', 'Vendor');
             })->get(),
-            'vendor'=> Vendor::all()
+            'vendor' => Vendor::all()
         ];
 
         return view('pages.project.add', $data);
     }
 
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $request->validate([
-            'name' => 'required'
+            'name' => 'required|string|max:255',
+            'company_id' => 'required|exists:companies,id',
+            'description' => 'nullable|string',
         ], [
             'name.required' => 'Nama wajib diisi.',
+            'company_id.required' => 'Perusahaan wajib diisi.',
+            'company_id.exists' => 'Perusahaan tidak valid.',
         ]);
 
         $project = Project::create($request->all());
-        return redirect()->route('project.detail',['id'=>$project->id])->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Project!']);
+        return redirect()->route('project.detail', ['id' => $project->id])->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Project!']);
+    }
+
+    public function show($id)
+    {
+        $data = [
+            'tittle' => 'Project',
+            'project' => Project::find($id),
+            'company' => Company::all(),
+            'user' => User::whereDoesntHave('roles', function ($query) {
+                $query->where('name', 'Developer')->orwhere('name', 'Vendor');
+            })->get(),
+            'vendor' => Vendor::all()
+        ];
+
+        return view('pages.project.edit', $data);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $project = Project::find($id);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'company_id' => 'required|exists:companies,id',
+            'description' => 'nullable|string',
+        ], [
+            'name.required' => 'Nama wajib diisi.',
+            'company_id.required' => 'Perusahaan wajib diisi.',
+            'company_id.exists' => 'Perusahaan tidak valid.',
+        ]);
+        $project->update($request->all());
+        return redirect()->route('project')->with(['status' => 'Success', 'message' => 'Berhasil Mengubah Project!']);
     }
 
 
@@ -107,5 +143,4 @@ class ProjectController extends Controller
             ]);
         }
     }
-
 }

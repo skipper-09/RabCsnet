@@ -43,6 +43,7 @@
                                         <th>No</th>
                                         <th>Name</th>
                                         <th>Perusahaan</th>
+                                        <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -95,6 +96,10 @@
                         {
                             data: 'company',
                             name: 'company'
+                        },
+                        {
+                            data: 'status',
+                            name: 'status'
                         },
                         {
                             data: 'action',

@@ -15,11 +15,11 @@
             <div class="row align-items-center">
                 <div class="col-sm-6">
                     <div class="page-title">
-                        <h4>Tambah {{ $tittle }}</h4>
+                        <h4>Edit {{ $tittle }}</h4>
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('project') }}">{{ $tittle }}</a></li>
-                            <li class="breadcrumb-item active">Tambah {{ $tittle }}</li>
+                            <li class="breadcrumb-item active">Edit {{ $tittle }}</li>
                         </ol>
                     </div>
                 </div>
@@ -36,14 +36,15 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <form action="{{ route('project.store') }}" method="POST" enctype="multipart/form-data"
-                                class="">
+                            <form action="{{ route('project.update', ['id' => $project->id]) }}" method="POST"
+                                enctype="multipart/form-data" class="needs-validation" novalidate>
                                 @csrf
+                                @method('PUT')
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label required">Nama</label>
-                                            <input type="text" name="name" value="{{ old('name') }}"
+                                            <input type="text" name="name" value="{{ $project->name }}"
                                                 class="form-control @error('name') is-invalid @enderror"
                                                 id="validationCustom01">
                                             @error('name')
@@ -63,10 +64,15 @@
                                             <select name="company_id"
                                                 class="form-control  @error('company_id') is-invalid @enderror select2"
                                                 aria-label="Default select example">
-                                                <option selected value="">Pilih Perusahaan</option>
+                                                @foreach ($company as $item)
+                                                    <option value="{{ $item->id }}"
+                                                        {{ $project->company_id == $item->id ? 'selected' : '' }}>
+                                                        {{ $item->name }}</option>
+                                                @endforeach
+                                                {{-- <option selected value="">Pilih Perusahaan</option>
                                                 @foreach ($company as $item)
                                                     <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                                @endforeach
+                                                @endforeach --}}
                                             </select>
                                             @error('company_id')
                                                 <div class="invalid-feedback">
@@ -163,24 +169,24 @@
                                     </div>
                                 </div> --}}
 
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label for="validationCustom01" class="form-label required">
-                                            Deskripsi
-                                        </label>
-                                        <textarea id="textarea" name="description" class="form-control @error('description') is-invalid @enderror" maxlength="225"
-                                            rows="3"></textarea>
-                                        @error('description')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label for="validationCustom01" class="form-label required">
+                                                Deskripsi
+                                            </label>
+                                            <textarea id="textarea" name="description" class="form-control @error('description') is-invalid @enderror"
+                                                maxlength="225" rows="3">{{ $project->description }}</textarea>
+                                            @error('description')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div>
-                                    <button class="btn btn-primary" type="submit">Submit</button>
-                                </div>
+                                    <div>
+                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                    </div>
                             </form>
                         </div>
                     </div>
