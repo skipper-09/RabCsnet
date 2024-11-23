@@ -158,7 +158,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::prefix('log')->group(function () {
             Route::get('/', [LogController::class, 'index'])->name('log');
             Route::get('getData', [LogController::class, 'getData'])->name('log.getdata');
-            Route::get('clean', [LogController::class, 'cleanLogs'])->name('log.clean');
+            Route::post('clean', [LogController::class, 'cleanlog'])->name('log.clean');
         });
     });
 });

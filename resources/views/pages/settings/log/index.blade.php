@@ -44,8 +44,8 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Pengguna</th>
-                                        <th>Waktu</th>
                                         <th>Deskripsi</th>
+                                        <th>Waktu</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -74,19 +74,18 @@
                             data: 'DT_RowIndex',
                             orderable: false,
                             searchable: false,
-                            class: 'text-center'
                         },
                         {
                             data: 'causer',
                             name: 'causer'
                         },
                         {
-                            data: 'created_at',
-                            name: 'created_at'
-                        },
-                        {
                             data: 'description',
                             name: 'description'
+                        },
+                        {
+                            data: 'created_at',
+                            name: 'created_at'
                         },
                     ],
                 });
@@ -95,63 +94,58 @@
             });
 
             function clearLog() {
+                // Show confirmation dialog using SweetAlert2
                 Swal.fire({
-                    title: 'Apakah anda yakin?',
-                    text: "Semua log aktivitas akan dihapus!",
+                    title: 'Are you sure?',
+                    text: "All activity logs will be permanently deleted!",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Ya, hapus!',
-                    cancelButtonText: 'Batal'
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete all logs!',
+                    cancelButtonText: 'Cancel'
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        // Send AJAX request to clean logs
                         $.ajax({
                             url: '{{ route('log.clean') }}',
                             type: 'POST',
                             data: {
-                                _token: '{{ csrf_token() }}'
+                                _token: $('meta[name="csrf-token"]').attr('content')
                             },
                             success: function(response) {
-                                if (response.status === 'success') {
+                                if (response.success) {
+                                    // Show success message
                                     Swal.fire(
-                                        'Berhasil!',
+                                        'Deleted!',
                                         response.message,
                                         'success'
-                                    ).then(() => {
-                                        $('#datatable').DataTable().ajax.reload();
-                                    });
+                                    );
+
+                                    // Refresh the DataTable
+                                    $('#datatable').DataTable().ajax.reload();
                                 } else {
+                                    // Show error message if success is false
                                     Swal.fire(
-                                        'Gagal!',
+                                        'Error!',
                                         response.message,
                                         'error'
                                     );
                                 }
                             },
-                            error: function(xhr) {
+                            error: function(xhr, status, error) {
+                                // Show error message if request fails
                                 Swal.fire(
                                     'Error!',
-                                    'Terjadi kesalahan saat membersihkan log.',
+                                    'Failed to clean logs. Please try again.',
                                     'error'
                                 );
+                                console.error(error);
                             }
                         });
                     }
                 });
             }
         </script>
-
-        @if (Session::has('message'))
-            <script>
-                Swal.fire({
-                    title: `{{ Session::get('status') }}`,
-                    text: `{{ Session::get('message') }}`,
-                    icon: "success",
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            </script>
-        @endif
     @endpush
 @endsection

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use App\Models\TypeItem;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Exception;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
@@ -28,11 +30,15 @@ class ItemTypeController extends Controller
         $datatype = TypeItem::orderByDesc('id')->get();
 
         return DataTables::of($datatype)->addIndexColumn()->addColumn('action', function ($data) {
+            $userauth = User::with('roles')->where('id', Auth::id())->first();
             $button = '';
-            $button .= ' <a href="' . route('itemtype.edit', ['id' => $data->id]) . '" class="btn btn-sm btn-success action mr-1" data-id=' . $data->id . ' data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data"><i
-            class="fas fa-pencil-alt"></i></a>';
-            $button .= ' <button  class="btn btn-sm btn-danger  action" data-id=' . $data->id . ' data-type="delete" data-route="' . route('itemtype.delete', ['id' => $data->id]) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data"><i
-                                                            class="fas fa-trash-alt "></i></button>';
+            if ($userauth->can('update-itemtypes')) {
+                $button .= ' <a href="' . route('itemtype.edit', ['id' => $data->id]) . '" class="btn btn-sm btn-success action mr-1" data-id=' . $data->id . ' data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data"><i class="fas fa-pencil-alt"></i></a>';
+            }
+            if ($userauth->can('delete-itemtypes')) {
+                $button .= ' <button  class="btn btn-sm btn-danger  action" data-id=' . $data->id . ' data-type="delete" data-route="' . route('itemtype.delete', ['id' => $data->id]) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data"><i
+                class="fas fa-trash-alt "></i></button>';
+            }
             return '<div class="d-flex gap-2">' . $button . '</div>';
         })->rawColumns(['action'])->make(true);
     }

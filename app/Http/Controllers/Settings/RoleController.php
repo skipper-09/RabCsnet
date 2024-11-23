@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use App\Models\Role;
 use Yajra\DataTables\DataTables;
@@ -51,9 +51,26 @@ class RoleController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required']);
+        $request->validate(['name' => 'required'], [
+            'name.required' => 'Nama wajib diisi.',
+        ]);
         $role = Role::create($request->only(['name']));
         $role->givePermissionTo($request->permissions);
+
+        // Enhanced activity logging
+        activity()
+            ->causedBy(Auth::user())
+            ->performedOn($role)
+            ->event('created')
+            ->withProperties([
+                'attributes' => [
+                    'name' => $role->name,
+                    'permissions' => $request->permissions,
+                ],
+                'description' => "Created new role: {$role->name} with " . count($request->permissions) . " permission(s)"
+            ])
+            ->log('role_created');
+
         return redirect()->route('role')->with(['status' => 'Success!', 'message' => 'Berhasil Menambahkan Role!']);
     }
 
@@ -69,10 +86,52 @@ class RoleController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate(['name' => 'required']);
+        $request->validate(['name' => 'required'], [
+            'name.required' => 'Nama wajib diisi.',
+        ]);
+
         $role = Role::find($id);
+        $oldName = $role->name;
+        $oldPermissions = $role->permissions->pluck('name')->toArray();
+
         $role->syncPermissions($request->permissions);
         $role->update($request->only(['name']));
+
+        // Get added and removed permissions
+        $newPermissions = collect($request->permissions);
+        $addedPermissions = $newPermissions->diff($oldPermissions);
+        $removedPermissions = collect($oldPermissions)->diff($newPermissions);
+
+        // Log activity for role update
+        $changes = [];
+        if ($oldName !== $request->name) {
+            $changes[] = "name changed from '{$oldName}' to '{$request->name}'";
+        }
+        if ($addedPermissions->count() > 0) {
+            $changes[] = "added " . $addedPermissions->count() . " permission(s)";
+        }
+        if ($removedPermissions->count() > 0) {
+            $changes[] = "removed " . $removedPermissions->count() . " permission(s)";
+        }
+
+        activity()
+            ->causedBy(Auth::user())
+            ->performedOn($role)
+            ->event('updated')
+            ->withProperties([
+                'changes' => $changes,
+                'old' => [
+                    'name' => $oldName,
+                    'permissions' => $oldPermissions,
+                ],
+                'new' => [
+                    'name' => $request->name,
+                    'permissions' => $request->permissions,
+                ],
+                'description' => "Updated role: {$role->name} with changes: " . implode(', ', $changes)
+            ])
+            ->log('role_updated');
+
         return redirect()->route('role')->with(['status' => 'Success!', 'message' => 'Berhasil Mengubah Role!']);
     }
 
@@ -80,8 +139,20 @@ class RoleController extends Controller
     {
         try {
             $role = Role::findOrFail($id);
+            $roleName = $role->name; // Store name before deletion
+
             $role->delete();
-            //return response
+
+            // Log activity for role deletion
+            activity()
+                ->causedBy(Auth::user())
+                ->performedOn($role)
+                ->event('deleted')
+                ->withProperties([
+                    'description' => "Deleted role: {$roleName}"
+                ])
+                ->log('role_deleted');
+
             return response()->json([
                 'status' => 'success',
                 'success' => true,

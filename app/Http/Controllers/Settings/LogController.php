@@ -34,17 +34,17 @@ class LogController extends Controller
                 // Menampilkan nama pengguna yang melakukan aksi (causer)
                 return $data->causer ? $data->causer->name : '-';
             })
-            ->editColumn('created_at', function ($data) {
-                // Menampilkan waktu aktivitas yang terformat
-                return Carbon::createFromFormat('Y-m-d H:i:s', $data->created_at)
-                    ->setTimezone(config('app.timezone'))
-                    ->format('Y-m-d H:i:s');
-            })
             ->editColumn('description', function ($data) {
                 // Menampilkan deskripsi aktivitas
                 return $data->description;
             })
-            ->rawColumns(['causer', 'created_at', 'description']) // Kolom ini mengizinkan HTML
+            ->editColumn('created_at', function ($data) {
+                // Menampilkan waktu aktivitas yang terformat
+                return Carbon::createFromFormat('Y-m-d H:i:s', $data->created_at)
+                    ->setTimezone('Asia/Jakarta')
+                    ->format('Y-m-d H:i:s');
+            })
+            ->rawColumns(['causer', 'description', 'created_at']) // Kolom ini mengizinkan HTML
             ->make(true); // Mengembalikan data dalam format JSON untuk DataTables
     }
 
