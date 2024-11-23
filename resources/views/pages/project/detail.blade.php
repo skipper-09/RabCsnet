@@ -18,7 +18,7 @@
                         <h4>{{ $tittle }}</h4>
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Master</li>
+                            <li class="breadcrumb-item"><a href="{{ route('project') }}">Project</a></li>
                             <li class="breadcrumb-item active">{{ $tittle }}</li>
                         </ol>
                     </div>
