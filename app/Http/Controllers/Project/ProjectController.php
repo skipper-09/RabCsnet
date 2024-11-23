@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\Project;
 use App\Models\User;
 use App\Models\Vendor;
+use Exception;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 
@@ -85,4 +86,26 @@ class ProjectController extends Controller
         $project = Project::create($request->all());
         return redirect()->route('project.detail',['id'=>$project->id])->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Project!']);
     }
+
+
+    public function destroy(string $id)
+    {
+        try {
+            $data = Project::find($id);
+            $data->delete();
+
+            //return response
+            return response()->json([
+                'status' => 'success',
+                'success' => true,
+                'message' => 'Projek Berhasil Dihapus!.',
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => "Gagal Menghapus Data Projek !",
+                'trace' => $e->getTrace()
+            ]);
+        }
+    }
+
 }

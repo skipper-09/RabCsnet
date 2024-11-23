@@ -1,5 +1,5 @@
 @extends('layout.base')
-@section('tittle', $tittle)
+@section('tittle', "Edit $tittle")
 
 @push('css')
 <link href="{{ asset('assets/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
@@ -14,11 +14,11 @@
         <div class="row align-items-center">
             <div class="col-sm-6">
                 <div class="page-title">
-                    <h4>Tambah {{ $tittle }}</h4>
+                    <h4>Edit {{ $tittle }}</h4>
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('item') }}">{{ $tittle }}</a></li>
-                        <li class="breadcrumb-item active">Tambah {{ $tittle }}</li>
+                        <li class="breadcrumb-item"><a href="{{ route('project') }}">{{ $tittle }}</a></li>
+                        <li class="breadcrumb-item active">Edit {{ $tittle }}</li>
                     </ol>
                 </div>
             </div>
@@ -32,13 +32,14 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <form action="{{ route('projectdetail.store',['id'=>$project->id]) }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('projectdetail.update',['id'=>$detailproject->project_id,'iddetail'=>$detailproject->id])}}" method="POST" enctype="multipart/form-data">
                             @csrf
+                            @method('PUT')
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="mb-3">
                                         <label for="validationCustom01" class="form-label required">Nama</label>
-                                        <input type="text" name="name" value="{{ old('name') }}"
+                                        <input type="text" name="name" value="{{ old('name', $detailproject->name) }}"
                                             class="form-control @error('name') is-invalid @enderror"
                                             id="validationCustom01">
                                         @error('name')
@@ -58,7 +59,9 @@
                                             aria-label="Default select example">
                                             <option value="">Pilih Tipe Projek</option>
                                             @foreach ($types as $type)
-                                                <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                                <option value="{{ $type->id }}" {{ $detailproject->type_project_id == $type->id ? 'selected' : '' }}>
+                                                    {{ $type->name }}
+                                                </option>
                                             @endforeach
                                         </select>
                                         @error('type_id')
@@ -73,7 +76,7 @@
                                         <label for="validationCustom01" class="form-label required">Deskripsi</label>
                                         <textarea id="textarea" name="description"
                                             class="form-control @error('description') is-invalid @enderror"
-                                            maxlength="225" rows="3"></textarea>
+                                            maxlength="225" rows="3">{{ old('description', $detailproject->description) }}</textarea>
                                         @error('description')
                                         <div class="invalid-feedback">
                                             {{ $message }}
@@ -98,18 +101,21 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                @foreach ($projectDetails as $index => $detail)
                                                 <tr>
-                                                    <th scope="row">1</th>
+                                                    <th scope="row">{{ $index + 1 }}</th>
                                                     <td>
                                                         <select name="item_id[]" class="form-control select2">
                                                             <option selected>Pilih Item Unit</option>
                                                             @foreach ($item as $unit)
-                                                            <option value="{{ $unit->id }}">{{ $unit->name }}</option>
+                                                            <option value="{{ $unit->id }}" {{ $detail->item_id == $unit->id ? 'selected' : '' }}>
+                                                                {{ $unit->name }}
+                                                            </option>
                                                             @endforeach
                                                         </select>
                                                     </td>
                                                     <td>
-                                                        <input type="text" name="quantity[]" class="form-control"
+                                                        <input type="text" name="quantity[]" value="{{ $detail->quantity }}" class="form-control"
                                                             inputmode="numeric">
                                                     </td>
                                                     <td>
@@ -118,6 +124,7 @@
                                                         </button>
                                                     </td>
                                                 </tr>
+                                                @endforeach
                                             </tbody>
                                         </table>
                                     </div>
@@ -143,20 +150,19 @@
 <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
 <script src="{{ asset('assets/js/custom.js') }}"></script>
 
-   @if (Session::has('message'))
-    <script>
-        Swal.fire({
-            title: "{{ Session::get('status') }}",
-            text: "{{ Session::get('message') }}",
-            icon: "{{ Session::get('status') == 'Success' ? 'success' : 'error' }}",
-            showConfirmButton: false,
-            timer: 3000
-        });
-    </script>
-@endif
+@if (Session::has('message'))
 <script>
+    Swal.fire({
+        title: "{{ Session::get('status') }}",
+        text: "{{ Session::get('message') }}",
+        icon: "{{ Session::get('status') == 'Success' ? 'success' : 'error' }}",
+        showConfirmButton: false,
+        timer: 3000
+    });
+</script>
+@endif
 
-
+<script>
     $(document).ready(function () {
         // Tambah baris baru
         $('#addRow').click(function () {

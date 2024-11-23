@@ -55,6 +55,6 @@ class DetailProject extends Model
         return $this->belongsTo(ProjectType::class,'type_project_id','id');
     }
     public function detailitemporject(){
-        return $this->hasMany(DetailItemProject::class);
+        return $this->hasMany(DetailItemProject::class, 'detail_id', 'id');
     }
 }

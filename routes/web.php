@@ -52,9 +52,9 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::get('getData', [DetailProjectController::class, 'getData'])->name('projectdetail.getdata');
         Route::get('/tambah', [DetailProjectController::class, 'create'])->name('projectdetail.add');
         Route::post('store', [DetailProjectController::class, 'store'])->name('projectdetail.store');
-        // Route::get('/edit/{id}', [DetailProjectController::class, 'show'])->name('projectdetail.edit');
+        Route::get('/edit/{iddetail}', [DetailProjectController::class, 'show'])->name('projectdetail.edit');
         // Route::get('/detail/{id}', [DetailProjectController::class, 'detail'])->name('projectdetail.detail');
-        // Route::put('/update/{id}', [DetailProjectController::class, 'update'])->name('projectdetail.update');
+        Route::put('/update/{iddetail}', [DetailProjectController::class, 'update'])->name('projectdetail.update');
         Route::delete('/delete/{iddetail}', [DetailProjectController::class, 'destroy'])->name('projectdetail.delete');
     });
 

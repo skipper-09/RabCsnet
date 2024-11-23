@@ -40,7 +40,7 @@ class DetailProjectController extends Controller
             ->addIndexColumn()
             ->addColumn('action', function ($data) {
                 $button = '';
-                $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
+                $button .= '<a href="' . route('projectdetail.edit', ['iddetail'=>$data->id,'id'=>$data->project_id]) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
                 <i class="fas fa-pencil-alt"></i>
             </a>';
                 $button .= '<button class="btn btn-sm btn-danger action" data-id="' . $data->id . '" data-type="delete" data-route="' . route('projectdetail.delete', ['iddetail'=>$data->id,'id'=>$data->project_id]) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data">
@@ -62,6 +62,12 @@ class DetailProjectController extends Controller
             'description' => 'required',
             'item_id' => 'required|array',
             'quantity' => 'required|array',
+        ],[
+            'type_id.required'=>'Tipe Projek Wajib di isi',
+            'name.required'=>'Nama Wajib di isi',
+            'description.required'=>'Deskripsi Wajib di isi',
+            'item_id.required'=>'Item Wajib di isi',
+            'quantity.required'=>'Jumlah Wajib di isi',
         ]);
     
         DB::beginTransaction(); 
@@ -95,6 +101,83 @@ class DetailProjectController extends Controller
     
         return redirect()->route('project.detail', ['id' => $id])->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Project!']);
     }
+
+
+
+    public function show($id,$iddetail){
+        $detail = DetailProject::find($iddetail);
+        $data = [
+            'tittle' => 'Detail Project',
+            'item' => Item::all(),
+            'types' => ProjectType::all(),
+            'project' => Project::find($id),
+            'detailproject'=>$detail,
+            'projectDetails'=>$detail->detailitemporject
+        ];
+
+        return view('pages.project.detail.edit', $data);
+    }
+
+
+    public function update(Request $request, $iddetail, $id)
+{
+
+    $request->validate([
+        'type_id' => 'required',
+        'name' => 'required',
+        'description' => 'required',
+        'item_id' => 'required|array',
+        'quantity' => 'required|array',
+    ], [
+        'type_id.required' => 'Tipe Projek Wajib diisi',
+        'name.required' => 'Nama Wajib diisi',
+        'description.required' => 'Deskripsi Wajib diisi',
+        'item_id.required' => 'Item Wajib diisi',
+        'quantity.required' => 'Jumlah Wajib diisi',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+        // Cari DetailProject berdasarkan ID
+        $detailProject = DetailProject::findOrFail($id);
+
+        // Update DetailProject
+        $detailProject->update([
+            'project_id' => $iddetail,
+            'type_project_id' => $request->type_id,
+            'name' => $request->name,
+            'description' => $request->description,
+        ]);
+
+        // Hapus DetailItemProject terkait
+        DetailItemProject::where('detail_id', $id)->delete();
+
+        // Tambahkan item baru
+        $items = $request->item_id;
+        $quantities = $request->quantity;
+
+        foreach ($items as $index => $itemId) {
+            DetailItemProject::create([
+                'detail_id' => $detailProject->id,
+                'item_id' => $itemId,
+                'quantity' => $quantities[$index],
+            ]);
+        }
+
+        DB::commit();
+
+        return redirect()
+            ->route('project.detail', ['id' => $iddetail])
+            ->with(['status' => 'Success', 'message' => 'Berhasil Memperbarui Detail Project!']);
+    } catch (Exception $e) {
+        DB::rollBack();
+        return redirect()
+            ->back()
+            ->with(['status' => 'Error', 'message' => 'Gagal Memperbarui Detail Project: ' . $e->getMessage()]);
+    }
+}
+
 
 
     public function destroy(string $iddetail,string $id)
