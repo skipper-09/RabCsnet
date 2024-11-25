@@ -40,12 +40,14 @@
 
 
                 <li>
-                    <a href="{{ route('vendor') }}" class="waves-effect">
-                        <i class="dripicons-device-desktop"></i>
-                        {{-- <span
-                            class="badge rounded-pill bg-info float-end">3</span> --}}
-                        <span>Vendor</span>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="dripicons-browser"></i>
+                        <span>Vendor Data</span>
                     </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="{{ route('vendor') }}">Vendor</a></li>
+                        <li><a href="javascript: void(0);">Payment Vendor</a></li>
+                    </ul>
                 </li>
 
 
@@ -61,8 +63,6 @@
                         <li><a href="{{ route('unit') }}">Unit/Satuan</a></li>
                         <li><a href="{{ route('company') }}">Company</a></li>
                         <li><a href="{{ route('projecttype') }}">Tipe Project</a></li>
-
-
                     </ul>
                 </li>
 
