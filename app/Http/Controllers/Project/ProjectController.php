@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\DetailProject;
 use App\Models\Project;
+use App\Models\ProjectFile;
+use App\Models\Summary;
 use App\Models\User;
 use App\Models\Vendor;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Exception;
 use Illuminate\Http\Request;
@@ -185,18 +188,19 @@ class ProjectController extends Controller
     {
         $project = Project::find($id);
         $detailProjects = DetailProject::with(['detailitemporject'])->where('project_id', $id)->get();
-        $ppnRate = 0.11;
+        $ppnRate = Setting('ppn') / 100;
         // Olah data untuk menghitung total biaya material dan service
-        $detailData = $detailProjects->map(function ($detail) use($ppnRate) {
+        $detailData = $detailProjects->map(function ($detail) use ($ppnRate) {
             $totalMaterial = 0;
             $totalService = 0;
 
-            
+
             foreach ($detail->detailitemporject as $detailItem) {
                 // Ambil biaya material dan service dari item terkait
                 $totalMaterial += $detailItem->cost_material;
                 $totalService += $detailItem->cost_service;
             }
+
 
             $subTotal = $totalMaterial + $totalService;
             $ppn = $subTotal * $ppnRate;
@@ -206,13 +210,12 @@ class ProjectController extends Controller
                 'distribusi' => $detail->name,
                 'total_material' => $totalMaterial,
                 'total_service' => $totalService,
-                'total'=>$subTotal,
+                'total' => $subTotal,
                 'ppn' => $ppn,
                 'total_with_ppn' => $totalWithPpn,
             ];
         });
 
-        
 
 
 
@@ -220,7 +223,63 @@ class ProjectController extends Controller
             'tittle' => $project->name,
             'project' => $detailProjects,
             'details' => $detailData,
+            'ppn_rate' => $ppnRate * 100,
+            'id_project' => $project->id
+
         ];
         return view('pages.project.proses', $data);
+    }
+
+
+    public function ProsesProjectStore(Request $request, $id)
+    {
+      
+
+        $request->validate([
+            'excel' => 'required|file|mimes:xlsx,xls,csv|max:10240', 
+            'kmz' => 'required|file|mimes:kmz|max:10240', 
+            'total_material' => 'required|numeric|min:0', 
+            'total_service' => 'required|numeric|min:0', 
+            'ppn' => 'required|numeric|min:0', 
+            'total_with_ppn' => 'required|numeric|min:0',
+        ]);
+    
+
+        try {
+            DB::beginTransaction();
+            $fileexcel = '';
+            if ($request->hasFile('excel')) {
+                $file = $request->file('excel');
+                $fileexcel = 'excel_' . rand(0, 999999999) . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('storage/files/excel/'), $fileexcel);
+            }
+            $filekmz = '';
+            if ($request->hasFile('kmz')) {
+                $file = $request->file('kmz');
+                $filekmz = 'kmz_' . rand(0, 999999999) . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('storage/files/kmz/'), $filekmz);
+            }
+
+            ProjectFile::create([
+                'project_id' => $id,
+                'excel' => $fileexcel,
+                'kmz' => $filekmz,
+            ]);
+
+            Summary::create([
+                'project_id' => $id,
+                'total_material_cost' => $request->total_material,
+                'total_service_cost' => $request->total_service,
+                'total_ppn_cost' => $request->ppn,
+                'total_summary' => $request->total_with_ppn
+            ]);
+
+            DB::commit();
+            return redirect()->route('project')->with(['status' => 'Success', 'message' => 'Pengajuan Berhasil Terkirim!']);
+        } catch (Exception $e) {
+            
+            DB::rollBack();
+            return redirect()->back()->with(['status' => 'Error', 'message' => 'Gagal Proses Pengajuan!']);
+        }
     }
 }

@@ -36,8 +36,8 @@ class SettingAplicationController extends Controller
     
         if ($request->hasFile('logo')) {
             // delete logo
-            if ($setting->logo !== 'default.png' && Storage::exists('public/logo/' . $setting->logo)) {
-                Storage::delete('public/logo/' . $setting->logo);
+            if ($setting->logo !== 'default.png' && Storage::exists('public/' . $setting->logo)) {
+                Storage::delete('public/' . $setting->logo);
             }else{
                 $validated['logo'] = $request->file('logo')->store('logo', 'public');
             }

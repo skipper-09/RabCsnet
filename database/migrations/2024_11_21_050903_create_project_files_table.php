@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('project_files', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('project_id')->references('id')->on('projects')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('exel');
+            $table->string('excel');
             $table->string('kmz');
             $table->timestamps();
         });

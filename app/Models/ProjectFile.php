@@ -12,7 +12,7 @@ class ProjectFile extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['project_id','exel','kmz'];
+    protected $fillable = ['project_id','excel','kmz'];
     protected static function boot()
     {
         parent::boot();

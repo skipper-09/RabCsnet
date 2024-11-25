@@ -12,7 +12,7 @@ class Summary extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['project_id','ppn_id','total_material_cost','total_service_cost','total_ppn_cost','total_summary'];
+    protected $fillable = ['project_id','total_material_cost','total_service_cost','total_ppn_cost','total_summary'];
 
     protected static function boot()
     {

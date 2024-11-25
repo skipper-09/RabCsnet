@@ -6,19 +6,19 @@
             <div class="navbar-brand-box">
                 <a href="{{ route('dashboard') }}" class="logo logo-dark">
                     <span class="logo-sm">
-                        <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="22">
+                        <img src="{{ asset('/storage/' . Setting('logo')) }}" alt="" height="22">
                     </span>
                     <span class="logo-lg">
-                        <img src="{{ asset('assets/images/logo-dark.png') }}" alt="" height="20">
+                        <img src="{{ asset('/storage/' . Setting('logo')) }}" alt="" height="20">
                     </span>
                 </a>
 
                 <a href="{{ route('dashboard') }}" class="logo logo-light">
                     <span class="logo-sm">
-                        <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="22">
+                        <img src="{{ asset('/storage/' . Setting('logo')) }}" alt="" height="22">
                     </span>
                     <span class="logo-lg">
-                        <img src="{{ asset('assets/images/logo-light.png') }}" alt="" height="20">
+                        <img src="{{ asset('/storage/' . Setting('logo')) }}" alt="" height="20">
                     </span>
                 </a>
             </div>
@@ -32,25 +32,25 @@
                 <ul class="list-inline title-tooltip m-0">
                     <li class="list-inline-item">
                         <a href="email-inbox.html" data-bs-toggle="tooltip" data-placement="top" title="Email">
-                         <i class="mdi mdi-email-outline"></i>
+                            <i class="mdi mdi-email-outline"></i>
                         </a>
                     </li>
-                
+
                     <li class="list-inline-item">
                         <a href="chat.html" data-bs-toggle="tooltip" data-placement="top" title="Chat">
-                         <i class="mdi mdi-tooltip-outline"></i>
+                            <i class="mdi mdi-tooltip-outline"></i>
                         </a>
                     </li>
 
                     <li class="list-inline-item">
                         <a href="calendar.html" data-bs-toggle="tooltip" data-placement="top" title="Calendar">
-                         <i class="mdi mdi-calendar"></i>
+                            <i class="mdi mdi-calendar"></i>
                         </a>
                     </li>
 
                     <li class="list-inline-item">
                         <a href="pages-invoice.html" data-bs-toggle="tooltip" data-placement="top" title="Printer">
-                         <i class="mdi mdi-printer"></i>
+                            <i class="mdi mdi-printer"></i>
                         </a>
                     </li>
                 </ul>
@@ -70,40 +70,48 @@
 
         <div class="d-flex">
             {{-- <div class="dropdown d-none d-lg-inline-block">
-                <button type="button" class="btn header-item toggle-search noti-icon waves-effect" data-target="#search-wrap">
+                <button type="button" class="btn header-item toggle-search noti-icon waves-effect"
+                    data-target="#search-wrap">
                     <i class="mdi mdi-magnify"></i>
                 </button>
             </div> --}}
 
             {{-- <div class="dropdown d-none d-md-block ms-2">
-                <button type="button" class="btn header-item waves-effect" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <img class="me-2" src="assets/images/flags/us.jpg" alt="Header Language" height="16"> English <span class="mdi mdi-chevron-down"></span>
+                <button type="button" class="btn header-item waves-effect" data-bs-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                    <img class="me-2" src="assets/images/flags/us.jpg" alt="Header Language" height="16"> English <span
+                        class="mdi mdi-chevron-down"></span>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end">
 
                     <!-- item-->
                     <a href="javascript:void(0);" class="dropdown-item notify-item">
-                        <img src="assets/images/flags/germany.jpg" alt="user-image" class="me-1" height="12"> <span class="align-middle"> German </span>
+                        <img src="assets/images/flags/germany.jpg" alt="user-image" class="me-1" height="12"> <span
+                            class="align-middle"> German </span>
                     </a>
 
                     <!-- item-->
                     <a href="javascript:void(0);" class="dropdown-item notify-item">
-                        <img src="assets/images/flags/italy.jpg" alt="user-image" class="me-1" height="12"> <span class="align-middle"> Italian </span>
+                        <img src="assets/images/flags/italy.jpg" alt="user-image" class="me-1" height="12"> <span
+                            class="align-middle"> Italian </span>
                     </a>
 
                     <!-- item-->
                     <a href="javascript:void(0);" class="dropdown-item notify-item">
-                        <img src="assets/images/flags/french.jpg" alt="user-image" class="me-1" height="12"> <span class="align-middle"> French </span>
+                        <img src="assets/images/flags/french.jpg" alt="user-image" class="me-1" height="12"> <span
+                            class="align-middle"> French </span>
                     </a>
 
                     <!-- item-->
                     <a href="javascript:void(0);" class="dropdown-item notify-item">
-                        <img src="assets/images/flags/spain.jpg" alt="user-image" class="me-1" height="12"> <span class="align-middle"> Spanish </span>
+                        <img src="assets/images/flags/spain.jpg" alt="user-image" class="me-1" height="12"> <span
+                            class="align-middle"> Spanish </span>
                     </a>
 
                     <!-- item-->
                     <a href="javascript:void(0);" class="dropdown-item notify-item">
-                        <img src="assets/images/flags/russia.jpg" alt="user-image" class="me-1" height="12"> <span class="align-middle"> Russian </span>
+                        <img src="assets/images/flags/russia.jpg" alt="user-image" class="me-1" height="12"> <span
+                            class="align-middle"> Russian </span>
                     </a>
                 </div>
             </div> --}}
@@ -220,8 +228,7 @@
                     <a class="dropdown-item" href="#"><i
                             class="mdi mdi-account-circle-outline font-size-16 align-middle me-1"></i> Profile</a>
 
-                    <a class="dropdown-item d-block" href="#"><span
-                            class="badge badge-success float-end">11</span><i
+                    <a class="dropdown-item d-block" href="#"><span class="badge badge-success float-end">11</span><i
                             class="mdi mdi-cog-outline font-size-16 align-middle me-1"></i> Settings</a>
 
                     <div class="dropdown-divider"></div>
