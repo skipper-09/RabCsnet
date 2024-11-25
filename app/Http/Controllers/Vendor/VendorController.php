@@ -35,13 +35,16 @@ class VendorController extends Controller
         return DataTables::of($dataType)
             ->addIndexColumn()
             ->addColumn('action', function ($data) {
+                $userauth = User::with('roles')->where('id', Auth::id())->first();
                 $button = '';
-                $button .= '<a href="' . route('vendor.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
-                <i class="fas fa-pencil-alt"></i>
-            </a>';
-                $button .= '<button class="btn btn-sm btn-danger action" data-id="' . $data->id . '" data-type="delete" data-route="' . route('vendor.delete', $data->id) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data">
-                <i class="fas fa-trash-alt"></i>
-            </button>';
+                if ($userauth->can('update-vendors')) {
+                    $button .= '<a href="' . route('vendor.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
+                    <i class="fas fa-pencil-alt"></i></a>';
+                }
+                if ($userauth->can('delete-vendors')) {
+                    $button .= '<button class="btn btn-sm btn-danger action" data-id="' . $data->id . '" data-type="delete" data-route="' . route('vendor.delete', $data->id) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data">
+                    <i class="fas fa-trash-alt"></i></button>';
+                }
                 return '<div class="d-flex gap-2">' . $button . '</div>';
             })->editColumn('user', function ($data) {
                 return $data->user->name;
@@ -108,7 +111,7 @@ class VendorController extends Controller
             'user_id.exists' => 'User tidak valid.',
             'website.url' => 'Hanya Menerima input Url valid',
         ]);
-        
+
 
         $vendor = Vendor::create($request->all());
 

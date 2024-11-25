@@ -64,13 +64,13 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
     //route vendor
     Route::prefix('vendor')->group(function () {
-        Route::get('/', [VendorController::class, 'index'])->name('vendor');
+        Route::get('/', [VendorController::class, 'index'])->name('vendor')->middleware('can:read-vendors');
         Route::get('getData', [VendorController::class, 'getData'])->name('vendor.getdata');
-        Route::get('/tambah', [VendorController::class, 'create'])->name('vendor.add');
+        Route::get('/tambah', [VendorController::class, 'create'])->name('vendor.add')->middleware('can:create-vendors');
         Route::post('store', [VendorController::class, 'store'])->name('vendor.store');
-        Route::get('/edit/{id}', [VendorController::class, 'show'])->name('vendor.edit');
+        Route::get('/edit/{id}', [VendorController::class, 'show'])->name('vendor.edit')->middleware('can:update-vendors');
         Route::put('/update/{id}', [VendorController::class, 'update'])->name('vendor.update');
-        Route::delete('/delete/{id}', [VendorController::class, 'destroy'])->name('vendor.delete');
+        Route::delete('/delete/{id}', [VendorController::class, 'destroy'])->name('vendor.delete')->middleware('can:delete-vendors');
     });
 
     //route payment vendor
