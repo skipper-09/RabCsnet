@@ -52,10 +52,12 @@ class ProjectController extends Controller
                 <i class="fas fa-trash-alt"></i>
             </button>';
                 return '<div class="d-flex gap-2">' . $button . '</div>';
+            })->editColumn('status', function ($data) {
+                return $data->status == 'pending' ? '<span class="badge badge-pill badge-soft-primary font-size-13">Pending</span>' : '';
             })
             ->editColumn('company', function ($data) {
                 return $data->company->name;
-            })->rawColumns(['action', 'company'])
+            })->rawColumns(['action', 'company','status'])
             ->make(true);
     }
 

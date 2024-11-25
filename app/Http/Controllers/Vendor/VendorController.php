@@ -61,9 +61,9 @@ class VendorController extends Controller
             })->editColumn('status', function ($data) {
                 $button = '';
                 if ($data->status == 1) {
-                    $button = '<button type="button" class="btn btn-sm btn-primary waves-effect waves-light">Aktif</button>';
+                    $button = '<span class="badge badge-pill badge-soft-primary font-size-13">Aktif</span>';
                 } else {
-                    $button = '<button type="button" class="btn btn-sm btn-secondary waves-effect waves-light">Tidak Aktif</button>';
+                    $button = '<span class="badge badge-pill badge-soft-danger font-size-13">Tidak Aktif</span>';
                 }
                 return $button;
             })
