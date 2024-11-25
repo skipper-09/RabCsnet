@@ -29,7 +29,7 @@ class ProjectController extends Controller
 
     public function getData(Request $request)
     {
-        $dataType = Project::with(['company',])
+        $dataType = Project::with(['company','detailproject','Projectfile'])
             ->orderByDesc('id')
             ->get();
 
@@ -37,9 +37,11 @@ class ProjectController extends Controller
             ->addIndexColumn()
             ->addColumn('action', function ($data) {
                 $button = '';
-                $button .= '<a href="' . route('project.proses', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
-                <i class="fas fa-upload"></i> Proses Pengajuan
-            </a>';
+                if($data->detailproject->isNotEmpty() && !$data->Projectfile){
+                    $button .= '<a href="' . route('project.proses', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
+                    <i class="fas fa-upload"></i> Proses Pengajuan
+                </a>';
+                }
                 $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
                 <i class="fas fa-pencil-alt"></i>
             </a>';
@@ -237,7 +239,7 @@ class ProjectController extends Controller
 
         $request->validate([
             'excel' => 'required|file|mimes:xlsx,xls,csv|max:10240', 
-            'kmz' => 'required|file|mimes:kmz|max:10240', 
+            'kmz' => 'required|file|max:10240', 
             'total_material' => 'required|numeric|min:0', 
             'total_service' => 'required|numeric|min:0', 
             'ppn' => 'required|numeric|min:0', 
