@@ -72,7 +72,7 @@ class ReportVendorController extends Controller
             'vendor_id' => 'required|exists:vendors,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Added max file size
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5048', // Added max file size
         ], [
             'project_id.required' => 'Project wajib diisi.',
             'project_id.exists' => 'Project tidak valid.',
@@ -83,7 +83,7 @@ class ReportVendorController extends Controller
             'description.max' => 'Deskripsi tidak boleh lebih dari 255 karakter.',
             'image.required' => 'Gambar wajib diisi.',
             'image.mimes' => 'Format gambar tidak valid.',
-            'image.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
+            'image.max' => 'Ukuran gambar tidak boleh lebih dari 5MB.',
         ]);
 
         $filename = '';
@@ -129,7 +129,7 @@ class ReportVendorController extends Controller
             'vendor_id' => 'required|exists:vendors,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Added max file size
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5048', // Added max file size
         ], [
             'project_id.required' => 'Project wajib diisi.',
             'project_id.exists' => 'Project tidak valid.',
@@ -141,7 +141,7 @@ class ReportVendorController extends Controller
             'description.string' => 'Deskripsi harus berupa teks.',
             'image.image' => 'File harus berupa gambar.',
             'image.mimes' => 'Format gambar harus jpeg, png, jpg, gif, atau svg.',
-            'image.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
+            'image.max' => 'Ukuran gambar tidak boleh lebih dari 5MB.',
         ]);
 
         $reportVendor = ReportVendor::findOrFail($id); // Added error handling

@@ -11,6 +11,7 @@
             max-width: 200px;
             max-height: 200px;
             margin-top: 10px;
+            display: none;
         }
 
         .preview-container {
@@ -26,18 +27,20 @@
             <div class="row align-items-center">
                 <div class="col-sm-6">
                     <div class="page-title">
-                        <h4>Edit {{ $tittle }}</h4>
+                        <h4>Tambah {{ $tittle }}</h4>
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('report') }}">{{ $tittle }}</a></li>
-                            <li class="breadcrumb-item active">Edit {{ $tittle }}</li>
+                            <li class="breadcrumb-item"><a href="{{ route('payment') }}">{{ $tittle }}</a></li>
+                            <li class="breadcrumb-item active">Tambah {{ $tittle }}</li>
                         </ol>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
     <!-- end page title -->
+
 
     <div class="container-fluid">
         <div class="page-content-wrapper">
@@ -45,42 +48,38 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <form action="{{ route('report.update', $report->id) }}" method="POST" enctype="multipart/form-data"
+                            <form action="{{ route('payment.store') }}" method="POST" enctype="multipart/form-data"
                                 class="needs-validation" novalidate>
                                 @csrf
-                                @method('PUT')
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label required">Judul</label>
-                                            <input type="text" name="title"
-                                                class="form-control @error('title') is-invalid @enderror"
-                                                id="validationCustom01" value="{{ old('title', $report->title) }}">
-                                            @error('title')
+                                            <label for="image" class="form-label required">Bukti Pembayaran</label>
+                                            <input type="file" name="bukti_pembayaran" id="image"
+                                                class="form-control @error('bukti_pembayaran') is-invalid @enderror"
+                                                accept="image/*" onchange="previewImage(this)">
+                                            <small class="text-muted">Format yang diterima: JPEG, PNG, JPG, GIF. Ukuran
+                                                maksimal:
+                                                5MB</small>
+                                            @error('bukti_pembayaran')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <div class="preview-container">
+                                                <img id="imagePreview" src="#" alt="Preview" class="image-preview">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="payment_date" class="form-label required">Tanggal Pembayaran</label>
+                                            <input type="date"
+                                                class="form-control @error('payment_date') is-invalid @enderror"
+                                                id="payment_date" name="payment_date" value="{{ old('payment_date') }}">
+                                            @error('payment_date')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
                                                 </div>
                                             @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="mb-3">
-                                            <label for="image" class="form-label">Gambar</label>
-                                            <input type="file" name="image" id="image"
-                                                class="form-control @error('image') is-invalid @enderror" accept="image/*"
-                                                onchange="previewImage(this)">
-                                            <small class="text-muted">Format yang diterima: JPEG, PNG, JPG, GIF. Ukuran maksimal:
-                                                5MB</small>
-                                            @error('image')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                            <div class="preview-container">
-                                                <img id="imagePreview" 
-                                                     src="{{ $report->image ? asset('storage/images/reportvendor/' . $report->image) : '#' }}" 
-                                                     alt="Preview" 
-                                                     class="image-preview" 
-                                                     style="display: {{ $report->image ? 'block' : 'none' }}">
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -93,12 +92,9 @@
                                             <select name="project_id"
                                                 class="form-control select2 @error('project_id') is-invalid @enderror"
                                                 aria-label="Default select example">
-                                                <option>Pilih Project</option>
+                                                <option selected>Pilih Project</option>
                                                 @foreach ($projects as $project)
-                                                    <option value="{{ $project->id }}" 
-                                                        {{ old('project_id', $report->project_id) == $project->id ? 'selected' : '' }}>
-                                                        {{ $project->name }}
-                                                    </option>
+                                                    <option value="{{ $project->id }}">{{ $project->name }}</option>
                                                 @endforeach
                                             </select>
                                             @error('project_id')
@@ -116,12 +112,9 @@
                                             <select name="vendor_id"
                                                 class="form-control select2 @error('vendor_id') is-invalid @enderror"
                                                 aria-label="Default select example">
-                                                <option>Pilih Vendor</option>
+                                                <option selected>Pilih Vendor</option>
                                                 @foreach ($vendors as $vendor)
-                                                    <option value="{{ $vendor->id }}"
-                                                        {{ old('vendor_id', $report->vendor_id) == $vendor->id ? 'selected' : '' }}>
-                                                        {{ $vendor->name }}
-                                                    </option>
+                                                    <option value="{{ $vendor->id }}">{{ $vendor->name }}</option>
                                                 @endforeach
                                             </select>
                                             @error('vendor_id')
@@ -131,14 +124,33 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-12">
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">
-                                                Deskripsi
+                                            <label for="amount" class="form-label required">Amount</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">Rp</span>
+                                                <input type="number"
+                                                    class="form-control @error('amount') is-invalid @enderror"
+                                                    id="amount" name="amount" value="{{ old('amount') }}"
+                                                    min="0" step="0.01" placeholder="Enter amount">
+                                            </div>
+                                            @error('amount')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="validationCustom01" class="form-label required">
+                                                Note
                                             </label>
-                                            <textarea id="textarea" name="description" class="form-control @error('description') is-invalid @enderror"
-                                                maxlength="225" rows="3" placeholder="Enter Description">{{ old('description', $report->description) }}</textarea>
-                                            @error('description')
+                                            <textarea id="textarea" name="note" class="form-control @error('note') is-invalid @enderror" maxlength="225"
+                                                rows="3" placeholder="Enter Note"></textarea>
+                                            @error('note')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
                                                 </div>
@@ -147,14 +159,15 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <button class="btn btn-primary" type="submit">Update</button>
-                                    <a href="{{ route('report') }}" class="btn btn-secondary">Batal</a>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- end row -->
+
         </div>
     </div>
 
@@ -184,11 +197,8 @@
 
                     reader.readAsDataURL(input.files[0]);
                 } else {
-                    // Don't reset the preview if no new file is selected
-                    if (!preview.src.includes('storage/images/reportvendor')) {
-                        preview.src = '#';
-                        preview.style.display = 'none';
-                    }
+                    preview.src = '#';
+                    preview.style.display = 'none';
                 }
             }
         </script>

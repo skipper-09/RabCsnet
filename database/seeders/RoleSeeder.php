@@ -18,6 +18,7 @@ class RoleSeeder extends Seeder
         
         $developer->givePermissionTo([
             'read-dashboard',
+            'read-paymentvendors', 'create-paymentvendors', 'update-paymentvendors', 'delete-paymentvendors',
             'read-companies','create-companies','update-companies','delete-companies',
             'read-items', 'create-items', 'update-items', 'delete-items',
             'read-itemtypes', 'create-itemtypes', 'update-itemtypes', 'delete-itemtypes',

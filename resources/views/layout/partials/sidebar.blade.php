@@ -46,7 +46,7 @@
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
                         <li><a href="{{ route('vendor') }}">Vendor</a></li>
-                        <li><a href="javascript: void(0);">Payment Vendor</a></li>
+                        <li><a href="{{ route('payment') }}">Payment Vendor</a></li>
                     </ul>
                 </li>
 
