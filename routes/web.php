@@ -163,8 +163,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
         //setting aplication
         Route::prefix('application')->group(function () {
-            Route::get('/{id}', [SettingAplicationController::class, 'index'])->name('aplication');
-            Route::put('/update/{id}', [SettingAplicationController::class, 'update'])->name('aplication.update');
+            Route::get('/', [SettingAplicationController::class, 'index'])->name('aplication');
+            Route::post('/update', [SettingAplicationController::class, 'update'])->name('aplication.update');
         });
 
         // Log Activity

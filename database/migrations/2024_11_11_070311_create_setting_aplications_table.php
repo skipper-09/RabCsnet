@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('setting_aplications', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
+            $table->integer('ppn')->default(0);
             $table->longText('logo');
             $table->longText('description');
             $table->timestamps();

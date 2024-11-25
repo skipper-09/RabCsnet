@@ -10,38 +10,41 @@ use Illuminate\Support\Facades\File;
 
 class SettingAplicationController extends Controller
 {
-    public function index($id)
+    public function index()
     {
         $data = [
             'tittle' => 'Setting Aplikasi',
-            'app' => SettingAplication::findOrFail($id),
+            'setting' => SettingAplication::first(),
         ];
 
         return view('pages.settings.settingaplication.index', $data);
     }
 
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        // dd($request->all());
-        $app = SettingAplication::find($id);
-        // Validate and save image
-        $filename = $app->logo;
+       
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'ppn' => 'required|numeric',
+            'description' => 'nullable|string|max:225',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:5048', 
+        ]);
+    
+        // get data
+        $setting = SettingAplication::firstOrCreate([]);
+    
         if ($request->hasFile('logo')) {
-            $file = $request->file('logo');
-            $filename = 'logo_' . rand(0, 999999999) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('storage/logo/'), $filename);
-            if ($app->logo !== 'logocsnet.webp' && file_exists(public_path('storage/logo/' . $app->logo))) {
-                File::delete(public_path('storage/logo/' . $app->logo));
+            // delete logo
+            if ($setting->logo !== 'default.png' && Storage::exists('public/logo/' . $setting->logo)) {
+                Storage::delete('public/logo/' . $setting->logo);
+            }else{
+                $validated['logo'] = $request->file('logo')->store('logo', 'public');
             }
         }
-
-        $app->update([
-            'name' => $request->name,
-            'logo' => $filename,
-            'description' => $request->description
-        ]);
-
-        return redirect()->back();
+    
+        // update
+        $setting->update($validated);
+        return redirect()->back()->with(['status' => 'Success!', 'message' => 'Berhasil Setting Aplication!']);
     }
 }

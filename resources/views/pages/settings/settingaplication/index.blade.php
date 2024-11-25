@@ -58,18 +58,20 @@
             <div class="col-lg-6">
                 <div class="card">
                     <div class="card-body">
-                        <form action="{{ route('aplication.update', ['id' => $app->id]) }}" method="POST"
+                        <form action="{{ route('aplication.update') }}" method="POST"
                             enctype="multipart/form-data" novalidate>
                             @csrf
-                            @method('PUT')
-
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="mb-3">
                                         <label for="validationCustom01" class="form-label">Nama Aplikasi</label>
-                                        <input type="text" name="name" class="form-control" id="validationCustom01"
-                                            value="{{ $app->name }}" required>
-                                        <div class="valid-feedback">Looks good!</div>
+                                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" id="validationCustom01"
+                                            value="{{ $setting->name }}" required>
+                                            @error('name')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
                                     </div>
                                 </div>
 
@@ -79,23 +81,45 @@
                                 <div class="col-md-12">
                                     <div class="mb-3">
                                         <label for="dropzone" class="form-label">Logo Perusahaan</label>
-                                        <input type="file" name="logo" class="form-control" id="">
-                                        {{-- <div id="dropzoneArea" class="dropzone">
-                                            <div class="dz-message needsclick">
-                                                Drag & drop your file here or click to upload.
-                                            </div>
-                                        </div> --}}
+                                        <div>
+                                            @if ($setting->logo)
+                                                <img id="previewImage" src="{{ asset('storage/' . $setting->logo) }}" alt="Preview Logo"
+                                                    class="img-thumbnail mb-3" style="max-height: 150px;">
+                                            @else
+                                                <img id="previewImage" src="#" alt="Preview Logo" class="img-thumbnail mb-3" style="display: none; max-height: 150px;">
+                                            @endif
+                                        </div>
+                                        <input type="file" name="logo" class="form-control" id="logoInput">
                                     </div>
                                 </div>
+                                
 
 
 
                                 <div class="col-md-12">
                                     <div class="mb-3">
                                         <label for="validationCustom01" class="form-label">Description</label>
-                                        <textarea id="textarea" name="description" class="form-control" maxlength="225"
-                                            rows="3" placeholder="Enter Description">{{ $app->description }}</textarea>
-                                        <div class="valid-feedback">Looks good!</div>
+                                        <textarea id="textarea" name="description" class="form-control @error('description') is-invalid @enderror" maxlength="225"
+                                            rows="3" placeholder="Enter Description">{{ $setting->description }}</textarea>
+                                            @error('description')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label for="validationCustom01" class="form-label">Ppn</label>
+                                        <input type="text" inputmode="numeric" name="ppn" class="form-control @error('ppn') is-invalid @enderror" id="validationCustom01"
+                                            value="{{ $setting->ppn }}" required>
+                                            @error('ppn')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
@@ -120,37 +144,23 @@
 <script src="{{ asset('assets/js/custom.js') }}"></script>
 <script src="{{ asset('assets/libs/dropzone/min/dropzone.min.js') }}"></script>
 
+
 <script>
-    Dropzone.autoDiscover = false;
-            var dropzoneArea = new Dropzone("#dropzoneArea", {
-                url: "{{ route('aplication.update',['id'=>$app->id]) }}",  // Route specifically for image upload
-                maxFiles: 1,
-                acceptedFiles: ".jpeg,.jpg,.png,.webp",
-                addRemoveLinks: true,
-                dictDefaultMessage: "Drop file here or click to upload",
-                autoProcessQueue: true,  // Automatically upload files when added
-                init: function () {
-                    this.on("maxfilesexceeded", function (file) {
-                        this.removeAllFiles();
-                        this.addFile(file);
-                    });
-        
-                    this.on("success", function (file, response) {
-                        // Add response (e.g., filename) to hidden input for form submission
-                        document.getElementById('dropzoneArea').value = response.filename;
-                    });
-                    
-                    // Display existing file if exists
-                    var existingFile = "{{ $app->logo }}";
-                    if (existingFile) {
-                        var mockFile = { name: "Current Logo", size: 12345, type: 'image/jpeg' };
-                        this.emit("addedfile", mockFile);
-                        this.emit("thumbnail", mockFile, "{{ asset('/storage/logo/' . $app->logo) }}");
-                        this.emit("complete", mockFile);
-                        this.files.push(mockFile);
-                    }
-                }
-            });
+    document.getElementById('logoInput').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        const previewImage = document.getElementById('previewImage');
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                previewImage.src = event.target.result;
+                previewImage.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewImage.style.display = 'none';
+        }
+    });
 </script>
 
 @endpush
