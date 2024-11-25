@@ -66,6 +66,14 @@
                     </ul>
                 </li>
 
+                <li class="menu-title">Review</li>
+                <li class="{{ request()->is('admin/review') ? 'mm-activate' : '' }}">
+                    <a href="{{ route('review') }}" class=" waves-effect">
+                        <i class="dripicons-blog"></i>
+                        <span>Project Review</span>
+                    </a>
+                </li>
+
                 <li class="menu-title">Laporan</li>
                 <li class="{{ request()->is('admin/report') ? 'mm-activate' : '' }}">
                     <a href="{{ route('report') }}" class=" waves-effect">

@@ -13,6 +13,7 @@ use App\Http\Controllers\Report\ReportVendorController;
 use App\Http\Controllers\Settings\SettingAplicationController;
 use App\Http\Controllers\Settings\UserController;
 use App\Http\Controllers\PaymentVendor\PaymentVendorController;
+use App\Http\Controllers\Review\ProjectReviewController;
 use App\Http\Controllers\Vendor\VendorController;
 use App\Http\Controllers\Settings\RoleController;
 use App\Http\Controllers\Settings\LogController;
@@ -150,6 +151,16 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::get('/edit/{id}', [ReportVendorController::class, 'show'])->name('report.edit');
         Route::put('/update/{id}', [ReportVendorController::class, 'update'])->name('report.update');
         Route::delete('/delete/{id}', [ReportVendorController::class, 'destroy'])->name('report.delete');
+    });
+
+    Route::prefix('review')->group(function () {
+        Route::get('/', [ProjectReviewController::class, 'index'])->name('review')->middleware('can:read-projectreviews');
+        Route::get('getData', [ProjectReviewController::class, 'getData'])->name('review.getdata');
+        Route::get('/tambah', [ProjectReviewController::class, 'create'])->name('review.add')->middleware('can:create-projectreviews');
+        Route::post('store', [ProjectReviewController::class, 'store'])->name('review.store');
+        Route::get('/edit/{id}', [ProjectReviewController::class, 'show'])->name('review.edit')->middleware('can:update-projectreviews');
+        Route::put('/update/{id}', [ProjectReviewController::class, 'update'])->name('review.update');
+        Route::delete('/delete/{id}', [ProjectReviewController::class, 'destroy'])->name('review.delete')->middleware('can:delete-projectreviews');
     });
 
     Route::prefix('settings')->group(function () {
