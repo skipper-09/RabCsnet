@@ -50,7 +50,7 @@ class UserController extends Controller
     {
         $data = [
             'tittle' => 'User',
-            'role' => Role::all()
+            'role' => Role::whereNotIn('name', ['Developer'])->get(),
         ];
 
         return view('pages.settings.user.add', $data);
@@ -101,7 +101,7 @@ class UserController extends Controller
         $data = [
             'tittle' => 'User',
             'user' => $user,
-            'role' => Role::all(),
+            'role' => Role::whereNotIn('name', ['Developer'])->get(),
             'userRoles' => $user->roles->pluck('name')->toArray(),
         ];
 
