@@ -54,7 +54,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label required">Title</label>
+                                            <label for="validationCustom01" class="form-label required">Judul</label>
                                             <input type="text" name="title"
                                                 class="form-control @error('title') is-invalid @enderror"
                                                 id="validationCustom01">
@@ -67,12 +67,12 @@
                                     </div>
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label for="image" class="form-label required">Image</label>
+                                            <label for="image" class="form-label required">Gambar</label>
                                             <input type="file" name="image" id="image"
                                                 class="form-control @error('image') is-invalid @enderror" accept="image/*"
                                                 onchange="previewImage(this)">
-                                            <small class="text-muted">Accepted formats: JPEG, PNG, JPG, GIF. Max size:
-                                                2MB</small>
+                                            <small class="text-muted">Format yang diterima: JPEG, PNG, JPG, GIF. Ukuran maksimal:
+                                                5MB</small>
                                             @error('image')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -91,7 +91,7 @@
                                             <select name="project_id"
                                                 class="form-control select2 @error('project_id') is-invalid @enderror"
                                                 aria-label="Default select example">
-                                                <option selected>Select Project</option>
+                                                <option selected>Pilih Project</option>
                                                 @foreach ($projects as $project)
                                                     <option value="{{ $project->id }}">{{ $project->name }}</option>
                                                 @endforeach
@@ -111,7 +111,7 @@
                                             <select name="vendor_id"
                                                 class="form-control select2 @error('vendor_id') is-invalid @enderror"
                                                 aria-label="Default select example">
-                                                <option selected>Select Vendor</option>
+                                                <option selected>Pilih Vendor</option>
                                                 @foreach ($vendors as $vendor)
                                                     <option value="{{ $vendor->id }}">{{ $vendor->name }}</option>
                                                 @endforeach
@@ -126,7 +126,7 @@
                                     <div class="col-md-12">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label">
-                                                Description
+                                                Deskripsi
                                             </label>
                                             <textarea id="textarea" name="description" class="form-control @error('description') is-invalid @enderror"
                                                 maxlength="225" rows="3" placeholder="Enter Description"></textarea>

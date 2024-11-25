@@ -12,6 +12,7 @@ use App\Http\Controllers\Project\ProjectController;
 use App\Http\Controllers\Report\ReportVendorController;
 use App\Http\Controllers\Settings\SettingAplicationController;
 use App\Http\Controllers\Settings\UserController;
+use App\Http\Controllers\PaymentVendor\PaymentVendorController;
 use App\Http\Controllers\Vendor\VendorController;
 use App\Http\Controllers\Settings\RoleController;
 use App\Http\Controllers\Settings\LogController;
@@ -64,13 +65,24 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
     //route vendor
     Route::prefix('vendor')->group(function () {
-        Route::get('/', [VendorController::class, 'index'])->name('vendor');
+        Route::get('/', [VendorController::class, 'index'])->name('vendor')->middleware('can:read-vendors');
         Route::get('getData', [VendorController::class, 'getData'])->name('vendor.getdata');
-        Route::get('/tambah', [VendorController::class, 'create'])->name('vendor.add');
+        Route::get('/tambah', [VendorController::class, 'create'])->name('vendor.add')->middleware('can:create-vendors');
         Route::post('store', [VendorController::class, 'store'])->name('vendor.store');
-        Route::get('/edit/{id}', [VendorController::class, 'show'])->name('vendor.edit');
+        Route::get('/edit/{id}', [VendorController::class, 'show'])->name('vendor.edit')->middleware('can:update-vendors');
         Route::put('/update/{id}', [VendorController::class, 'update'])->name('vendor.update');
-        Route::delete('/delete/{id}', [VendorController::class, 'destroy'])->name('vendor.delete');
+        Route::delete('/delete/{id}', [VendorController::class, 'destroy'])->name('vendor.delete')->middleware('can:delete-vendors');
+    });
+
+    //route payment vendor
+    Route::prefix('payment')->group(function () {
+        Route::get('/', [PaymentVendorController::class, 'index'])->name('payment')->middleware('can:read-paymentvendors');
+        Route::get('getData', [PaymentVendorController::class, 'getData'])->name('payment.getdata');
+        Route::get('/tambah', [PaymentVendorController::class, 'create'])->name('payment.add')->middleware('can:create-paymentvendors');
+        Route::post('store', [PaymentVendorController::class, 'store'])->name('payment.store');
+        Route::get('/edit/{id}', [PaymentVendorController::class, 'show'])->name('payment.edit')->middleware('can:update-paymentvendors');
+        Route::put('/update/{id}', [PaymentVendorController::class, 'update'])->name('payment.update');
+        Route::delete('/delete/{id}', [PaymentVendorController::class, 'destroy'])->name('payment.delete')->middleware('can:delete-paymentvendors');
     });
 
     //route master group
