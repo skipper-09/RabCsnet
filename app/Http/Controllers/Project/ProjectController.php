@@ -53,7 +53,14 @@ class ProjectController extends Controller
             </button>';
                 return '<div class="d-flex gap-2">' . $button . '</div>';
             })->editColumn('status', function ($data) {
-                return $data->status == 'pending' ? '<span class="badge badge-pill badge-soft-primary font-size-13">Pending</span>' : '';
+                if ($data->status == 'pending') {
+                    return '<span class="badge badge-pill badge-soft-primary font-size-13">Pending</span>';
+                } elseif ($data->status == 'approved') {
+                    return '<span class="badge badge-pill badge-soft-success font-size-13">Approved</span>';
+                } elseif ($data->status == 'rejected') {
+                    return '<span class="badge badge-pill badge-soft-danger font-size-13">Declined</span>';
+                }
+                return ''; // Def
             })
             ->editColumn('company', function ($data) {
                 return $data->company->name;
