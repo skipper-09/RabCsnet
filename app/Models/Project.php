@@ -68,5 +68,8 @@ class Project extends Model
     public function detailproject(){
         return $this->hasMany(DetailProject::class);
     }
+    public function projectreview(){
+        return $this->hasMany(ProjectReview::class);
+    }
     
 }

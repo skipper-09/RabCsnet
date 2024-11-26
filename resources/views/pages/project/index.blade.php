@@ -44,6 +44,7 @@
                                         <th>Name</th>
                                         <th>Perusahaan</th>
                                         <th>Status</th>
+                                        <th>Review</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -100,6 +101,10 @@
                         {
                             data: 'status',
                             name: 'status'
+                        },
+                        {
+                            data: 'review',
+                            name: 'review'
                         },
                         {
                             data: 'action',

@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\DetailProject;
 use App\Models\Project;
 use App\Models\ProjectFile;
+use App\Models\ProjectReview;
 use App\Models\Summary;
 use App\Models\User;
 use App\Models\Vendor;
@@ -29,15 +30,14 @@ class ProjectController extends Controller
 
     public function getData(Request $request)
     {
-        $dataType = Project::with(['company','detailproject','Projectfile'])
+        $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'projectreview'])
             ->orderByDesc('id')
             ->get();
-
         return DataTables::of($dataType)
             ->addIndexColumn()
             ->addColumn('action', function ($data) {
                 $button = '';
-                if($data->detailproject->isNotEmpty() && !$data->Projectfile){
+                if ($data->detailproject->isNotEmpty() && !$data->Projectfile) {
                     $button .= '<a href="' . route('project.proses', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
                     <i class="fas fa-upload"></i> Proses Pengajuan
                 </a>';
@@ -53,11 +53,25 @@ class ProjectController extends Controller
             </button>';
                 return '<div class="d-flex gap-2">' . $button . '</div>';
             })->editColumn('status', function ($data) {
-                return $data->status == 'pending' ? '<span class="badge badge-pill badge-soft-primary font-size-13">Pending</span>' : '';
+                $status = '';
+
+                if ($data->status == 'pending') {
+                    $status = '<span class="badge badge-pill badge-soft-primary font-size-13">Pending</span>';
+                } else if ($data->status == 'approved') {
+                    $status = '<span class="badge badge-pill badge-soft-success font-size-13">Approved</span>';
+                } else {
+                    $status = '<span class="badge badge-pill badge-soft-danger font-size-13">Rejected</span>';
+                }
+
+                return $status;
             })
             ->editColumn('company', function ($data) {
                 return $data->company->name;
-            })->rawColumns(['action', 'company','status'])
+            })->editColumn('review', function ($data) {
+                $review = ProjectReview::where('project_id',$data->id)->orderByDesc('id')->first();
+
+                return $review->review_note ?? '-';
+            })->rawColumns(['action', 'company', 'status','review'])
             ->make(true);
     }
 
@@ -237,17 +251,17 @@ class ProjectController extends Controller
 
     public function ProsesProjectStore(Request $request, $id)
     {
-      
+
 
         $request->validate([
-            'excel' => 'required|file|mimes:xlsx,xls,csv|max:10240', 
-            'kmz' => 'required|file|max:10240', 
-            'total_material' => 'required|numeric|min:0', 
-            'total_service' => 'required|numeric|min:0', 
-            'ppn' => 'required|numeric|min:0', 
+            'excel' => 'required|file|mimes:xlsx,xls,csv|max:10240',
+            'kmz' => 'required|file|max:10240',
+            'total_material' => 'required|numeric|min:0',
+            'total_service' => 'required|numeric|min:0',
+            'ppn' => 'required|numeric|min:0',
             'total_with_ppn' => 'required|numeric|min:0',
         ]);
-    
+
 
         try {
             DB::beginTransaction();
@@ -281,7 +295,7 @@ class ProjectController extends Controller
             DB::commit();
             return redirect()->route('project')->with(['status' => 'Success', 'message' => 'Pengajuan Berhasil Terkirim!']);
         } catch (Exception $e) {
-            
+
             DB::rollBack();
             return redirect()->back()->with(['status' => 'Error', 'message' => 'Gagal Proses Pengajuan!']);
         }
