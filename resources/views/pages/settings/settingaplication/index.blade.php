@@ -120,6 +120,19 @@
                                         @enderror
                                     </div>
                                 </div>
+
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label for="validationCustom01" class="form-label">Nilai Lebih</label>
+                                        <input type="text" inputmode="numeric" name="backup" class="form-control @error('backup') is-invalid @enderror" id="validationCustom01"
+                                            value="{{ $setting->backup }}" required>
+                                            @error('backup')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
 
                             <div>

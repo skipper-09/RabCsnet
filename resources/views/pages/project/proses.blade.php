@@ -102,6 +102,19 @@
                                             </th> --}}
                                         </tr>
                                         <tr>
+                                            <th colspan="2" class="text-end">Backup {{ $backup_rate }}%:</th>
+                                            <th colspan="2">{{ number_format($details->sum('backup'), 0, ',', '.') }}</th>
+                                            {{-- <th>{{ number_format($details->sum('total_service'), 0, ',', '.') }}
+                                            </th> --}}
+                                        </tr>
+                                        <tr>
+                                            <th colspan="2" class="text-end">Total + Backup:</th>
+                                            <th colspan="2">{{ number_format($details->sum('total_with_backup'), 0, ',',
+                                                '.') }}</th>
+                                            {{-- <th>{{ number_format($details->sum('total_service'), 0, ',', '.') }}
+                                            </th> --}}
+                                        </tr>
+                                        <tr>
                                             <th colspan="2" class="text-end">Ppn {{ $ppn_rate }}%:</th>
                                             <th colspan="2">{{ number_format($details->sum('ppn'), 0, ',', '.') }}</th>
                                             {{-- <th>{{ number_format($details->sum('total_service'), 0, ',', '.') }}
@@ -110,6 +123,13 @@
                                         <tr>
                                             <th colspan="2" class="text-end">Total + Ppn:</th>
                                             <th colspan="2">{{ number_format($details->sum('total_with_ppn'), 0, ',',
+                                                '.') }}</th>
+                                            {{-- <th>{{ number_format($details->sum('total_service'), 0, ',', '.') }}
+                                            </th> --}}
+                                        </tr>
+                                        <tr>
+                                            <th colspan="2" class="text-end">Total + Ppn + Backup:</th>
+                                            <th colspan="2">{{ number_format($details->sum('total_with_ppn_backup'), 0, ',',
                                                 '.') }}</th>
                                             {{-- <th>{{ number_format($details->sum('total_service'), 0, ',', '.') }}
                                             </th> --}}
