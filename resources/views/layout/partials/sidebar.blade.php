@@ -74,6 +74,23 @@
                     </a>
                 </li>
 
+                <li class="menu-title">Task Management</li>
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="dripicons-suitcase"></i>
+                        <span>
+                            Task Data
+                        </span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="{{ route('tasks') }}">Tasks</a></li>
+                        {{-- <li><a href="{{ route('itemtype') }}">Items Type</a></li>
+                        <li><a href="{{ route('unit') }}">Unit/Satuan</a></li>
+                        <li><a href="{{ route('company') }}">Company</a></li>
+                        <li><a href="{{ route('projecttype') }}">Tipe Project</a></li> --}}
+                    </ul>
+                </li>
+
                 <li class="menu-title">Laporan</li>
                 <li class="{{ request()->is('admin/report') ? 'mm-activate' : '' }}">
                     <a href="{{ route('report') }}" class=" waves-effect">
@@ -81,7 +98,6 @@
                         <span>Report</span>
                     </a>
                 </li>
-
 
                 <li class="menu-title">SETTING</li>
 

@@ -18,7 +18,7 @@
                         <h4>{{ $tittle }}</h4>
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Master</li>
+                            <li class="breadcrumb-item active">Task Management</li>
                             <li class="breadcrumb-item active">{{ $tittle }}</li>
                         </ol>
                     </div>
@@ -34,19 +34,21 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="mb-3">
-                                <a href="{{ route('project.add') }}" class="btn btn-primary btn-sm">Tambah
+                                <a href="{{ route('tasks.add') }}" class="btn btn-primary btn-sm">Tambah
                                     {{ $tittle }}</a>
                             </div>
-                            <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
+                            <table id="datatable" class="table table-responsive table-hover" style="width: 100%;">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Name</th>
-                                        <th>Perusahaan</th>
-                                        <th>Status</th>
-                                        <th>Review</th>
-                                        <th>Reviewer</th>
-                                        <th>Action</th>
+                                        <th class="text-center" style="width: 5%">No</th>
+                                        <th style="width: 15%">Judul</th>
+                                        <th style="width: 15%">Project</th>
+                                        <th style="width: 15%">Vendor</th>
+                                        <th style="width: 15%">Mulai</th>
+                                        <th style="width: 15%">Selesai</th>
+                                        <th style="width: 15%">Status</th>
+                                        <th style="width: 15%">Prioritas</th>
+                                        <th class="text-center" style="width: 10%">Action</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -82,9 +84,8 @@
                 $("#datatable").DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: '{{ route('project.getdata') }}',
-                    columns: [
-                        {
+                    ajax: '{{ route('tasks.getdata') }}',
+                    columns: [{
                             data: 'DT_RowIndex',
                             orderable: false,
                             searchable: false,
@@ -92,24 +93,32 @@
 
                         },
                         {
-                            data: 'name',
-                            name: 'name'
+                            data: 'title',
+                            name: 'title'
                         },
                         {
-                            data: 'company',
-                            name: 'company'
+                            data: 'project',
+                            name: 'project.name'
+                        },
+                        {
+                            data: 'vendor',
+                            name: 'vendor.name'
+                        },
+                        {
+                            data: 'start_date',
+                            name: 'start_date'
+                        },
+                        {
+                            data: 'end_date',
+                            name: 'end_date'
                         },
                         {
                             data: 'status',
                             name: 'status'
                         },
                         {
-                            data: 'review',
-                            name: 'review'
-                        },
-                        {
-                            data: 'reviewer',
-                            name: 'reviewer'
+                            data: 'priority',
+                            name: 'priority'
                         },
                         {
                             data: 'action',

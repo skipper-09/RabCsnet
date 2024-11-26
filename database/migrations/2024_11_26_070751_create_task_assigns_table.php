@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignUuid('task_id')->references('id')->on('tasks')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignUuid('vendor_id')->references('id')->on('vendors')->onDelete('cascade')->onUpdate('cascade');
             $table->date('finish_date');
-            $table->integer('progres');
+            $table->integer('progress');
             $table->longText('notes')->nullable();
             $table->timestamps();
         });

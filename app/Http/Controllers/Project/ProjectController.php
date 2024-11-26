@@ -71,7 +71,12 @@ class ProjectController extends Controller
                 $review = ProjectReview::where('project_id',$data->id)->orderByDesc('id')->first();
 
                 return $review->review_note ?? '-';
-            })->rawColumns(['action', 'company', 'status','review'])
+            })->editColumn('reviewer', function ($data) {
+                $review = ProjectReview::where('project_id',$data->id)->orderByDesc('id')->first();
+
+                return $review->reviewer->name ?? '-';
+            })
+            ->rawColumns(['action', 'company', 'status','review', 'reviewer'])
             ->make(true);
     }
 

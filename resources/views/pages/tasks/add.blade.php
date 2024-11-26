@@ -6,6 +6,7 @@
     <link href="{{ asset('assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
 @endpush
+
 @section('content')
     <!-- start page title -->
     <div class="page-title-box">
@@ -16,7 +17,7 @@
                         <h4>Tambah {{ $tittle }}</h4>
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('item') }}">{{ $tittle }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('tasks') }}">{{ $tittle }}</a></li>
                             <li class="breadcrumb-item active">Tambah {{ $tittle }}</li>
                         </ol>
                     </div>
@@ -34,31 +35,37 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <form action="{{ route('vendor.store') }}" method="POST" enctype="multipart/form-data"
-                                class="">
+                            <form action="{{ route('tasks.store') }}" method="POST" enctype="multipart/form-data"
+                                class="needs-validation" novalidate>
                                 @csrf
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="validationCustom01" class="form-label required">Judul</label>
+                                        <input type="text" name="title" value="{{ old('title') }}"
+                                            class="form-control @error('title') is-invalid @enderror"
+                                            id="validationCustom01">
+                                        @error('title')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label required">Nama</label>
-                                            <input type="text" name="name" value="{{ old('name') }}"
-                                                class="form-control @error('name') is-invalid @enderror"
-                                                id="validationCustom01">
-                                            @error('name')
-                                                <div class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label required">Email</label>
-                                            <input type="email" name="email" value="{{ old('email') }}"
-                                                class="form-control @error('email') is-invalid @enderror"
-                                                id="validationCustom01">
-                                            @error('email')
+                                            <label for="validationCustom01" class="form-label required">
+                                                Project
+                                            </label>
+                                            <select name="project_id"
+                                                class="form-control select2 @error('project_id') is-invalid @enderror"
+                                                aria-label="Default select example">
+                                                <option selected>Pilih Project</option>
+                                                @foreach ($projects as $project)
+                                                    <option value="{{ $project->id }}">{{ $project->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('project_id')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
                                                 </div>
@@ -67,30 +74,54 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label required">No Telepon</label>
-                                            <input type="text" inputmode="numeric" name="phone" value="{{ old('phone') }}"
-                                                class="form-control @error('phone') is-invalid @enderror"
-                                                id="validationCustom01">
-                                            @error('phone')
+                                            <label for="validationCustom01" class="form-label required">
+                                                Vendor
+                                            </label>
+                                            <select name="vendor_id"
+                                                class="form-control select2 @error('vendor_id') is-invalid @enderror"
+                                                aria-label="Default select example">
+                                                <option selected>Pilih Vendor</option>
+                                                @foreach ($vendors as $vendor)
+                                                    <option value="{{ $vendor->id }}">{{ $vendor->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('vendor_id')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
                                                 </div>
                                             @enderror
                                         </div>
                                     </div>
-
+                                </div>
+                                <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">Website</label>
-                                            <input type="text" name="website" class="form-control @error('website') is-invalid @enderror"
-                                                id="validationCustom01" value="{{ old('website') }}">
-                                                @error('website')
+                                            <label for="start_date" class="form-label required">Tanggal Mulai</label>
+                                            <input type="date"
+                                                class="form-control @error('start_date') is-invalid @enderror"
+                                                id="start_date" name="start_date" value="{{ old('start_date') }}">
+                                            @error('start_date')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
                                                 </div>
                                             @enderror
                                         </div>
                                     </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="end_date" class="form-label required">Tanggal Selesai</label>
+                                            <input type="date"
+                                                class="form-control @error('end_date') is-invalid @enderror"
+                                                id="end_date" name="end_date" value="{{ old('end_date') }}">
+                                            @error('end_date')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label required">
@@ -99,32 +130,39 @@
                                             <select name="status"
                                                 class="form-control select2 @error('status') is-invalid @enderror"
                                                 aria-label="Default select example">
-                                                <option selected value="">Pilih Status</option>
-                                                <option value="1">Aktif</option>
-                                                <option value="0">Tidak Aktif</option>
+                                                <option selected value="">Pilih Prioritas</option>
+                                                <option value="pending">
+                                                    Pending
+                                                </option>
+                                                <option value="in_progres">Progress</option>
+                                                <option value="complated">Completed</option>
+                                                <option value="canceled">
+                                                    Canceled
+                                                </option>
                                             </select>
                                             @error('status')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
                                                 </div>
                                             @enderror
-
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label required">
-                                                User
+                                                Prioritas
                                             </label>
-                                            <select name="user_id"
-                                                class="form-control  @error('user_id') is-invalid @enderror select2"
+                                            <select name="priority"
+                                                class="form-control select2 @error('priority') is-invalid @enderror"
                                                 aria-label="Default select example">
-                                                <option selected value="">Pilih User</option>
-                                                @foreach ($user as $item)
-                                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                                @endforeach
+                                                <option selected value="">Pilih Prioritas</option>
+                                                <option value="low">
+                                                    Low
+                                                </option>
+                                                <option value="medium">Medium</option>
+                                                <option value="high">High</option>
                                             </select>
-                                            @error('user_id')
+                                            @error('priority')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
                                                 </div>
@@ -132,22 +170,20 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="col-md-12">
                                     <div class="mb-3">
-                                        <label for="validationCustom01" class="form-label required">
-                                            Alamat
+                                        <label for="validationCustom01" class="form-label">
+                                            Deskripsi
                                         </label>
-                                        <textarea id="textarea" name="address" class="form-control @error('address') is-invalid @enderror" maxlength="225"
-                                            rows="3"></textarea>
-                                        @error('address')
+                                        <textarea id="textarea" name="description" class="form-control @error('description') is-invalid @enderror"
+                                            maxlength="225" rows="3" placeholder="Enter Description"></textarea>
+                                        @error('description')
                                             <div class="invalid-feedback">
                                                 {{ $message }}
                                             </div>
                                         @enderror
                                     </div>
                                 </div>
-
                                 <div>
                                     <button class="btn btn-primary" type="submit">Submit</button>
                                 </div>

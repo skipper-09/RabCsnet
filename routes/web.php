@@ -17,6 +17,7 @@ use App\Http\Controllers\Review\ProjectReviewController;
 use App\Http\Controllers\Vendor\VendorController;
 use App\Http\Controllers\Settings\RoleController;
 use App\Http\Controllers\Settings\LogController;
+use App\Http\Controllers\Task\TaskController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 
@@ -161,6 +162,16 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::get('/edit/{id}', [ProjectReviewController::class, 'show'])->name('review.edit')->middleware('can:update-projectreviews');
         Route::put('/update/{id}', [ProjectReviewController::class, 'update'])->name('review.update');
         Route::delete('/delete/{id}', [ProjectReviewController::class, 'destroy'])->name('review.delete')->middleware('can:delete-projectreviews');
+    });
+
+    Route::prefix('tasks')->group(function () {
+        Route::get('/', [TaskController::class, 'index'])->name('tasks')->middleware('can:read-tasks');
+        Route::get('getData', [TaskController::class, 'getData'])->name('tasks.getdata');
+        Route::get('/tambah', [TaskController::class, 'create'])->name('tasks.add')->middleware('can:create-tasks');
+        Route::post('store', [TaskController::class, 'store'])->name('tasks.store');
+        Route::get('/edit/{id}', [TaskController::class, 'show'])->name('tasks.edit')->middleware('can:update-tasks');
+        Route::put('/update/{id}', [TaskController::class, 'update'])->name('tasks.update');
+        Route::delete('/delete/{id}', [TaskController::class, 'destroy'])->name('tasks.delete')->middleware('can:delete-tasks');
     });
 
     Route::prefix('settings')->group(function () {
