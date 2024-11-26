@@ -27,6 +27,7 @@ class SettingAplicationController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'ppn' => 'required|numeric',
+            'backup' => 'required|numeric',
             'description' => 'nullable|string|max:225',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:5048', 
         ]);

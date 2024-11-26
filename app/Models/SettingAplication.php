@@ -12,7 +12,7 @@ class SettingAplication extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['name','logo','description','ppn'];
+    protected $fillable = ['name','logo','description','ppn','backup'];
     protected static function boot()
     {
         parent::boot();

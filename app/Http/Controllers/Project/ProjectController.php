@@ -206,9 +206,11 @@ class ProjectController extends Controller
     {
         $project = Project::find($id);
         $detailProjects = DetailProject::with(['detailitemporject'])->where('project_id', $id)->get();
+        $ratebackup = Setting('backup') / 100;
         $ppnRate = Setting('ppn') / 100;
+        
         // Olah data untuk menghitung total biaya material dan service
-        $detailData = $detailProjects->map(function ($detail) use ($ppnRate) {
+        $detailData = $detailProjects->map(function ($detail) use ($ppnRate,$ratebackup) {
             $totalMaterial = 0;
             $totalService = 0;
 
@@ -222,15 +224,20 @@ class ProjectController extends Controller
 
             $subTotal = $totalMaterial + $totalService;
             $ppn = $subTotal * $ppnRate;
+            $backup = $subTotal * $ratebackup;
             $totalWithPpn = $subTotal + $ppn;
+            $totalWithbackup = $subTotal + $backup;
 
             return [
                 'distribusi' => $detail->name,
                 'total_material' => $totalMaterial,
                 'total_service' => $totalService,
                 'total' => $subTotal,
+                'backup'=>$backup,
                 'ppn' => $ppn,
                 'total_with_ppn' => $totalWithPpn,
+                'total_with_backup' => $totalWithbackup,
+                'total_with_ppn_backup' => $totalWithPpn + $backup,
             ];
         });
 
@@ -242,6 +249,7 @@ class ProjectController extends Controller
             'project' => $detailProjects,
             'details' => $detailData,
             'ppn_rate' => $ppnRate * 100,
+            'backup_rate' => $ratebackup * 100,
             'id_project' => $project->id
 
         ];

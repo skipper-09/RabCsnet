@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('name');
             $table->integer('ppn')->default(0);
+            $table->integer('backup')->default(0);
             $table->longText('logo');
             $table->longText('description');
             $table->timestamps();
