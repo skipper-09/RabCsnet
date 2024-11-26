@@ -52,6 +52,7 @@
                                     <tr>
                                         <th class="text-center" style="width: 5%">No</th>
                                         <th style="width: 15%">Project</th>
+                                        <th style="width: 15%">Reviewer</th>
                                         <th>Note</th>
                                         <th style="width: 15%">Tanggal Review</th>
                                         <th class="text-center" style="width: 10%">Action</th>
@@ -102,6 +103,11 @@
                         {
                             data: 'project',
                             name: 'project.name',
+                            className: 'align-middle'
+                        },
+                        {
+                            data: 'reviewer',
+                            name: 'reviewer.name',
                             className: 'align-middle'
                         },
                         {
