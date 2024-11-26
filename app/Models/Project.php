@@ -65,11 +65,13 @@ class Project extends Model
     public function Projectfile(){
         return $this->hasOne(ProjectFile::class);
     }
+    public function ProjectReview() {
+        return $this->hasMany(ProjectReview::class, 'project_id');
+    }
+    
     public function detailproject(){
         return $this->hasMany(DetailProject::class);
     }
-    public function projectreview(){
-        return $this->hasMany(ProjectReview::class);
-    }
+    
     
 }

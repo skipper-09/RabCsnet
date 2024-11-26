@@ -67,7 +67,6 @@ class RoleSeeder extends Seeder
         ]);
 
         $admin = Role::create(['name' => 'Administrator']);
-        $vendor = Role::create(['name' => 'Vendor']);
 
         $admin->givePermissionTo([
             'read-dashboard',
@@ -76,12 +75,35 @@ class RoleSeeder extends Seeder
             'update-users',
             'delete-users',
         ]);
+
+        $vendor = Role::create(['name' => 'Vendor']);
+
         $vendor->givePermissionTo([
             'read-dashboard',
             'read-users',
             'create-users',
             'update-users',
             'delete-users',
+        ]);
+
+        $accounting = Role::create(['name' => 'Accounting']);
+
+        $accounting->givePermissionTo([
+            'read-dashboard',
+            'read-projectreviews',
+            'create-projectreviews',
+            'update-projectreviews',
+            'delete-projectreviews',
+        ]);
+
+        $owner = Role::create(['name' => 'Owner']);
+
+        $owner->givePermissionTo([
+            'read-dashboard',
+            'read-projectreviews',
+            'create-projectreviews',
+            'update-projectreviews',
+            'delete-projectreviews',
         ]);
     }
 }

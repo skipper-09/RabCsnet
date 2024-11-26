@@ -29,5 +29,21 @@ class UserSeeder extends Seeder
             'email' => 'vendor@gmail.com',
             'password' => Hash::make('vendor'),
         ])->assignRole('Vendor'); 
+
+        User::create([
+            'id'=>'472d06b8-e7b3-444a-826d-23b1664575f0',
+            'name' => 'Accounting',
+            'username' => 'accounting',
+            'email' => 'accounting@gmail.com',
+            'password' => Hash::make('accounting'),
+        ])->assignRole('Accounting');
+
+        User::create([
+            'id'=>'e64d2178-5c22-4aea-b400-db9838941a18',
+            'name' => 'Ko Xiang',
+            'username' => 'owner',
+            'email' => 'owner@gmail.com',
+            'password' => Hash::make('owner'),
+        ])->assignRole('Owner');
     }
 }

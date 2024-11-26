@@ -30,7 +30,7 @@ class ProjectController extends Controller
 
     public function getData(Request $request)
     {
-        $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'projectreview'])
+        $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview'])
             ->orderByDesc('id')
             ->get();
         return DataTables::of($dataType)
