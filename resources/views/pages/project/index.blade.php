@@ -44,6 +44,7 @@
                                         <th>Name</th>
                                         <th>Perusahaan</th>
                                         <th>Status</th>
+                                        <th>Status Review</th>
                                         <th>Review</th>
                                         <th>Action</th>
                                     </tr>
@@ -101,6 +102,10 @@
                         {
                             data: 'status',
                             name: 'status'
+                        },
+                        {
+                            data: 'status_pengajuan',
+                            name: 'status_pengajuan'
                         },
                         {
                             data: 'review',

@@ -129,6 +129,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
             Route::get('/edit/{id}', [ItemController::class, 'show'])->name('item.edit')->middleware('can:update-items');
             Route::put('/update/{id}', [ItemController::class, 'update'])->name('item.update');
             Route::delete('/delete/{id}', [ItemController::class, 'destroy'])->name('item.delete')->middleware('can:delete-items');
+            Route::get('/export', [ItemController::class, 'ExportItem'])->name('item.export')->middleware('can:export-items');
         });
 
         //route project type

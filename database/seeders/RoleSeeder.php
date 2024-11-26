@@ -34,6 +34,7 @@ class RoleSeeder extends Seeder
             'create-items',
             'update-items',
             'delete-items',
+            'export-items',
             'read-itemtypes',
             'create-itemtypes',
             'update-itemtypes',

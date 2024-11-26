@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Master;
 
+use App\Exports\ItemExport;
 use App\Http\Controllers\Controller;
 use App\Models\Item;
 use App\Models\TypeItem;
@@ -12,6 +13,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 
 class ItemController extends Controller
@@ -205,5 +207,12 @@ class ItemController extends Controller
                 'trace' => $e->getTrace()
             ]);
         }
+    }
+
+
+
+    public function ExportItem(){
+        $now = now();
+        return Excel::download(new ItemExport, "Item_$now.csv");
     }
 }
