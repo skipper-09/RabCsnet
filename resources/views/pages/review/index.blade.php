@@ -15,6 +15,13 @@
         .action-buttons {
             white-space: nowrap;
         }
+
+        .truncate-text {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 @endpush
 
@@ -32,30 +39,33 @@
                         </ol>
                     </div>
                 </div>
+                @can('create-projectreviews')
+                    <div class="col-sm-6 text-end">
+                        <a href="{{ route('review.add') }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus me-1"></i> Tambah {{ $tittle }}
+                        </a>
+                    </div>
+                @endcan
             </div>
         </div>
     </div>
 
     <div class="container-fluid">
-
         <div class="page-content-wrapper">
             <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <div class="mb-3">
-                                <a href="{{ route('review.add') }}" class="btn btn-primary btn-sm">Tambah
-                                    {{ $tittle }}</a>
-                            </div>
-                            <table id="datatable" class="table table-responsive table-hover" style="width: 100%;">
+                            <table id="datatable" class="table table-hover" style="width: 100%;">
                                 <thead>
                                     <tr>
                                         <th class="text-center" style="width: 5%">No</th>
                                         <th style="width: 15%">Project</th>
                                         <th style="width: 15%">Reviewer</th>
                                         <th>Note</th>
+                                        <th style="width: 10%">Status</th>
                                         <th style="width: 15%">Tanggal Review</th>
-                                        <th class="text-center" style="width: 10%">Action</th>
+                                        <th class="text-center" style="width: 10%">Aksi</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -81,11 +91,10 @@
                 Swal.fire({
                     title: `{{ Session::get('status') }}`,
                     text: `{{ Session::get('message') }}`,
-                    icon: "success",
+                    icon: "{{ strtolower(Session::get('status')) == 'success' ? 'success' : 'error' }}",
                     showConfirmButton: false,
                     timer: 3000
                 });
-                // Swal.fire(`{{ Session::get('status') }}`, `{{ Session::get('message') }}`, "success");
             @endif
             $(document).ready(function() {
                 // Initialize DataTable
@@ -113,11 +122,16 @@
                         {
                             data: 'review_note',
                             name: 'review_note',
-                            className: 'align-middle',
+                            className: 'align-middle truncate-text',
                             render: function(data, type, row) {
                                 return data ? data.substring(0, 100) + (data.length > 100 ? '...' :
                                     '') : '-';
                             }
+                        },
+                        {
+                            data: 'status_pengajuan',
+                            name: 'project.status_pengajuan',
+                            className: 'align-middle text-center'
                         },
                         {
                             data: 'review_date',

@@ -31,9 +31,8 @@ class ProjectReviewController extends Controller
         $currentUser = Auth::user();
         $currentUserRole = $currentUser->roles->first()->name;
 
-        // Check if the current user is a Developer
+        // For Developers, show ALL project reviews
         if ($currentUserRole === 'Developer') {
-            // For Developers, show all project reviews or implement specific logic
             $dataReview = ProjectReview::with(['project', 'reviewer'])
                 ->orderByDesc('created_at')
                 ->get();
@@ -53,6 +52,22 @@ class ProjectReviewController extends Controller
             ->addColumn('reviewer', function ($item) {
                 return $item->reviewer ? $item->reviewer->name : '-';
             })
+            ->addColumn('status_pengajuan', function ($item) {
+                $status = $item->project->status_pengajuan;
+
+                switch ($status) {
+                    case 'pending':
+                        return '<span class="badge bg-warning">Pending</span>';
+                    case 'in_review':
+                        return '<span class="badge bg-primary">In Review</span>';
+                    case 'approved':
+                        return '<span class="badge bg-success">Approved</span>';
+                    case 'Rejected':
+                        return '<span class="badge bg-danger">Rejected</span>';
+                    default:
+                        return '<span class="badge bg-secondary">Unknown</span>';
+                }
+            })
             ->editColumn('review_date', function ($data) {
                 return Carbon::parse($data->created_at)->format('Y-m-d');
             })
@@ -64,11 +79,11 @@ class ProjectReviewController extends Controller
                 }
                 if ($userauth->can('delete-projectreviews')) {
                     $button .= '<button class="btn btn-sm btn-danger action" data-id="' . $data->id . '" data-type="delete" data-route="' . route('review.delete', $data->id) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data">
-                <i class="fas fa-trash-alt"></i></button>';
+                    <i class="fas fa-trash-alt"></i></button>';
                 }
                 return '<div class="d-flex gap-2">' . $button . '</div>';
             })
-            ->rawColumns(['action', 'project', 'reviewer', 'review_date'])
+            ->rawColumns(['action', 'project', 'reviewer', 'status_pengajuan', 'review_date'])
             ->make(true);
     }
 
@@ -96,7 +111,7 @@ class ProjectReviewController extends Controller
         switch ($currentUserRole) {
             case 'Accounting':
                 // Untuk accounting, ambil project yang belum direview accounting
-                $projects = Project::where('status', 'pending')
+                $projects = Project::where('status_pengajuan', 'pending')
                     ->whereDoesntHave('ProjectReview', function ($query) use ($currentUser) {
                         $query->whereHas('reviewer.roles', function ($roleQuery) {
                             $roleQuery->where('name', 'Accounting');
@@ -109,7 +124,7 @@ class ProjectReviewController extends Controller
 
             case 'Owner':
                 // Untuk owner, ambil project yang sudah direview accounting tapi belum direview owner
-                $projects = Project::where('status', 'pending')
+                $projects = Project::where('status_pengajuan', 'pending')
                     ->whereHas('ProjectReview.reviewer.roles', function ($query) {
                         $query->where('name', 'Accounting');
                     })
@@ -122,10 +137,9 @@ class ProjectReviewController extends Controller
                 break;
 
             case 'Developer':
-                // Untuk Developer, akses semua project yang belum direview
-                $projects = Project::where('status', 'pending')
+                // Untuk Developer, ambil SEMUA project yang belum fully reviewed
+                $projects = Project::whereIn('status_pengajuan', ['pending', 'in_review'])
                     ->whereHas('Projectfile') // Pastikan project memiliki file
-                    ->whereDoesntHave('ProjectReview') // Belum ada review sama sekali
                     ->with(['Projectfile', 'ProjectReview']) // Eager load relasi
                     ->get();
                 break;
@@ -192,8 +206,8 @@ class ProjectReviewController extends Controller
                         ]);
                     }
 
-                    // Set status ke pending untuk review accounting
-                    $project->status = 'pending';
+                    // Set status ke in_review untuk review accounting
+                    $project->status_pengajuan = 'in_review';
                     break;
 
                 case 'Owner':
@@ -211,38 +225,30 @@ class ProjectReviewController extends Controller
                     }
 
                     // Set status ke approved untuk review owner
-                    $project->status = 'approved';
+                    $project->status_pengajuan = 'approved';
                     break;
 
                 case 'Developer':
-                    // Developer dapat melakukan review awal sebelum accounting
-                    $existingReviews = ProjectReview::where('project_id', $project->id)->count();
+                    // Developer dapat melakukan review di berbagai tahap
+                    // Cek apakah review sudah ada
+                    $existingReviews = ProjectReview::where('project_id', $project->id)
+                        ->where('reviewer_id', $currentUser->id)
+                        ->first();
 
-                    if ($existingReviews > 0) {
+                    if ($existingReviews) {
                         throw ValidationException::withMessages([
-                            'project_id' => 'Project sudah memiliki review sebelumnya.'
+                            'project_id' => 'Anda sudah pernah melakukan review untuk project ini.'
                         ]);
                     }
 
-                    // Set status ke pending untuk review selanjutnya
-                    $project->status = 'pending';
+                    // Developer bisa merubah status ke in_review atau approved
+                    $project->status_pengajuan = $request->input('status_pengajuan', 'in_review');
                     break;
 
                 default:
                     throw ValidationException::withMessages([
                         'project_id' => 'Anda tidak memiliki izin untuk melakukan review.'
                     ]);
-            }
-
-            // Cek apakah user saat ini sudah pernah review project ini
-            $userExistingReview = ProjectReview::where('project_id', $project->id)
-                ->where('reviewer_id', $currentUser->id)
-                ->first();
-
-            if ($userExistingReview) {
-                throw ValidationException::withMessages([
-                    'project_id' => 'Anda sudah pernah melakukan review untuk project ini.'
-                ]);
             }
 
             // Create project review
@@ -278,6 +284,106 @@ class ProjectReviewController extends Controller
                 ->with([
                     'status' => 'Error',
                     'message' => 'Terjadi kesalahan saat menambahkan review project. Silakan coba lagi.'
+                ]);
+        }
+    }
+
+    public function show($id)
+    {
+        try {
+            // Find the project review with related project and reviewer
+            $projectReview = ProjectReview::with(['project', 'project.Projectfile', 'reviewer'])
+                ->findOrFail($id);
+
+            // Get current user and role
+            $currentUser = Auth::user();
+            $currentUserRole = $currentUser->roles->first()->name;
+
+            // Check access based on user role
+            $allowedRoles = ['Developer', 'Accounting', 'Owner'];
+            if (!in_array($currentUserRole, $allowedRoles)) {
+                return redirect()->back()->with([
+                    'status' => 'Error',
+                    'message' => 'Anda tidak memiliki izin untuk melihat detail review.'
+                ]);
+            }
+
+            // For Developers, allow full access to all reviews
+            $data = [
+                'tittle' => 'Detail Project Review',
+                'review' => $projectReview,
+            ];
+
+            return view('pages.review.show', $data);
+        } catch (Exception $e) {
+            return redirect()->back()->with([
+                'status' => 'Error',
+                'message' => 'Terjadi kesalahan saat mengambil detail review. Silakan coba lagi.'
+            ]);
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        try {
+            // Validate request
+            $validated = $request->validate([
+                'review_note' => 'nullable|string|max:255',
+                'project_id' => 'required|exists:projects,id',
+            ], [
+                'review_note.max' => 'Catatan review tidak boleh lebih dari 255 karakter.',
+                'project_id.required' => 'Project wajib diisi.',
+                'project_id.exists' => 'Project tidak valid.',
+            ]);
+
+            // Begin transaction
+            DB::beginTransaction();
+
+            // Get current user
+            $currentUser = Auth::user();
+            $currentUserRole = $currentUser->roles->first()->name;
+
+            // Find the project review
+            $projectReview = ProjectReview::findOrFail($id);
+
+            // Check if user has permission to update
+            // Developers now have full access to update any review
+            $allowedRoles = ['Developer', 'Accounting', 'Owner'];
+            if (!in_array($currentUserRole, $allowedRoles)) {
+                throw new Exception('Anda tidak memiliki izin untuk mengubah review.');
+            }
+
+            // Check if the review belongs to the current user or current user is a Developer
+            if ($projectReview->reviewer_id !== $currentUser->id && $currentUserRole !== 'Developer') {
+                throw new Exception('Anda hanya dapat mengubah review milik sendiri.');
+            }
+
+            // Update the project review
+            $projectReview->review_note = $validated['review_note'];
+            $projectReview->save();
+
+            // Commit transaction
+            DB::commit();
+
+            return redirect()
+                ->route('review')
+                ->with([
+                    'status' => 'Success',
+                    'message' => 'Berhasil memperbarui review project!'
+                ]);
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            return redirect()
+                ->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()
+                ->back()
+                ->with([
+                    'status' => 'Error',
+                    'message' => $e->getMessage()
                 ]);
         }
     }

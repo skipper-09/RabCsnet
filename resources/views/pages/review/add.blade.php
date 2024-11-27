@@ -35,21 +35,23 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <form action="{{ route('review.store') }}" method="POST" enctype="multipart/form-data"
-                                class="needs-validation" novalidate>
+                            <form action="{{ route('review.store') }}" method="POST" id="reviewForm" class="needs-validation" novalidate>
                                 @csrf
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label required">
+                                            <label for="project_id" class="form-label required">
                                                 Project
                                             </label>
-                                            <select name="project_id"
+                                            <select name="project_id" id="project_id" 
                                                 class="form-control select2 @error('project_id') is-invalid @enderror"
-                                                aria-label="Default select example">
-                                                <option selected>Pilih Project</option>
+                                                required>
+                                                <option value="">Pilih Project</option>
                                                 @foreach ($projects as $project)
-                                                    <option value="{{ $project->id }}">{{ $project->name }}</option>
+                                                    <option value="{{ $project->id }}" 
+                                                        {{ old('project_id') == $project->id ? 'selected' : '' }}>
+                                                        {{ $project->name }}
+                                                    </option>
                                                 @endforeach
                                             </select>
                                             @error('project_id')
@@ -59,36 +61,45 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    {{-- <div class="col-md-6">
+
+                                    @if(auth()->user()->roles->first()->name == 'Developer')
+                                    <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label for="review_date" class="form-label required">Tanggal Review</label>
-                                            <input type="date"
-                                                class="form-control @error('review_date') is-invalid @enderror"
-                                                id="review_date" name="review_date" value="{{ old('review_date') }}">
-                                            @error('review_date')
+                                            <label for="status_pengajuan" class="form-label required">
+                                                Status Project
+                                            </label>
+                                            <select name="status_pengajuan" id="status_pengajuan" 
+                                                class="form-control select2"
+                                                required>
+                                                <option value="in_review" {{ old('status_pengajuan') == 'in_review' ? 'selected' : '' }}>In Review</option>
+                                                <option value="approved" {{ old('status_pengajuan') == 'approved' ? 'selected' : '' }}>Approved</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    @endif
+                                    
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label for="review_note" class="form-label">
+                                                Catatan Review
+                                            </label>
+                                            <textarea id="review_note" name="review_note" 
+                                                class="form-control @error('review_note') is-invalid @enderror"
+                                                maxlength="255" rows="4" 
+                                                placeholder="Masukkan catatan review (maksimal 255 karakter)">{{ old('review_note') }}</textarea>
+                                            @error('review_note')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
                                                 </div>
                                             @enderror
+                                            <small class="text-muted form-text">Sisa karakter: <span id="charCount">255</span></small>
                                         </div>
-                                    </div> --}}
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label for="validationCustom01" class="form-label">
-                                            Note
-                                        </label>
-                                        <textarea id="textarea" name="review_note" class="form-control @error('review_note') is-invalid @enderror"
-                                            maxlength="225" rows="3" placeholder="Enter Description"></textarea>
-                                        @error('review_note')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
                                     </div>
                                 </div>
-                                <div>
-                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ route('review') }}" class="btn btn-secondary">Kembali</a>
+                                    <button class="btn btn-primary" type="submit">Simpan Review</button>
                                 </div>
                             </form>
                         </div>
@@ -96,7 +107,6 @@
                 </div>
             </div>
             <!-- end row -->
-
         </div>
     </div>
 
