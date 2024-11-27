@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('summaries', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('project_id')->references('id')->on('projects')->onDelete('cascade')->onUpdate('cascade');
-            $table->decimal('total_material_cost',10,2);
-            $table->decimal('total_service_cost',10,2);
-            $table->decimal('total_ppn_cost',10,2);
-            $table->decimal('total_summary',10,2);
+            $table->decimal('total_material_cost',15,2);
+            $table->decimal('total_service_cost',15,2);
+            $table->decimal('total_ppn_cost',15,2);
+            $table->decimal('total_summary',15,2);
             // $table->foreignUuid('ppn_id')->references('id')->on('ppns')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });

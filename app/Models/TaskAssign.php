@@ -23,4 +23,8 @@ class TaskAssign extends Model
             }
         });
     }
+
+    public function task(){
+        $this->belongsTo(Task::class,'task_id','id');
+    }
 }

@@ -90,6 +90,12 @@
                         <li><a href="{{ route('projecttype') }}">Tipe Project</a></li> --}}
                     </ul>
                 </li>
+                <li class="{{ request()->is('/admin/timeline') ? 'mm-activate' : '' }}">
+                    <a href="{{ route('timeline') }}" class=" waves-effect">
+                        <i class="dripicons-blog"></i>
+                        <span>Project Timeline</span>
+                    </a>
+                </li>
 
                 <li class="menu-title">Laporan</li>
                 <li class="{{ request()->is('admin/report') ? 'mm-activate' : '' }}">

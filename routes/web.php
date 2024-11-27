@@ -14,6 +14,7 @@ use App\Http\Controllers\Settings\SettingAplicationController;
 use App\Http\Controllers\Settings\UserController;
 use App\Http\Controllers\PaymentVendor\PaymentVendorController;
 use App\Http\Controllers\Review\ProjectReviewController;
+use App\Http\Controllers\Task\TimelineController;
 use App\Http\Controllers\Vendor\VendorController;
 use App\Http\Controllers\Settings\RoleController;
 use App\Http\Controllers\Settings\LogController;
@@ -175,6 +176,17 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::get('/edit/{id}', [TaskController::class, 'show'])->name('tasks.edit')->middleware('can:update-tasks');
         Route::put('/update/{id}', [TaskController::class, 'update'])->name('tasks.update');
         Route::delete('/delete/{id}', [TaskController::class, 'destroy'])->name('tasks.delete')->middleware('can:delete-tasks');
+    });
+
+
+    Route::prefix('timeline')->group(function () {
+        Route::get('/', [TimelineController::class, 'index'])->name('timeline');
+        Route::get('data', [TimelineController::class, 'timeline'])->name('tasks.data');
+        // Route::get('/tambah', [TaskController::class, 'create'])->name('tasks.add')->middleware('can:create-tasks');
+        // Route::post('store', [TaskController::class, 'store'])->name('tasks.store');
+        // Route::get('/edit/{id}', [TaskController::class, 'show'])->name('tasks.edit')->middleware('can:update-tasks');
+        // Route::put('/update/{id}', [TaskController::class, 'update'])->name('tasks.update');
+        // Route::delete('/delete/{id}', [TaskController::class, 'destroy'])->name('tasks.delete')->middleware('can:delete-tasks');
     });
 
     Route::prefix('settings')->group(function () {
