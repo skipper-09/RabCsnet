@@ -22,7 +22,7 @@ return new class extends Migration
             $table->date('end_date')->nullable();
             $table->longText('description');
             $table->decimal('amount',10,2)->default(0)->nullable();
-            $table->enum('status', ['pending', 'in_progres', 'finish'])->default('pending');
+            $table->enum('status', ['pending', 'in_progres', 'finish', 'canceled'])->default('pending');
             $table->enum('status_pengajuan', ['pending', 'in_review', 'approved','rejected'])->default('pending');
             $table->timestamps();
         });

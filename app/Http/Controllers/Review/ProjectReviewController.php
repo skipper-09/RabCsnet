@@ -57,15 +57,15 @@ class ProjectReviewController extends Controller
 
                 switch ($status) {
                     case 'pending':
-                        return '<span class="badge bg-warning">Pending</span>';
+                        return '<span class="badge badge-pill badge-soft-info font-size-13">Pending</span>';
                     case 'in_review':
-                        return '<span class="badge bg-primary">In Review</span>';
+                        return '<span class="badge badge-pill badge-soft-primary font-size-13">In Review</span>';
                     case 'approved':
-                        return '<span class="badge bg-success">Approved</span>';
-                    case 'Rejected':
-                        return '<span class="badge bg-danger">Rejected</span>';
+                        return '<span class="badge badge-pill badge-soft-success font-size-13">Approved</span>';
+                    case 'rejected':
+                        return '<span class="badge badge-pill badge-soft-danger font-size-13">Rejected</span>';
                     default:
-                        return '<span class="badge bg-secondary">Unknown</span>';
+                        return '<span class="badge badge-pill badge-soft-secondary font-size-13">Unknown</span>';
                 }
             })
             ->editColumn('review_date', function ($data) {
@@ -226,6 +226,10 @@ class ProjectReviewController extends Controller
 
                    // Owner bisa merubah status ke rejected atau approved
                     $project->status_pengajuan = $request->input('status_pengajuan', 'in_review');
+                    // Jika status pengajuan rejected, maka status adalah canceled
+                    if ($project->status_pengajuan == 'rejected') {
+                        $project->status = 'canceled';
+                    }
                     break;
 
                 case 'Developer':
@@ -243,6 +247,10 @@ class ProjectReviewController extends Controller
 
                     // Developer bisa merubah status ke in_review, rejected, approved
                     $project->status_pengajuan = $request->input('status_pengajuan', 'in_review');
+                    // Jika status pengajuan rejected, maka status adalah canceled
+                    if ($project->status_pengajuan == 'rejected') {
+                        $project->status = 'canceled';
+                    }
                     break;
 
                 default:

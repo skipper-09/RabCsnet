@@ -63,26 +63,27 @@ class ProjectController extends Controller
                 if ($data->status == 'pending') {
                     $status = '<span class="badge badge-pill badge-soft-primary font-size-13">Pending</span>';
                 } else if ($data->status == 'in_progres') {
-                    $status = '<span class="badge badge-pill badge-soft-success font-size-13">Approved</span>';
+                    $status = '<span class="badge badge-pill badge-soft-info font-size-13">In Progress</span>';
+                } else if ($data->status == 'canceled') {
+                    $status = '<span class="badge badge-pill badge-soft-danger font-size-13">Canceled</span>';
                 } else {
-                    $status = '<span class="badge badge-pill badge-soft-danger font-size-13">Selesai</span>';
+                    $status = '<span class="badge badge-pill badge-soft-success font-size-13">Selesai</span>';
                 }
 
                 return $status;
             })->editColumn('status_pengajuan', function ($data) {
-                $status = '';
+                $status_pengajuan = '';
 
-                if ($data->status == 'pending') {
-                    $status = '<span class="badge badge-pill badge-soft-primary font-size-13">Pending</span>';
-                } else if ($data->status == 'in_review') {
-                    $status = '<span class="badge badge-pill badge-soft-success font-size-13">In Review</span>';
-                } else if ($data->status == 'approved') {
-                    $status = '<span class="badge badge-pill badge-soft-danger font-size-13">Approved</span>';
+                if ($data->status_pengajuan == 'pending') {
+                    $status_pengajuan = '<span class="badge badge-pill badge-soft-primary font-size-13">Pending</span>';
+                } else if ($data->status_pengajuan == 'in_review') {
+                    $status_pengajuan = '<span class="badge badge-pill badge-soft-info font-size-13">In Review</span>';
+                } else if ($data->status_pengajuan == 'approved') {
+                    $status_pengajuan = '<span class="badge badge-pill badge-soft-success font-size-13">Approved</span>';
                 } else {
-                    $status = '<span class="badge badge-pill badge-soft-danger font-size-13">Rejected</span>';
+                    $status_pengajuan = '<span class="badge badge-pill badge-soft-danger font-size-13">Rejected</span>';
                 }
-
-                return $status;
+                return $status_pengajuan;
             })
             ->editColumn('company', function ($data) {
                 return $data->company->name;
