@@ -124,7 +124,7 @@ class ProjectReviewController extends Controller
 
             case 'Owner':
                 // Untuk owner, ambil project yang sudah direview accounting tapi belum direview owner
-                $projects = Project::where('status_pengajuan', 'pending')
+                $projects = Project::where('status_pengajuan', 'in_review')
                     ->whereHas('ProjectReview.reviewer.roles', function ($query) {
                         $query->where('name', 'Accounting');
                     })
@@ -224,8 +224,8 @@ class ProjectReviewController extends Controller
                         ]);
                     }
 
-                    // Set status ke approved untuk review owner
-                    $project->status_pengajuan = 'approved';
+                   // Owner bisa merubah status ke rejected atau approved
+                    $project->status_pengajuan = $request->input('status_pengajuan', 'in_review');
                     break;
 
                 case 'Developer':
@@ -241,7 +241,7 @@ class ProjectReviewController extends Controller
                         ]);
                     }
 
-                    // Developer bisa merubah status ke in_review atau approved
+                    // Developer bisa merubah status ke in_review, rejected, approved
                     $project->status_pengajuan = $request->input('status_pengajuan', 'in_review');
                     break;
 
@@ -314,7 +314,7 @@ class ProjectReviewController extends Controller
                 'review' => $projectReview,
             ];
 
-            return view('pages.review.show', $data);
+            return view('pages.review.edit', $data);
         } catch (Exception $e) {
             return redirect()->back()->with([
                 'status' => 'Error',

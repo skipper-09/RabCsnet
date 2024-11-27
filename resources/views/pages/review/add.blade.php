@@ -66,13 +66,28 @@
                                     <div class="col-md-12">
                                         <div class="mb-3">
                                             <label for="status_pengajuan" class="form-label required">
-                                                Status Project
+                                                Status Pengajuan
                                             </label>
                                             <select name="status_pengajuan" id="status_pengajuan" 
                                                 class="form-control select2"
                                                 required>
                                                 <option value="in_review" {{ old('status_pengajuan') == 'in_review' ? 'selected' : '' }}>In Review</option>
                                                 <option value="approved" {{ old('status_pengajuan') == 'approved' ? 'selected' : '' }}>Approved</option>
+                                                <option value="rejected" {{ old('status_pengajuan') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    @elseif (auth()->user()->roles->first()->name == 'Owner')
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label for="status_pengajuan" class="form-label required">
+                                                Status Pengajuan
+                                            </label>
+                                            <select name="status_pengajuan" id="status_pengajuan" 
+                                                class="form-control select2"
+                                                required>
+                                                <option value="approved" {{ old('status_pengajuan') == 'approved' ? 'selected' : '' }}>Approved</option>
+                                                <option value="rejected" {{ old('status_pengajuan') == 'rejected' ? 'selected' : '' }}>Rejected</option>
                                             </select>
                                         </div>
                                     </div>
