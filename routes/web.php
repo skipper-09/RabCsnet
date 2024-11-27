@@ -52,6 +52,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::delete('/delete/{id}', [ProjectController::class, 'destroy'])->name('project.delete');
         Route::get('/proses/{id}', [ProjectController::class, 'ProsesProject'])->name('project.proses');
         Route::post('/prosesdata/{id}', [ProjectController::class, 'ProsesProjectStore'])->name('project.prosesdata');
+        Route::get('/start/{id}', [ProjectController::class, 'StartProject'])->name('project.start');
+        Route::put('/prosesstart/{id}', [ProjectController::class, 'ProjectStart'])->name('project.prosesstart');
     });
 
     Route::prefix('detail/{id}')->group(function () {
