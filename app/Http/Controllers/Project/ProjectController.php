@@ -284,6 +284,7 @@ class ProjectController extends Controller
     public function ProsesProjectStore(Request $request, $id)
     {
 
+        
 
         $request->validate([
             'excel' => 'required|file|mimes:xlsx,xls,csv|max:10240',
@@ -327,7 +328,7 @@ class ProjectController extends Controller
             DB::commit();
             return redirect()->route('project')->with(['status' => 'Success', 'message' => 'Pengajuan Berhasil Terkirim!']);
         } catch (Exception $e) {
-
+            \Log::info("Errro $e");
             DB::rollBack();
             return redirect()->back()->with(['status' => 'Error', 'message' => 'Gagal Proses Pengajuan!']);
         }

@@ -33,4 +33,9 @@ class Task extends Model
     {
         return $this->belongsTo(Vendor::class);
     }
+
+    public function taskassign()
+    {
+        return $this->hasMany(TaskAssign::class);
+    }
 }
