@@ -37,10 +37,15 @@ class ProjectController extends Controller
             ->addIndexColumn()
             ->addColumn('action', function ($data) {
                 $button = '';
+                // $review = ProjectReview::where('project_id', $data->id)->orderByDesc('id')->first();
                 if ($data->detailproject->isNotEmpty() && !$data->Projectfile) {
                     $button .= '<a href="' . route('project.proses', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
                     <i class="fas fa-upload"></i> Proses Pengajuan
                 </a>';
+                }
+                if ($data->status_pengajuan == 'approved' && !$data->vendor_id) {
+                $button .= '<a href="' . route('project.start', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
+                    <i class="fas fa-upload"></i> Start Project</a>';
                 }
                 $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
                 <i class="fas fa-pencil-alt"></i>
@@ -57,8 +62,22 @@ class ProjectController extends Controller
 
                 if ($data->status == 'pending') {
                     $status = '<span class="badge badge-pill badge-soft-primary font-size-13">Pending</span>';
-                } else if ($data->status == 'approved') {
+                } else if ($data->status == 'in_progres') {
                     $status = '<span class="badge badge-pill badge-soft-success font-size-13">Approved</span>';
+                } else {
+                    $status = '<span class="badge badge-pill badge-soft-danger font-size-13">Selesai</span>';
+                }
+
+                return $status;
+            })->editColumn('status_pengajuan', function ($data) {
+                $status = '';
+
+                if ($data->status == 'pending') {
+                    $status = '<span class="badge badge-pill badge-soft-primary font-size-13">Pending</span>';
+                } else if ($data->status == 'in_review') {
+                    $status = '<span class="badge badge-pill badge-soft-success font-size-13">In Review</span>';
+                } else if ($data->status == 'approved') {
+                    $status = '<span class="badge badge-pill badge-soft-danger font-size-13">Approved</span>';
                 } else {
                     $status = '<span class="badge badge-pill badge-soft-danger font-size-13">Rejected</span>';
                 }
@@ -68,15 +87,14 @@ class ProjectController extends Controller
             ->editColumn('company', function ($data) {
                 return $data->company->name;
             })->editColumn('review', function ($data) {
-                $review = ProjectReview::where('project_id',$data->id)->orderByDesc('id')->first();
+                $review = ProjectReview::where('project_id', $data->id)->orderByDesc('id')->first();
 
                 return $review->review_note ?? '-';
             })->editColumn('reviewer', function ($data) {
-                $review = ProjectReview::where('project_id',$data->id)->orderByDesc('id')->first();
-
+                $review = ProjectReview::where('project_id', $data->id)->orderByDesc('id')->first();
                 return $review->reviewer->name ?? '-';
             })
-            ->rawColumns(['action', 'company', 'status','review', 'reviewer'])
+            ->rawColumns(['action', 'company', 'status', 'review', 'reviewer', 'status_pengajuan'])
             ->make(true);
     }
 
@@ -213,9 +231,9 @@ class ProjectController extends Controller
         $detailProjects = DetailProject::with(['detailitemporject'])->where('project_id', $id)->get();
         $ratebackup = Setting('backup') / 100;
         $ppnRate = Setting('ppn') / 100;
-        
+
         // Olah data untuk menghitung total biaya material dan service
-        $detailData = $detailProjects->map(function ($detail) use ($ppnRate,$ratebackup) {
+        $detailData = $detailProjects->map(function ($detail) use ($ppnRate, $ratebackup) {
             $totalMaterial = 0;
             $totalService = 0;
 
@@ -238,7 +256,7 @@ class ProjectController extends Controller
                 'total_material' => $totalMaterial,
                 'total_service' => $totalService,
                 'total' => $subTotal,
-                'backup'=>$backup,
+                'backup' => $backup,
                 'ppn' => $ppn,
                 'total_with_ppn' => $totalWithPpn,
                 'total_with_backup' => $totalWithbackup,
@@ -311,6 +329,48 @@ class ProjectController extends Controller
 
             DB::rollBack();
             return redirect()->back()->with(['status' => 'Error', 'message' => 'Gagal Proses Pengajuan!']);
+        }
+    }
+
+
+
+    public function StartProject($id)
+    {
+        $data = [
+            'tittle' => 'Project',
+            'user' => User::whereDoesntHave('roles', function ($query) {
+                $query->where('name', 'Developer')->orwhere('name', 'Vendor');
+            })->get(),
+            'vendor' => Vendor::all(),
+            'project_id' => $id,
+        ];
+
+        return view('pages.project.startproject', $data);
+    }
+
+
+
+    public function ProjectStart(Request $request, $id)
+    {
+        
+        $request->validate([
+            'vendor_id' => 'required',
+            'responsible_person' => 'required',
+            'start_date' => 'required||date',
+            'end_date' => 'required||date',
+        ]);
+        try {
+            $project = Project::find($id);
+            $project->update([
+                'vendor_id' => $request->vendor_id,
+                'responsible_person' => $request->responsible_person,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'status'=>'in_progres',
+            ]);
+            return redirect()->route('project')->with(['status' => 'Success', 'message' => 'Project Berhasil Di Start!']);
+        } catch (Exception $e) {
+            return redirect()->back()->with(['status' => 'Error', 'message' => 'Gagal Start Project']);
         }
     }
 }
