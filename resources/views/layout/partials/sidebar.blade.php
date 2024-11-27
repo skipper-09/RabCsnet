@@ -84,6 +84,7 @@
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
                         <li><a href="{{ route('tasks') }}">Tasks</a></li>
+                        <li><a href="{{ route('tasks.assign') }}">Task Assign</a></li>
                         {{-- <li><a href="{{ route('itemtype') }}">Items Type</a></li>
                         <li><a href="{{ route('unit') }}">Unit/Satuan</a></li>
                         <li><a href="{{ route('company') }}">Company</a></li>

@@ -28,7 +28,7 @@ class TaskController extends Controller
     {
         // Get task data that contain project status is approved
         $dataType = Task::with(['project', 'vendor'])->whereHas('project', function ($query) {
-            $query->where('status', 'approved');
+            $query->where('status_pengajuan', 'approved');
         })->orderByDesc('id')->get();
 
         return DataTables::of($dataType)
@@ -90,7 +90,7 @@ class TaskController extends Controller
     {
         $data = [
             'tittle' => 'Task',
-            'projects' => Project::where('status', 'approved')->get(), // Changed from Task to Project
+            'projects' => Project::where('status_pengajuan', 'approved')->get(), // Changed from Task to Project
             'vendors' => Vendor::all(),
         ];
 
@@ -150,7 +150,7 @@ class TaskController extends Controller
         $data = [
             'tittle' => 'Task',
             'tasks' => Task::findOrFail($id), // Changed from 'tasks' to 'task'
-            'projects' => Project::where('status', 'approved')->get(),
+            'projects' => Project::where('status_pengajuan', 'approved')->get(),
             'vendors' => Vendor::all(),
         ];
 

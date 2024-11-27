@@ -130,7 +130,7 @@
                                             <select name="status"
                                                 class="form-control select2 @error('status') is-invalid @enderror"
                                                 aria-label="Default select example">
-                                                <option selected value="">Pilih Prioritas</option>
+                                                <option selected value="">Pilih Status</option>
                                                 <option value="pending">
                                                     Pending
                                                 </option>

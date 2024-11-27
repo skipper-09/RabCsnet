@@ -23,4 +23,14 @@ class TaskAssign extends Model
             }
         });
     }
+
+    public function task()
+    {
+        return $this->belongsTo(Task::class);
+    }
+
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class);
+    }
 }

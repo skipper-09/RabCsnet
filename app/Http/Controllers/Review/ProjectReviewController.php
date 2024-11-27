@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Project;
 use App\Models\ProjectFile;
 use App\Models\ProjectReview;
+use App\Models\Summary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -229,6 +230,10 @@ class ProjectReviewController extends Controller
                     // Jika status pengajuan rejected, maka status adalah canceled
                     if ($project->status_pengajuan == 'rejected') {
                         $project->status = 'canceled';
+
+                        // Hapus file project dan summary berdasarkan project id
+                        ProjectFile::where('project_id', $project->id)->delete();
+                        Summary::where('project_id', $project->id)->delete();
                     }
                     break;
 
@@ -250,6 +255,10 @@ class ProjectReviewController extends Controller
                     // Jika status pengajuan rejected, maka status adalah canceled
                     if ($project->status_pengajuan == 'rejected') {
                         $project->status = 'canceled';
+
+                        // Hapus file project dan summary berdasarkan project id
+                        ProjectFile::where('project_id', $project->id)->delete();
+                        Summary::where('project_id', $project->id)->delete();
                     }
                     break;
 

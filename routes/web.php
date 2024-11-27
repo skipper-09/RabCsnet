@@ -17,6 +17,7 @@ use App\Http\Controllers\Review\ProjectReviewController;
 use App\Http\Controllers\Vendor\VendorController;
 use App\Http\Controllers\Settings\RoleController;
 use App\Http\Controllers\Settings\LogController;
+use App\Http\Controllers\Task\TaskAssignController;
 use App\Http\Controllers\Task\TaskController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
@@ -39,7 +40,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('can:read-dashboard');
 
 
-//route project
+    //route project
     Route::prefix('project')->group(function () {
         Route::get('/', [ProjectController::class, 'index'])->name('project');
         Route::get('getData', [ProjectController::class, 'getData'])->name('project.getdata');
@@ -119,7 +120,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
             Route::get('/tambah', [UnitController::class, 'create'])->name('unit.add')->middleware('can:create-units');
             Route::post('store', [UnitController::class, 'store'])->name('unit.store');
             Route::get('/edit/{id}', [UnitController::class, 'show'])->name('unit.edit')->middleware('can:update-units');
-            Route::put('/update/{id}', [UnitController::class, 'update'])->name('unit.update'); 
+            Route::put('/update/{id}', [UnitController::class, 'update'])->name('unit.update');
             Route::delete('/delete/{id}', [UnitController::class, 'destroy'])->name('unit.delete')->middleware('can:delete-units');
         });
 
@@ -177,6 +178,18 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::delete('/delete/{id}', [TaskController::class, 'destroy'])->name('tasks.delete')->middleware('can:delete-tasks');
     });
 
+    Route::prefix('assign')->group(function () {
+        Route::get('/', [TaskAssignController::class, 'index'])->name('tasks.assign');
+        Route::get('getData', [TaskAssignController::class, 'getData'])->name('tasks.assign.getdata');
+        Route::get('/tambah', [TaskAssignController::class, 'create'])->name('tasks.assign.add');
+        Route::post('store', [TaskAssignController::class, 'store'])->name('tasks.assign.store');
+        Route::get('/edit/{id}', [TaskAssignController::class, 'show'])->name('tasks.assign.edit');
+        Route::put('/update/{id}', [TaskAssignController::class, 'update'])->name('tasks.assign.update');
+        Route::delete('/delete/{id}', [TaskAssignController::class, 'destroy'])->name('tasks.assign.delete');
+        Route::post('/status/{id}', [TaskAssignController::class, 'updateProgress'])->name('tasks.assign.status');
+    });
+
+
     Route::prefix('settings')->group(function () {
 
         Route::prefix('role')->group(function () {
@@ -207,7 +220,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
         // Log Activity
         Route::prefix('log')->group(function () {
-            Route::get('/', [LogController::class, 'index'])->name('log')-> middleware('can:read-logs');
+            Route::get('/', [LogController::class, 'index'])->name('log')->middleware('can:read-logs');
             Route::get('getData', [LogController::class, 'getData'])->name('log.getdata');
             Route::post('clean', [LogController::class, 'cleanlog'])->name('log.clean')->middleware('can:clean-logs');
         });
