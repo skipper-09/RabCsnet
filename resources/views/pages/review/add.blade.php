@@ -242,19 +242,21 @@
                     // Project File Details
                     if (projectFileData && (projectFileData.excel || projectFileData.kmz)) {
                         let fileDetailsHtml = `
-                                        <ul class="list-unstyled mb-0">
-                                            ${projectFileData.excel ? `
-                                                                                                <li class="mb-2">
-                                                                                                    <i class="mdi mdi-file-excel text-success me-2"></i>
-                                                                                                    <strong>Excel File:</strong> ${projectFileData.excel}
-                                                                                                </li>` : ''}
-                                            ${projectFileData.kmz ? `
-                                                                                                <li class="mb-2">
-                                                                                                    <i class="mdi mdi-map text-danger me-2"></i>
-                                                                                                    <strong>KMZ File:</strong> ${projectFileData.kmz}
-                                                                                                </li>` : ''}
-                                        </ul>
-                                    `;
+        <ul class="list-unstyled mb-0">
+            ${projectFileData.excel ? `
+                        <li class="mb-2">
+                            <i class="mdi mdi-file-excel text-success me-2"></i>
+                            <strong>Excel File:</strong> 
+                            <a href="{{ asset('storage/files/excel/${projectFileData.excel}') }}" download>${projectFileData.excel}</a>
+                        </li>` : ''}
+            ${projectFileData.kmz ? `
+                        <li class="mb-2">
+                            <i class="mdi mdi-map text-danger me-2"></i>
+                            <strong>KMZ File:</strong> 
+                            <a href="{{ asset('storage/files/kmz/${projectFileData.kmz}') }}" download>${projectFileData.kmz}</a>
+                        </li>` : ''}
+        </ul>
+    `;
                         projectFileDetailsContainer.html(fileDetailsHtml);
                     }
 
