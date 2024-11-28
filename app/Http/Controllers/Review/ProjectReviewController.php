@@ -111,38 +111,94 @@ class ProjectReviewController extends Controller
 
         switch ($currentUserRole) {
             case 'Accounting':
-                // Untuk accounting, ambil project yang belum direview accounting
                 $projects = Project::where('status_pengajuan', 'pending')
                     ->whereDoesntHave('ProjectReview', function ($query) use ($currentUser) {
                         $query->whereHas('reviewer.roles', function ($roleQuery) {
                             $roleQuery->where('name', 'Accounting');
                         });
                     })
-                    ->whereHas('Projectfile') // Pastikan project memiliki file
-                    ->with(['Projectfile', 'ProjectReview']) // Eager load relasi
-                    ->get();
+                    ->whereHas('Projectfile')
+                    ->with(['Projectfile', 'summary', 'ProjectReview.reviewer'])
+                    ->get()
+                    ->map(function ($project) {
+                        // Ensure this line is present and working correctly
+                        $project->formatted_total_summary = number_format(
+                            $project->summary->first()->total_summary ?? 0,
+                            2,
+                            ',',
+                            '.'
+                        );
+                        $project->reviewed_by = $project->ProjectReview->isEmpty()
+                            ? 'Belum Direview'
+                            : $project->ProjectReview->last()->reviewer->name;
+                        // reviewer note
+                        $project->review_note = $project->ProjectReview->isEmpty()
+                            ? 'Tidak ada catatan'
+                            : $project->ProjectReview->last()->review_note;
+                        return $project;
+                    });
                 break;
 
             case 'Owner':
                 // Untuk owner, ambil project yang sudah direview accounting tapi belum direview owner
-                $projects = Project::where('status_pengajuan', 'pending')
+                $projects = Project::where('status_pengajuan', 'in_review')
                     ->whereHas('ProjectReview.reviewer.roles', function ($query) {
                         $query->where('name', 'Accounting');
                     })
                     ->whereDoesntHave('ProjectReview.reviewer.roles', function ($query) {
                         $query->where('name', 'Owner');
                     })
-                    ->whereHas('Projectfile') // Pastikan project memiliki file
-                    ->with(['Projectfile', 'ProjectReview']) // Eager load relasi
-                    ->get();
+                    ->whereHas('Projectfile')
+                    ->with(['Projectfile', 'summary', 'ProjectReview.reviewer'])
+                    ->get()
+                    ->map(function ($project) {
+                        // Ensure this line is present and working correctly
+                        $project->formatted_total_summary = number_format(
+                            $project->summary->first()->total_summary ?? 0,
+                            2,
+                            ',',
+                            '.'
+                        );
+                        $project->reviewed_by = $project->ProjectReview->isEmpty()
+                            ? 'Belum Direview'
+                            : $project->ProjectReview->last()->reviewer->name;
+                        // reviewer note
+                        $project->review_note = $project->ProjectReview->isEmpty()
+                            ? 'Tidak ada catatan'
+                            : $project->ProjectReview->last()->review_note;
+                        return $project;
+                    });
                 break;
 
             case 'Developer':
                 // Untuk Developer, ambil SEMUA project yang belum fully reviewed
                 $projects = Project::whereIn('status_pengajuan', ['pending', 'in_review'])
                     ->whereHas('Projectfile') // Pastikan project memiliki file
-                    ->with(['Projectfile', 'ProjectReview']) // Eager load relasi
-                    ->get();
+                    ->with([
+                        'Projectfile',
+                        'summary',
+                        'ProjectReview.reviewer'
+                    ]) // Eager load summary with aggregation
+                    ->get()
+                    ->map(function ($project) {
+                        // Ensure this line is present and working correctly
+                        $project->formatted_total_summary = number_format(
+                            $project->summary->first()->total_summary ?? 0,
+                            2,
+                            ',',
+                            '.'
+                        );
+                        // Tambahkan informasi siapa yang sudah melakukan review, jika ada
+                        $project->reviewed_by = $project->ProjectReview->isEmpty()
+                            ? 'Belum Direview'
+                            : $project->ProjectReview->last()->reviewer->name;
+                        // reviewer note
+                        $project->review_note = $project->ProjectReview->isEmpty()
+                            ? 'Tidak ada catatan'
+                            : $project->ProjectReview->last()->review_note;
+
+                        return $project;
+                    });
                 break;
 
             default:
@@ -225,7 +281,7 @@ class ProjectReviewController extends Controller
                         ]);
                     }
 
-                   // Owner bisa merubah status ke rejected atau approved
+                    // Owner bisa merubah status ke rejected atau approved
                     $project->status_pengajuan = $request->input('status_pengajuan', 'in_review');
                     // Jika status pengajuan rejected, maka status adalah canceled
                     if ($project->status_pengajuan == 'rejected') {
