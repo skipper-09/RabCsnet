@@ -133,7 +133,7 @@ class ProjectReviewController extends Controller
 
             case 'Owner':
                 // Untuk owner, ambil project yang sudah direview accounting tapi belum direview owner
-                $projects = Project::where('status_pengajuan', 'pending')
+                $projects = Project::where('status_pengajuan', 'in_review')
                     ->whereHas('ProjectReview.reviewer.roles', function ($query) {
                         $query->where('name', 'Accounting');
                     })
