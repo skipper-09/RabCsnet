@@ -53,7 +53,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="project_id" class="form-label">
                                         Pilih Project
@@ -74,14 +74,14 @@
                                     </div>
                                     @enderror
                                 </div>
-                            </div>
-                            <div class="col-md-12 d-none detail">
-                                <h3 class="mt-4">{{ $projects[0]->name }}</h3>
-                                <h6>Perusahaan</h6>
+                            </div> --}}
+                            <div class="col-md-12 ">
+                                <h3 class="mt-4">{{ $projects->name }}</h3>
+                                <h6>{{ $projects->company->name }}</h6>
                                 <p>Mulai Project Sampai</p>
                             </div>
 
-                            <div class="col-12 d-none detail">
+                            <div class="col-12 ">
                                 <div class="card mb-5">
                                     <div class="card-body">
                                         <h5>File Project</h5>
@@ -100,7 +100,7 @@
                             </div>
 
 
-                            <div class="col-12 d-none detail">
+                            <div class="col-12 ">
                                 <div class="card">
                                     <div class="card-body">
                                         <h5>Review Project</h5>
@@ -155,16 +155,17 @@
                 // Swal.fire(`{{ Session::get('status') }}`, `{{ Session::get('message') }}`, "success");
             @endif
             $(document).ready(function() {
+                var project_id = @json($id)
                 // Initialize DataTable
                 let datatableFileProject = $("#datatablefileproject").DataTable({
                     processing: true,
                     serverSide: true,
                     ajax: {
-            url: '{{ route('report.project.getdatafile') }}',
-            data: function (e) {
-                e.project_id = $('#project_id').val(); 
-            }
-        },
+                url: '{{ route('report.project.getdatafile') }}',
+                data: function (e) {
+                    e.project_id = project_id; 
+                }
+                },
                     columns: [{
                             data: 'DT_RowIndex',
                             name: 'DT_RowIndex',

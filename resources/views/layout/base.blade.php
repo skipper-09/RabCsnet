@@ -60,6 +60,7 @@
 
             {{-- footer --}}
             @include('layout.partials.footer')
+            @include('layout.component.reportprojectmodal')
         </div>
         <!-- end main content-->
 

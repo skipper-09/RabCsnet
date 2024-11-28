@@ -11,14 +11,12 @@ use Yajra\DataTables\DataTables;
 class ProjectReportController extends Controller
 {
     public function index(Request $request){
-        // dd($request->query('project_id'));
-        $projectId = $request->query('project_id'); // Ambil project_id dari query string
-        $selectedProject = $projectId ? Project::find($projectId) : null;
-    
+        $project_id = $request->input('project_id');
+        $project = Project::find($project_id);
         $data = [
-            'tittle' => 'Report Project',
-            'projects' => Project::all(),
-            'selectedProject' => $selectedProject, // Project yang dipilih
+            'tittle' => "Report Project $project->name",
+            'projects' => Project::find($project_id),
+            'id'=>$project_id
         ];
         return view('pages.report.projectreport.index', $data);
     }

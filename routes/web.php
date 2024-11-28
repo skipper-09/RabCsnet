@@ -160,7 +160,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::delete('/delete/{id}', [ReportVendorController::class, 'destroy'])->name('report.delete');
 
         Route::prefix('project')->group(function () {
-            Route::get('/', [ProjectReportController::class, 'index'])->name('report.project');
+            Route::post('/', [ProjectReportController::class, 'index'])->name('report.project');
             Route::get('getDataFile', [ProjectReportController::class, 'getDataFile'])->name('report.project.getdatafile');
             // Route::get('/tambah', [ReportVendorController::class, 'create'])->name('report.add');
             // Route::post('store', [ReportVendorController::class, 'store'])->name('report.store');

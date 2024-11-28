@@ -106,7 +106,7 @@
                     </a>
                 </li>
                 <li class="{{ request()->is('admin/report/project') ? 'mm-activate' : '' }}">
-                    <a href="{{ route('report.project') }}" class=" waves-effect">
+                    <a type="button" data-bs-toggle="modal" data-bs-target="#ReportProjectModal" class=" waves-effect">
                         <i class="dripicons-to-do"></i>
                         <span>Report Project</span>
                     </a>
