@@ -13,7 +13,7 @@ class Vendor extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['name','phone','email','address','website','status','user_id'];
+    protected $fillable = ['name','code','phone','email','address','website','status','user_id'];
     protected static function boot()
     {
         parent::boot();
@@ -23,6 +23,30 @@ class Vendor extends Model
                 $model->id = (string) Str::uuid(); // Generate UUID
             }
         });
+
+
+        static::creating(function ($item) {
+            // Generate item_code if it's not already set
+            if (empty($item->code)) {
+                $item->code = self::generateItemCode();
+            }
+        });
+    }
+
+    public static function generateItemCode()
+    {
+
+        $lastItem = self::orderBy('id', 'desc')->first();
+        $lastCode = $lastItem ? $lastItem->code : null;
+
+        if ($lastCode) {
+            $lastNumber = (int) substr($lastCode, 5);
+        } else {
+            $lastNumber = 0;
+        }
+
+        $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
+        return 'VND-' . $newNumber + rand(10000,99999);
     }
 
     public function user(){

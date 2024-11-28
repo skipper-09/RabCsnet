@@ -105,12 +105,18 @@
                         <span>Report</span>
                     </a>
                 </li>
+                <li class="{{ request()->is('admin/report/project') ? 'mm-activate' : '' }}">
+                    <a href="{{ route('report.project') }}" class=" waves-effect">
+                        <i class="dripicons-to-do"></i>
+                        <span>Report Project</span>
+                    </a>
+                </li>
 
                 <li class="menu-title">SETTING</li>
 
                 <li>
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
-                        <i class="dripicons-checklist"></i>
+                        <i class="dripicons-gear"></i>
                         <span>Setting</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="true">

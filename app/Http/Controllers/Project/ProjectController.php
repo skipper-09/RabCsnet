@@ -229,7 +229,7 @@ class ProjectController extends Controller
     public function ProsesProject($id)
     {
         $project = Project::find($id);
-        $detailProjects = DetailProject::with(['detailitemporject'])->where('project_id', $id)->get();
+        $detailProjects = DetailProject::with(['detailitemporject','projecttype'])->where('project_id', $id)->get();
         $ratebackup = Setting('backup') / 100;
         $ppnRate = Setting('ppn') / 100;
 
@@ -253,7 +253,7 @@ class ProjectController extends Controller
             $totalWithbackup = $subTotal + $backup;
 
             return [
-                'distribusi' => $detail->name,
+                'distribusi' => $detail->name . ' - '. $detail->projecttype->name,
                 'total_material' => $totalMaterial,
                 'total_service' => $totalService,
                 'total' => $subTotal,
