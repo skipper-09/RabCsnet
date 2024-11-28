@@ -119,8 +119,16 @@ class ProjectReviewController extends Controller
                         });
                     })
                     ->whereHas('Projectfile') // Pastikan project memiliki file
-                    ->with(['Projectfile', 'ProjectReview']) // Eager load relasi
-                    ->get();
+                    ->with([
+                        'Projectfile',
+                        'summary',
+                    ]) // Eager load summary with aggregation
+                    ->get()
+                    ->map(function ($project) {
+                        // Format the total_summary as a number (e.g., with 2 decimal places)
+                        $project->formatted_total_summary = number_format($project->summary->first()->total_summary ?? 0, 2, ',', '.');
+                        return $project;
+                    });
                 break;
 
             case 'Owner':
@@ -133,16 +141,32 @@ class ProjectReviewController extends Controller
                         $query->where('name', 'Owner');
                     })
                     ->whereHas('Projectfile') // Pastikan project memiliki file
-                    ->with(['Projectfile', 'ProjectReview']) // Eager load relasi
-                    ->get();
+                    ->with([
+                        'Projectfile',
+                        'summary',
+                    ]) // Eager load summary with aggregation
+                    ->get()
+                    ->map(function ($project) {
+                        // Format the total_summary as a number (e.g., with 2 decimal places)
+                        $project->formatted_total_summary = number_format($project->summary->first()->total_summary ?? 0, 2, ',', '.');
+                        return $project;
+                    });
                 break;
 
             case 'Developer':
                 // Untuk Developer, ambil SEMUA project yang belum fully reviewed
                 $projects = Project::whereIn('status_pengajuan', ['pending', 'in_review'])
                     ->whereHas('Projectfile') // Pastikan project memiliki file
-                    ->with(['Projectfile', 'ProjectReview']) // Eager load relasi
-                    ->get();
+                    ->with([
+                        'Projectfile',
+                        'summary',
+                    ]) // Eager load summary with aggregation
+                    ->get()
+                    ->map(function ($project) {
+                        // Format the total_summary as a number (e.g., with 2 decimal places)
+                        $project->formatted_total_summary = number_format($project->summary->first()->total_summary ?? 0, 2, ',', '.');
+                        return $project;
+                    });
                 break;
 
             default:
@@ -225,7 +249,7 @@ class ProjectReviewController extends Controller
                         ]);
                     }
 
-                   // Owner bisa merubah status ke rejected atau approved
+                    // Owner bisa merubah status ke rejected atau approved
                     $project->status_pengajuan = $request->input('status_pengajuan', 'in_review');
                     // Jika status pengajuan rejected, maka status adalah canceled
                     if ($project->status_pengajuan == 'rejected') {
