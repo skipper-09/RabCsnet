@@ -161,7 +161,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
         Route::prefix('project')->group(function () {
             Route::post('/', [ProjectReportController::class, 'index'])->name('report.project');
-            Route::get('getDataFile', [ProjectReportController::class, 'getDataFile'])->name('report.project.getdatafile');
+            Route::get('getDataReview', [ProjectReportController::class, 'getDataReview'])->name('report.project.getdatareview');
+            Route::get('getDataDetail', [ProjectReportController::class, 'DetailProjectReport'])->name('report.project.getdetailproject');
             // Route::get('/tambah', [ReportVendorController::class, 'create'])->name('report.add');
             // Route::post('store', [ReportVendorController::class, 'store'])->name('report.store');
             // Route::get('/edit/{id}', [ReportVendorController::class, 'show'])->name('report.edit');

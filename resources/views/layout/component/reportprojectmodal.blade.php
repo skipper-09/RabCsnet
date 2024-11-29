@@ -21,11 +21,11 @@
                                 <label for="project_id" class="form-label">
                                     Pilih Project
                                 </label>
-                                <select name="project_id" id="project_id"
-                                    class="form-control select2 @error('project_id') is-invalid @enderror" required>
+                                <select name="project_id"
+                                    class="form-control  @error('project_id') is-invalid @enderror" required>
                                     <option value="">Pilih Project</option>
-                                    @foreach ($projects as $item)
-                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                    @foreach ($projects as $dt)
+                                    <option value="{{ $dt->id }}">{{ $dt->name }}</option>
                                     @endforeach
                                 </select>
                                 @error('project_id')
