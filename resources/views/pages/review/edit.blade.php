@@ -1,5 +1,5 @@
 @extends('layout.base')
-@section('tittle', $tittle)
+@section('title', $tittle)
 
 @push('css')
     <link href="{{ asset('assets/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
@@ -17,8 +17,8 @@
                         <h4>Edit {{ $tittle }}</h4>
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('review') }}">{{ $tittle }}</a></li>
-                            <li class="breadcrumb-item active">Edit {{ $tittle }}</li>
+                            <li class="breadcrumb-item"><a href="{{ route('review') }}">Project Review</a></li>
+                            <li class="breadcrumb-item active">Edit Project Review</li>
                         </ol>
                     </div>
                 </div>
@@ -36,29 +36,29 @@
                             <form action="{{ route('review.update', $review->id) }}" method="POST" id="reviewForm" class="needs-validation" novalidate>
                                 @csrf
                                 @method('PUT')
+                                
+                                {{-- Project Details Section --}}
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label for="project_id" class="form-label required">
-                                                Project
-                                            </label>
-                                            <select name="project_id" id="project_id" 
-                                                class="form-control select2 @error('project_id') is-invalid @enderror"
-                                                required disabled>
-                                                <option value="{{ $review->project->id }}" selected>
-                                                    {{ $review->project->name }}
-                                                </option>
-                                            </select>
+                                            <label class="form-label">Project</label>
+                                            <input type="text" class="form-control" value="{{ $review->project->name }}" readonly>
                                             <input type="hidden" name="project_id" value="{{ $review->project->id }}">
-                                            @error('project_id')
-                                                <div class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
                                         </div>
                                     </div>
 
-                                    @if(auth()->user()->roles->first()->name == 'Developer')
+                                    {{-- Project Summary Details --}}
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label">Total Project Summary</label>
+                                            <input type="text" class="form-control" 
+                                                value="{{ $review->project->formatted_total_summary ?? 'N/A' }}" 
+                                                readonly>
+                                        </div>
+                                    </div>
+
+                                    {{-- Status Pengajuan for Developer and Owner --}}
+                                    @if(in_array(auth()->user()->roles->first()->name, ['Developer', 'Owner']))
                                     <div class="col-md-12">
                                         <div class="mb-3">
                                             <label for="status_pengajuan" class="form-label required">
@@ -66,14 +66,17 @@
                                             </label>
                                             <select name="status_pengajuan" id="status_pengajuan" 
                                                 class="form-control select2"
-                                                required>
+                                                {{ $canEdit ? '' : 'disabled' }}>
+                                                <option value="pending" {{ $review->project->status_pengajuan == 'pending' ? 'selected' : '' }}>Pending</option>
                                                 <option value="in_review" {{ $review->project->status_pengajuan == 'in_review' ? 'selected' : '' }}>In Review</option>
                                                 <option value="approved" {{ $review->project->status_pengajuan == 'approved' ? 'selected' : '' }}>Approved</option>
+                                                <option value="rejected" {{ $review->project->status_pengajuan == 'rejected' ? 'selected' : '' }}>Rejected</option>
                                             </select>
                                         </div>
                                     </div>
                                     @endif
                                     
+                                    {{-- Review Note --}}
                                     <div class="col-md-12">
                                         <div class="mb-3">
                                             <label for="review_note" class="form-label">
@@ -82,7 +85,8 @@
                                             <textarea id="review_note" name="review_note" 
                                                 class="form-control @error('review_note') is-invalid @enderror"
                                                 maxlength="255" rows="4" 
-                                                placeholder="Masukkan catatan review (maksimal 255 karakter)">{{ old('review_note', $review->review_note) }}</textarea>
+                                                placeholder="Masukkan catatan review (maksimal 255 karakter)"
+                                                {{ $canEdit ? '' : 'readonly' }}>{{ old('review_note', $review->review_note) }}</textarea>
                                             @error('review_note')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
@@ -91,18 +95,38 @@
                                             <small class="text-muted form-text">Sisa karakter: <span id="charCount">255</span></small>
                                         </div>
                                     </div>
+
+                                    {{-- Review Metadata --}}
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Reviewer</label>
+                                                    <input type="text" class="form-control" value="{{ $review->reviewer->name }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Review Date</label>
+                                                    <input type="text" class="form-control" value="{{ $review->created_at->format('Y-m-d H:i:s') }}" readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 
+                                {{-- Action Buttons --}}
                                 <div class="d-flex justify-content-between">
                                     <a href="{{ route('review') }}" class="btn btn-secondary">Kembali</a>
-                                    <button class="btn btn-primary" type="submit">Simpan Perubahan</button>
+                                    @if($canEdit)
+                                        <button class="btn btn-primary" type="submit">Simpan Perubahan</button>
+                                    @endif
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- end row -->
         </div>
     </div>
 
