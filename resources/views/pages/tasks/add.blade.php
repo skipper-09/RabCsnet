@@ -38,7 +38,7 @@
                             <form action="{{ route('tasks.store') }}" method="POST" enctype="multipart/form-data"
                                 class="needs-validation" novalidate>
                                 @csrf
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="mb-3">
                                         <label for="validationCustom01" class="form-label required">Judul</label>
                                         <input type="text" name="title" value="{{ old('title') }}"
@@ -111,8 +111,8 @@
                                         <div class="mb-3">
                                             <label for="end_date" class="form-label required">Tanggal Selesai</label>
                                             <input type="date"
-                                                class="form-control @error('end_date') is-invalid @enderror"
-                                                id="end_date" name="end_date" value="{{ old('end_date') }}">
+                                                class="form-control @error('end_date') is-invalid @enderror" id="end_date"
+                                                name="end_date" value="{{ old('end_date') }}">
                                             @error('end_date')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
@@ -122,31 +122,6 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label required">
-                                                Status
-                                            </label>
-                                            <select name="status"
-                                                class="form-control select2 @error('status') is-invalid @enderror"
-                                                aria-label="Default select example">
-                                                <option selected value="">Pilih Status</option>
-                                                <option value="pending">
-                                                    Pending
-                                                </option>
-                                                <option value="in_progres">Progress</option>
-                                                <option value="complated">Completed</option>
-                                                <option value="canceled">
-                                                    Canceled
-                                                </option>
-                                            </select>
-                                            @error('status')
-                                                <div class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label required">
@@ -169,19 +144,19 @@
                                             @enderror
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label for="validationCustom01" class="form-label">
-                                            Deskripsi
-                                        </label>
-                                        <textarea id="textarea" name="description" class="form-control @error('description') is-invalid @enderror"
-                                            maxlength="225" rows="3" placeholder="Enter Description"></textarea>
-                                        @error('description')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="validationCustom01" class="form-label">
+                                                Deskripsi
+                                            </label>
+                                            <textarea id="textarea" name="description" class="form-control @error('description') is-invalid @enderror"
+                                                maxlength="225" rows="3" placeholder="Enter Description"></textarea>
+                                            @error('description')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
                                     </div>
                                 </div>
                                 <div>

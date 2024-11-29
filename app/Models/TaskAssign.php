@@ -12,7 +12,8 @@ class TaskAssign extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['vendor_id','task_id','finish_date','progress','notes'];
+    protected $fillable = ['vendor_id', 'task_id', 'finish_date', 'progress', 'notes'];
+    
     protected static function boot()
     {
         parent::boot();
@@ -24,7 +25,13 @@ class TaskAssign extends Model
         });
     }
 
-    public function task(){
-        $this->belongsTo(Task::class,'task_id','id');
+    public function task()
+    {
+        return $this->belongsTo(Task::class, 'task_id', 'id');
+    }
+
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class);
     }
 }

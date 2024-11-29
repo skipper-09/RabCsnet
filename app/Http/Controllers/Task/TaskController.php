@@ -106,7 +106,6 @@ class TaskController extends Controller
             'description' => 'nullable|string',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'status' => 'required|in:pending,in_progres,complated,canceled',
             'priority' => 'required|in:low,medium,high',
         ], [
             'project_id.required' => 'Project is required',
@@ -120,8 +119,6 @@ class TaskController extends Controller
             'end_date.required' => 'End date is required',
             'end_date.date' => 'End date is invalid',
             'end_date.after_or_equal' => 'End date must be after or equal to start date',
-            'status.required' => 'Status is required',
-            'status.in' => 'Status is invalid',
             'priority.required' => 'Priority is required',
             'priority.in' => 'Priority is invalid',
         ]);
@@ -134,7 +131,7 @@ class TaskController extends Controller
                 'description' => $request->description,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
-                'status' => $request->status,
+                'status' => 'pending',
                 'priority' => $request->priority,
             ]);
 

@@ -4,7 +4,8 @@
 
 @push('css')
     <!-- DataTables CSS -->
-    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet"
+        type="text/css" />
     <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endpush
 
@@ -33,7 +34,9 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="mb-3">
-                                <a href="{{ route('tasks.assign.add') }}" class="btn btn-primary btn-sm">Tambah {{ $tittle }}</a>
+                                <a href="{{ route('tasks.assign.add') }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus"></i> Tambah {{ $tittle }}
+                                </a>
                             </div>
                             <table id="datatable" class="table table-responsive table-hover" style="width: 100%;">
                                 <thead>
@@ -42,13 +45,44 @@
                                         <th>Task</th>
                                         <th>Vendor</th>
                                         <th>Finish Date</th>
-                                        <th>Status</th>
+                                        <th>Progress</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                             </table>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Modal -->
+    <div class="modal fade" id="progressModal" tabindex="-1" role="dialog" aria-labelledby="progressModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="progressModalLabel">Update Progress</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="progressForm">
+                        @csrf
+                        <input type="hidden" id="taskAssignId" name="task_assign_id">
+                        <div class="form-group">
+                            <label for="progressInput">Progress (%)</label>
+                            <input type="range" class="custom-range" id="progressInput" name="progress" min="0"
+                                max="100" step="1">
+                            <small id="progressValue" class="form-text text-muted">0%</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveProgress">Save Progress</button>
                 </div>
             </div>
         </div>
@@ -72,20 +106,19 @@
                     showConfirmButton: false,
                     timer: 3000
                 });
+                // Swal.fire(`{{ Session::get('status') }}`, `{{ Session::get('message') }}`, "success");
             @endif
-
             $(function() {
                 // Initialize DataTable
-                $('#datatable').DataTable({
+                const table = $('#datatable').DataTable({
                     processing: true,
                     serverSide: true,
                     ajax: '{{ route('tasks.assign.getdata') }}',
-                    columns: [
-                        {
+                    columns: [{
                             data: 'DT_RowIndex',
                             name: 'DT_RowIndex',
                             orderable: false,
-                            searchable: false
+                            searchable: false,
                         },
                         {
                             data: 'task',
@@ -102,15 +135,25 @@
                         {
                             data: null,
                             render: function(data) {
-                                return `
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input task-status-toggle" 
-                                            id="taskStatus${data.id}" 
-                                            data-id="${data.id}"
-                                            ${data.finish_date !== '-' ? 'checked' : ''}>
-                                        <label class="custom-control-label" for="taskStatus${data.id}"></label>
-                                    </div>
-                                `;
+                                let progressBar = `
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" 
+                    style="width: ${data.progress || 0}%" 
+                    aria-valuenow="${data.progress || 0}" 
+                    aria-valuemin="0" 
+                    aria-valuemax="100">
+                    ${data.progress || 0}%
+                </div>
+            </div>`;
+
+                                let updateButton = data.progress < 100 ? `
+            <button class="btn btn-sm btn-outline-primary update-progress mt-1" 
+                data-id="${data.id}" 
+                data-current-progress="${data.progress || 0}">
+                Update Progress
+            </button>` : '';
+
+                                return progressBar + updateButton;
                             },
                             orderable: false,
                             searchable: false
@@ -124,30 +167,61 @@
                     ]
                 });
 
-                // Task Status Toggle
-                $(document).on('change', '.task-status-toggle', function() {
-                    const taskId = $(this).data('id');
-                    const isCompleted = $(this).is(':checked');
+                // Progress Input Range Handling
+                $(document).on('input', '#progressInput', function() {
+                    $('#progressValue').text($(this).val() + '%');
+                });
+
+                // Open Progress Modal
+                $(document).on('click', '.update-progress', function() {
+                    const taskAssignId = $(this).data('id');
+                    const currentProgress = $(this).data('current-progress');
+
+                    $('#taskAssignId').val(taskAssignId);
+                    $('#progressInput').val(currentProgress);
+                    $('#progressValue').text(currentProgress + '%');
+
+                    $('#progressModal').modal('show');
+                });
+
+                // Save Progress
+                $('#saveProgress').on('click', function() {
+                    const taskAssignId = $('#taskAssignId').val();
+                    const progress = $('#progressInput').val();
 
                     $.ajax({
-                        url: `{{ route('tasks.assign.status', ['id' => '__ID__']) }}`.replace('__ID__', taskId),
+                        url: `{{ route('tasks.assign.progress.update', ['id' => '__ID__']) }}`.replace(
+                            '__ID__', taskAssignId),
                         method: 'POST',
                         data: {
                             _token: '{{ csrf_token() }}',
-                            is_completed: isCompleted
+                            progress: progress
                         },
                         success: function(response) {
                             if (response.status === 'success') {
-                                toastr.success(response.message);
-                                $('#datatable').DataTable().ajax.reload(null, false);
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.message,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                                $('#progressModal').modal('hide');
+                                table.ajax.reload(null, false);
                             } else {
-                                toastr.error(response.message);
-                                $(this).prop('checked', !isCompleted);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.message
+                                });
                             }
                         },
                         error: function() {
-                            toastr.error('Failed to update task status');
-                            $(this).prop('checked', !isCompleted);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Failed to update progress'
+                            });
                         }
                     });
                 });

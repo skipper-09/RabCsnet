@@ -198,7 +198,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::get('/edit/{id}', [TaskAssignController::class, 'show'])->name('tasks.assign.edit');
         Route::put('/update/{id}', [TaskAssignController::class, 'update'])->name('tasks.assign.update');
         Route::delete('/delete/{id}', [TaskAssignController::class, 'destroy'])->name('tasks.assign.delete');
-        Route::post('/status/{id}', [TaskAssignController::class, 'updateProgress'])->name('tasks.assign.status');
+        Route::post('/progress/{id}', [TaskAssignController::class, 'updateProgress'])->name('tasks.assign.progress.update');
     });
 
 
