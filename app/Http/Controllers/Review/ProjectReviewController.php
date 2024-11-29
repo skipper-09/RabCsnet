@@ -367,10 +367,6 @@ class ProjectReviewController extends Controller
     public function show($id)
     {
         try {
-            // Find the project review with related project and reviewer
-            $projectReview = ProjectReview::with(['project', 'project.Projectfile', 'reviewer'])
-                ->findOrFail($id);
-
             // Get current user and role
             $currentUser = Auth::user();
             $currentUserRole = $currentUser->roles->first()->name;
@@ -384,10 +380,31 @@ class ProjectReviewController extends Controller
                 ]);
             }
 
-            // For Developers, allow full access to all reviews
+            // Find the project review with detailed relations
+            $projectReview = ProjectReview::with([
+                'project',
+                'project.Projectfile',
+                'project.summary',
+                'reviewer'
+            ])->findOrFail($id);
+
+            // Format total summary if exists
+            $projectReview->project->formatted_total_summary = number_format(
+                $projectReview->project->summary->first()->total_summary ?? 0,
+                2,
+                ',',
+                '.'
+            );
+
+            // Determine editable status based on user role
+            $canEdit = $currentUserRole === 'Developer' ||
+                $projectReview->reviewer_id === $currentUser->id;
+
+            // Prepare data for view
             $data = [
                 'tittle' => 'Detail Project Review',
                 'review' => $projectReview,
+                'canEdit' => $canEdit
             ];
 
             return view('pages.review.edit', $data);
@@ -405,11 +422,10 @@ class ProjectReviewController extends Controller
             // Validate request
             $validated = $request->validate([
                 'review_note' => 'nullable|string|max:255',
-                'project_id' => 'required|exists:projects,id',
+                'status_pengajuan' => 'nullable|in:pending,in_review,approved,rejected',
             ], [
                 'review_note.max' => 'Catatan review tidak boleh lebih dari 255 karakter.',
-                'project_id.required' => 'Project wajib diisi.',
-                'project_id.exists' => 'Project tidak valid.',
+                'status_pengajuan.in' => 'Status pengajuan tidak valid.'
             ]);
 
             // Begin transaction
@@ -421,21 +437,61 @@ class ProjectReviewController extends Controller
 
             // Find the project review
             $projectReview = ProjectReview::findOrFail($id);
+            $project = Project::findOrFail($projectReview->project_id);
 
             // Check if user has permission to update
-            // Developers now have full access to update any review
             $allowedRoles = ['Developer', 'Accounting', 'Owner'];
             if (!in_array($currentUserRole, $allowedRoles)) {
                 throw new Exception('Anda tidak memiliki izin untuk mengubah review.');
             }
 
-            // Check if the review belongs to the current user or current user is a Developer
-            if ($projectReview->reviewer_id !== $currentUser->id && $currentUserRole !== 'Developer') {
-                throw new Exception('Anda hanya dapat mengubah review milik sendiri.');
+            // Update logic based on user role
+            switch ($currentUserRole) {
+                case 'Accounting':
+                    // Accounting can only update review note
+                    $projectReview->review_note = $validated['review_note'] ?? $projectReview->review_note;
+                    break;
+
+                case 'Owner':
+                    // Owner can update review note and change project status
+                    $projectReview->review_note = $validated['review_note'] ?? $projectReview->review_note;
+
+                    if (isset($validated['status_pengajuan'])) {
+                        $project->status_pengajuan = $validated['status_pengajuan'];
+
+                        if ($validated['status_pengajuan'] == 'rejected') {
+                            $project->status = 'canceled';
+                            $project->start_status = 1;
+
+                            // Delete related project files and summaries
+                            ProjectFile::where('project_id', $project->id)->delete();
+                            Summary::where('project_id', $project->id)->delete();
+                        }
+                        $project->save();
+                    }
+                    break;
+
+                case 'Developer':
+                    // Developer can update both review note and project status
+                    $projectReview->review_note = $validated['review_note'] ?? $projectReview->review_note;
+
+                    if (isset($validated['status_pengajuan'])) {
+                        $project->status_pengajuan = $validated['status_pengajuan'];
+
+                        if ($validated['status_pengajuan'] == 'rejected') {
+                            $project->status = 'canceled';
+                            $project->start_status = 1;
+
+                            // Delete related project files and summaries
+                            ProjectFile::where('project_id', $project->id)->delete();
+                            Summary::where('project_id', $project->id)->delete();
+                        }
+                        $project->save();
+                    }
+                    break;
             }
 
-            // Update the project review
-            $projectReview->review_note = $validated['review_note'];
+            // Save project review
             $projectReview->save();
 
             // Commit transaction
