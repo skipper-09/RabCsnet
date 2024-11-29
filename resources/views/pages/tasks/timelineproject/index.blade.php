@@ -4,10 +4,7 @@
 
 @push('css')
 <!-- Plugin css -->
-<link rel="stylesheet" href="{{ asset('assets/libs/@fullcalendar/core/main.min.css') }}" type="text/css">
-<link rel="stylesheet" href="{{ asset('assets/libs/@fullcalendar/daygrid/main.min.css') }}" type="text/css">
-<link rel="stylesheet" href="{{ asset('assets/libs/@fullcalendar/bootstrap/main.min.css') }}" type="text/css">
-<link rel="stylesheet" href="{{ asset('assets/libs/@fullcalendar/timegrid/main.min.css') }}" type="text/css">
+
 @endpush
 
 @section('content')
@@ -65,44 +62,87 @@
 <!-- plugin js -->
 <script src="{{ asset('assets/libs/moment/min/moment.min.js') }}"></script>
 <script src="{{ asset('assets/libs/jquery-ui-dist/jquery-ui.min.js') }}"></script>
-<script src="{{ asset('assets/libs/@fullcalendar/core/main.min.js') }}"></script>
-<script src="{{ asset('assets/libs/@fullcalendar/bootstrap/main.min.js') }}"></script>
-<script src="{{ asset('assets/libs/@fullcalendar/daygrid/main.min.js') }}"></script>
-<script src="{{ asset('assets/libs/@fullcalendar/timegrid/main.min.js') }}"></script>
-<script src="{{ asset('assets/libs/@fullcalendar/interaction/main.min.js') }}"></script>
+<script src="{{ asset('assets/libs/fullcalendar_new/dist/index.global.js') }}"></script>
 <!-- Calendar init -->
 <script>
-   document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        plugins: ["bootstrap", "interaction", "dayGrid", "timeGrid"],
-            editable: !0,
-            droppable: !0,
-            selectable: !0,
-            defaultView: "dayGridMonth",
-            themeSystem: "bootstrap",
-            header: {
-                left: "prev,next today",
-                center: "title",
-                right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
-            },
-        events: "{{ route('tasks.data') }}",
-        eventClick: function(info) {
-            // Handle event click
-            info.jsEvent.preventDefault();
-            if (info.event.url) {
-                window.open(info.event.url);
-            }
-        },
-        select: function(info) {
-            // Handle date selection
-        }
-    });
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
     
-    calendar.render();
-});
-</script>
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialDate: new Date(), // Set tanggal awal
+            editable: false,
+            selectable: false,
+            nowIndicator: false,
+            aspectRatio: 1.8,
+            headerToolbar: {
+                left: 'today prev,next',
+                center: 'title',
+                right: 'resourceTimelineYear,resourceTimelineMonth,resourceTimelineWeek'
+            },
+            initialView: 'resourceTimelineYear', // Default ke Year
+            views: {
+                resourceTimelineYear: {
+                    type: 'resourceTimeline',
+                    duration: { years: 3 }, // Durasi 3 tahun
+                    buttonText: 'Year',
+                    slotDuration: { months: 1 },
+                    slotLabelFormat: [{ year: 'numeric', month: 'short' }],
+                    slotLabelInterval: { months: 1 }
+                },
+                resourceTimelineMonth: {
+                    type: 'resourceTimeline',
+                    duration: { weeks: 12 }, // Durasi 12 minggu
+                    buttonText: 'Month',
+                    slotDuration: { days: 7 },
+                    slotLabelFormat: [{ weekday: 'short', month: 'numeric', day: 'numeric', omitCommas: true }]
+                },
+                resourceTimelineWeek: {
+                    type: 'resourceTimeline',
+                    duration: { days: 20 }, // Durasi 1 bulan
+                    buttonText: 'Week',
+                    slotDuration: { days: 7 },
+                    slotLabelFormat: [{ weekday: 'long', month: 'numeric', day: 'numeric', omitCommas: true }],
+                    slotLabelInterval: { days: 1 }
+                }
+            },
+            resourceAreaWidth: '40%',
+            resourceAreaColumns: [
+                {
+                    group: true,
+                    headerContent: 'Project',
+                    field: 'project'
+                },
+                {
+                    headerContent: 'Task',
+                    field: 'task',
+                }
+            ],
+            resources: [],
+            events: function(fetchInfo, successCallback, failureCallback) {
+                fetch('{{ route('tasks.data') }}') 
+                    .then(response => response.json())
+                    .then(data => {
+                      
+                        successCallback(data.events);
 
+                        const resources = data.resources.map(resource => ({
+                        id: resource.id,
+                        project: resource.project,
+                        task: resource.task,
+                    }));
+                    calendar.setOption('resources', resources);
+                       
+                    })
+                    .catch(error => {
+                        console.error('Error fetching events:', error);
+                        failureCallback(error);
+                    });
+            },
+        });
+    
+        calendar.render();
+    });
+</script>
 
 
 

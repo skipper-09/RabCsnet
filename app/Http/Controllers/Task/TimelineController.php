@@ -21,18 +21,30 @@ class TimelineController extends Controller
     public function timeline(Request $request)
     {
         // Ambil data project tasks beserta assignee
-        $tasks = Task::with('taskassign')->get();
+        $tasks = Task::with(['taskassign','vendor','project'])->get();
 
-        // Format data untuk FullCalendar
         $events = $tasks->map(function ($task) {
             return [
                 'id' => $task->id,
-                 'title' => $task->title,
+                'title' => $task->title,
                 'start' => $task->start_date,
                 'end' => $task->end_date,
+                
             ];
         });
-
-        return response()->json($events);
+    
+        // Ambil data resources (misalnya gedung atau ruangan)
+        $resources = Task::with('project', 'vendor')->get()->map(function ($task) {
+            return [
+                'id' => $task->id,
+                'project' => $task->project->name,
+                'task' => $task->title,
+            ];
+        });
+    
+        return response()->json([
+            'events' => $events,
+            'resources' => $resources,
+        ]);
     }
 }
