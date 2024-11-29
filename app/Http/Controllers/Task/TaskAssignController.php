@@ -41,8 +41,8 @@ class TaskAssignController extends Controller
 
         return DataTables::of($data)
             ->addIndexColumn()
-            ->addColumn('task', fn($row) => $row->task ? $row->task->title : '-')
-            ->addColumn('vendor', fn($row) => $row->vendor ? $row->vendor->name : '-')
+            ->addColumn('task', fn($row) => optional($row->task)->title ?? '-')
+            ->addColumn('vendor', fn($row) => optional($row->vendor)->name ?? '-')
             ->editColumn(
                 'finish_date',
                 fn($row) =>
@@ -146,6 +146,7 @@ class TaskAssignController extends Controller
     /**
      * Update task assignment progress
      */
+
     public function updateProgress(Request $request, $id)
     {
         Log::info('Attempting to update task assignment progress', ['task_assign_id' => $id, 'request' => $request->all()]);
@@ -156,8 +157,13 @@ class TaskAssignController extends Controller
 
         DB::beginTransaction();
         try {
-            // Find task assignment
-            $taskAssign = TaskAssign::findOrFail($id);
+            // Find task assignment with its related task
+            $taskAssign = TaskAssign::with('task')->findOrFail($id);
+
+            // Ensure task exists
+            if (!$taskAssign->task) {
+                throw new \Exception('No associated task found for this assignment.');
+            }
 
             // Update the progress
             $taskAssign->progress = $validated['progress'];
@@ -166,20 +172,36 @@ class TaskAssignController extends Controller
 
             // Update task status
             $task = $taskAssign->task;
-            $task->status = $taskAssign->progress == 100 ? 'complated' : 'in_progres';
+
+            // Determine task status based on progress
+            $task->status = match (true) {
+                $taskAssign->progress == 0 => 'pending',
+                $taskAssign->progress > 0 && $taskAssign->progress < 100 => 'in_progres',
+                $taskAssign->progress == 100 => 'complated',
+                default => $task->status
+            };
             $task->save();
             Log::info('Task status updated', ['task_id' => $task->id, 'status' => $task->status]);
 
             // Update project progress
-            $this->updateProjectProgress($task->project_id);
+            $projectProgress = $this->updateProjectProgress($task->project_id);
 
             DB::commit();
             Log::info('Transaction committed successfully');
-            return response()->json(['status' => 'success', 'message' => 'Progress updated successfully.']);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Progress updated successfully.',
+                'task_status' => $task->status,
+                'project_progress' => $projectProgress
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to update progress', ['error' => $e->getMessage()]);
-            return response()->json(['status' => 'error', 'message' => 'Failed to update progress: ' . $e->getMessage()], 500);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to update progress: ' . $e->getMessage()
+            ], 500);
         }
     }
 
@@ -217,23 +239,22 @@ class TaskAssignController extends Controller
     /**
      * Update project progress based on task assignments' progress
      */
-    /**
-     * Update project progress based on task assignments' progress
-     */
     private function updateProjectProgress($projectId)
     {
         if (!$projectId) return;
 
-        // Get all task assignments related to the project
+        // Fetch task assignments with their related tasks, filtering for the specific project
         $taskAssignments = TaskAssign::whereHas('task', function ($query) use ($projectId) {
             $query->where('project_id', $projectId);
-        })->get();
+        })
+            ->with('task')  // Eager load the task to avoid N+1 query
+            ->get();
 
         $totalAssignments = $taskAssignments->count();
 
         // If there are no task assignments, set the project progress to 0
         if ($totalAssignments == 0) {
-            return;
+            return 0;
         }
 
         // Calculate the total progress of all task assignments
@@ -242,16 +263,13 @@ class TaskAssignController extends Controller
         // Calculate average progress for the project
         $averageProgress = $totalProgress / $totalAssignments;
 
-        // Log the calculated progress for debugging
         Log::info('Calculated project progress based on task assignments.', [
             'project_id' => $projectId,
+            'total_assignments' => $totalAssignments,
             'total_progress' => $totalProgress,
             'average_progress' => $averageProgress,
         ]);
 
-        // Here, instead of updating the `projects.progress`, you may choose to
-        // log or return the average progress, or use it in some other way.
-        // Example: Returning the average progress to use in your application
         return $averageProgress;
     }
 }

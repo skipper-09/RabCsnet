@@ -63,7 +63,7 @@ class ProjectReviewController extends Controller
                         return '<span class="badge bg-primary">In Review</span>';
                     case 'approved':
                         return '<span class="badge bg-success">Approved</span>';
-                    case 'Rejected':
+                    case 'rejected':
                         return '<span class="badge bg-danger">Rejected</span>';
                     default:
                         return '<span class="badge bg-secondary">Unknown</span>';
@@ -282,7 +282,7 @@ class ProjectReviewController extends Controller
                     }
 
                     // Owner bisa merubah status ke rejected atau approved
-                    $project->status_pengajuan = $request->input('status_pengajuan', 'in_review');
+                    $project->status_pengajuan = $request->input('status_pengajuan', 'approved');
                     // Jika status pengajuan rejected, maka status adalah canceled
                     if ($project->status_pengajuan == 'rejected') {
                         $project->status = 'canceled';
@@ -387,7 +387,7 @@ class ProjectReviewController extends Controller
                 'review' => $projectReview,
             ];
 
-            return view('pages.review.show', $data);
+            return view('pages.review.edit', $data);
         } catch (Exception $e) {
             return redirect()->back()->with([
                 'status' => 'Error',
