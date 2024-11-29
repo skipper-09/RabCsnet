@@ -16,7 +16,9 @@ class SettingAplicationSeeder extends Seeder
         SettingAplication::create([
             'name' => 'Csnet',
             'logo' => 'logocsnet.png',
-            'description' => 'testing'
+            'description' => 'testing',
+            'ppn' => 12,
+            'backup' => 10
         ]);
     }
 }

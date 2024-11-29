@@ -265,7 +265,7 @@ class ProjectReviewController extends Controller
 
                     // Set status ke in_review untuk review accounting
                     $project->status_pengajuan = 'in_review';
-                    $project->start_status = true;
+                    $project->start_status = 0;
                     break;
 
                 case 'Owner':
@@ -287,7 +287,7 @@ class ProjectReviewController extends Controller
                     // Jika status pengajuan rejected, maka status adalah canceled
                     if ($project->status_pengajuan == 'rejected') {
                         $project->status = 'canceled';
-                        $project->start_status = false;
+                        $project->start_status = 1;
 
                         // Hapus file project dan summary berdasarkan project id
                         ProjectFile::where('project_id', $project->id)->delete();
@@ -313,7 +313,7 @@ class ProjectReviewController extends Controller
                     // Jika status pengajuan rejected, maka status adalah canceled
                     if ($project->status_pengajuan == 'rejected') {
                         $project->status = 'canceled';
-                        $project->start_status = false;
+                        $project->start_status = 1;
 
                         // Hapus file project dan summary berdasarkan project id
                         ProjectFile::where('project_id', $project->id)->delete();
