@@ -98,17 +98,17 @@
         <script src="{{ asset('assets/js/custom.js') }}"></script>
 
         <script>
-            @if (Session::has('message'))
-                Swal.fire({
-                    title: `{{ Session::get('status') }}`,
-                    text: `{{ Session::get('message') }}`,
-                    icon: "success",
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-                // Swal.fire(`{{ Session::get('status') }}`, `{{ Session::get('message') }}`, "success");
-            @endif
-            $(function() {
+            $(document).ready(function() {
+                @if (Session::has('message'))
+                    Swal.fire({
+                        title: '{{ Session::get('status') }}',
+                        text: '{{ Session::get('message') }}',
+                        icon: 'success',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                @endif
+
                 // Initialize DataTable
                 const table = $('#datatable').DataTable({
                     processing: true,
@@ -136,22 +136,22 @@
                             data: null,
                             render: function(data) {
                                 let progressBar = `
-            <div class="progress">
-                <div class="progress-bar" role="progressbar" 
-                    style="width: ${data.progress || 0}%" 
-                    aria-valuenow="${data.progress || 0}" 
-                    aria-valuemin="0" 
-                    aria-valuemax="100">
-                    ${data.progress || 0}%
-                </div>
-            </div>`;
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" 
+                                            style="width: ${data.progress || 0}%" 
+                                            aria-valuenow="${data.progress || 0}" 
+                                            aria-valuemin="0" 
+                                            aria-valuemax="100">
+                                            ${data.progress || 0}%
+                                        </div>
+                                    </div>`;
 
                                 let updateButton = data.progress < 100 ? `
-            <button class="btn btn-sm btn-outline-primary update-progress mt-1" 
-                data-id="${data.id}" 
-                data-current-progress="${data.progress || 0}">
-                Update Progress
-            </button>` : '';
+                                    <button class="btn btn-sm btn-outline-primary update-progress mt-1" 
+                                        data-id="${data.id}" 
+                                        data-current-progress="${data.progress || 0}">
+                                        Update Progress
+                                    </button>` : '';
 
                                 return progressBar + updateButton;
                             },
@@ -190,7 +190,7 @@
                     const progress = $('#progressInput').val();
 
                     $.ajax({
-                        url: `{{ route('tasks.assign.progress.update', ['id' => '__ID__']) }}`.replace(
+                        url: '{{ route('tasks.assign.progress.update', ['id' => '__ID__']) }}'.replace(
                             '__ID__', taskAssignId),
                         method: 'POST',
                         data: {
