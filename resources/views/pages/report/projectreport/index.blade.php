@@ -173,6 +173,7 @@
                                                     <th>Code</th>
                                                     <th>Name</th>
                                                     <th>Deskripsi</th>
+                                                    <th>Item</th>
                                                 </tr>
                                             </thead>
                                         </table>
@@ -210,6 +211,7 @@
     </div>
 </div>
 
+@include('layout.component.modalreportproject')
 
 @push('js')
 <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
@@ -221,7 +223,7 @@
 <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
 <script src="{{ asset('assets/js/pages/form-advanced.init.js') }}"></script>
 {{-- custom swetaert --}}
-{{-- <script src="{{ asset('assets/js/custom.js') }}"></script> --}}
+<script src="{{ asset('assets/js/custom.js') }}"></script>
 
 
 <script>
@@ -325,6 +327,11 @@
                         {
                             data: 'description',
                             name: 'description',
+                            className: 'align-middle'
+                        },
+                        {
+                            data: 'action',
+                            name: 'action',
                             className: 'align-middle'
                         },
                     ],

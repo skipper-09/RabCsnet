@@ -48,3 +48,63 @@ $("#datatable").on("click", ".action", function () {
         });
     }
 });
+
+
+$("#datatabledistribusi").on("click", ".action", function () {
+    //  let route = $(this).data("route");
+    let data = $(this).data();
+    let id = data.id;
+    let type = data.type;
+    var route = data.route;
+
+    if (type === "view") {
+        // Tampilkan modal
+        $(".exampleModalFullscreen").modal("show");
+
+        // if ($.fn.DataTable.isDataTable('#datatabledistribusi')) {
+        //     $('#datatabledistribusi').DataTable().clear().destroy();
+        // }
+        $.ajax({
+            url: route, 
+            method: "GET",
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                    "content"
+                ),
+            },
+            success: function (res) {
+                $("#datatablemodal").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: route,
+                    columns: [{
+                            data: 'DT_RowIndex',
+                            orderable: false,
+                            searchable: false,
+                            class: 'text-center',
+                        },
+                        {
+                            data: 'item_code',
+                            name: 'item_code'
+                        },
+                        {
+                            data: 'item_name',
+                            name: 'item_name'
+                        },
+                        {
+                            data: 'material_price',
+                            name: 'material_price'
+                        },
+                        {
+                            data: 'service_price',
+                            name: 'service_price'
+                        },
+                        
+                    ],
+                });
+                $(".dataTables_length select").addClass("form-select form-select-sm");
+            },
+        });
+    }
+   
+});

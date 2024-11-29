@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
+use App\Models\DetailItemProject;
 use App\Models\DetailProject;
 use App\Models\Project;
 use App\Models\ProjectFile;
@@ -67,13 +68,43 @@ class ProjectReportController extends Controller
         $DetailProject = DetailProject::with(['detailitemporject','project','projecttype'])->where('project_id',$project_id)->get();
         return DataTables::of($DetailProject)
         ->addIndexColumn()
+        ->addColumn('action', function ($data) {
+            $button = '';
+            $button .= '<button class="btn btn-sm btn-success action" data-id="' . $data->id . '" data-type="view"  data-route="' . route('report.project.getdetailitem', ['id'=>$data->id]) . '" data-toggle="tooltip" data-placement="bottom" title="Detail Item">
+            <i class="fas fa-eye"></i>
+        </button>';
+            return '<div class="d-flex gap-2">' . $button . '</div>';
+        })
         ->addColumn('project', function ($item) {
             return $item->project ? $item->project->name : '-';
         })
         ->addColumn('type', function ($item) {
             return $item->projecttype->name;
         })
-        ->rawColumns(['project','type'])
+        ->rawColumns(['action','project','type'])
+        ->make(true);
+    }
+
+
+    public function DetailItem(Request $request,$id){
+        
+        
+        $item = DetailItemProject::with(['detail','item'])->where('detail_id',$id)->get();
+        return DataTables::of($item)
+        ->addIndexColumn()
+        ->addColumn('item_name', function ($item) {
+            return $item->item->name;
+        })
+        ->addColumn('item_code', function ($item) {
+            return $item->item->item_code;
+        })
+        ->addColumn('material_price', function ($item) {
+            return formatRupiah($item->item->material_price);
+        })
+        ->addColumn('service_price', function ($item) {
+            return formatRupiah($item->item->service_price);
+        })
+        ->rawColumns(['item_name','material_price','service_price','item_code'])
         ->make(true);
     }
 
