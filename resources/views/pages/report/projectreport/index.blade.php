@@ -50,48 +50,129 @@
     <div class="page-content-wrapper">
         <div class="row">
             <div class="col-lg-12">
-                <div class="card">
+                <div class="">
                     <div class="card-body">
                         <div class="row">
-                            {{-- <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="project_id" class="form-label">
-                                        Pilih Project
-                                    </label>
-                                    <select name="project_id" id="project_id"
-                                        class="form-control select2 @error('project_id') is-invalid @enderror" required>
-                                        <option value="">Pilih Project</option>
-                                        @foreach ($projects as $project)
-                                        <option value="{{ $project->id }}" {{ request('project_id')==$project->id ?
-                                            'selected' : '' }}>
-                                            {{ $project->name }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-                                    @error('project_id')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
+
+                            <div class="col-12">
+                                <div class="card border-primary">
+                                    <div
+                                        class="card-header bg-primary text-white d-flex justify-content-between align-items-center align-content-center">
+                                        <h5 class="card-title mb-0">
+                                            <i class="mdi mdi-information-outline me-2"></i>Project Details
+                                        </h5>
+                                        <span class="h6 text-white text-uppercase">{{ $project->name .' - ' .
+                                            $project->code }}</span>
                                     </div>
-                                    @enderror
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div id="projectFileDetails" class="mb-3">
+                                                    <h6 class="text-primary mb-3">
+                                                        <i class="mdi mdi-file-document-outline me-2"></i>Project
+                                                        Files
+                                                    </h6>
+                                                    <div class="alert alert-soft-primary">
+                                                        @if ($project->Projectfile)
+                                                        <ul class="list-unstyled mb-0">
+                                                            <li class="mb-2">
+                                                                <i class="mdi mdi-file-excel text-success me-2"></i>
+                                                                <strong>Excel File:</strong>
+                                                                <a class="btn btn-primary btn-sm" href="{{ asset("
+                                                                    storage/files/excel/{$project->Projectfile->excel}")
+                                                                    }}">Download</a>
+                                                            </li>
+
+                                                            <li class="mb-2">
+                                                                <i class="mdi mdi-map text-danger me-2"></i>
+                                                                <strong>KMZ File:</strong>
+                                                                <a class="btn btn-primary btn-sm" href="{{ asset("
+                                                                    storage/files/kmz/{$project->Projectfile->kmz}")
+                                                                    }}">Download</a>
+                                                            </li>
+                                                        </ul>
+                                                        @else
+                                                        No files available
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div id="projectInfo" class="mb-3">
+                                                    <h6 class="text-primary mb-3">
+                                                        <i class="mdi mdi-chart-line me-2"></i>Project Information
+                                                    </h6>
+                                                    <div class="alert alert-soft-success">
+                                                        @if ($project)
+                                                        <ul class="list-unstyled mb-0">
+                                                            <li class="mb-2">
+                                                                <i class="mdi mdi-account text-success me-2"></i>
+                                                                <strong>Vendor:</strong> {{ $project->vendor->name ??
+                                                                'Belum Dipilih' }}
+                                                            </li>
+                                                            <li class="mb-2">
+                                                                <i class="mdi mdi-cash text-primary me-2"></i>
+                                                                <strong>Project Amount:</strong> {{
+                                                                formatRupiah($project->amount) }}
+                                                            </li>
+                                                            <li class="mb-2">
+                                                                <i class="mdi mdi-calendar text-primary me-2"></i>
+                                                                <strong>Project Start:</strong> {{ $project->start_date
+                                                                ?? 'Belum diset' }}
+                                                            </li>
+                                                            <li class="mb-2">
+                                                                <i class="mdi mdi-calendar text-primary me-2"></i>
+                                                                <strong>Project End:</strong> {{ $project->end_date ??
+                                                                'Belum diset' }}
+                                                            </li>
+                                                        </ul>
+                                                        @else
+                                                        No information available
+                                                        @endif
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div id="projectSummaryDetails" class="mb-3">
+                                                    <h6 class="text-primary mb-3">
+                                                        <i class="mdi mdi-chart-line me-2"></i>Project Summary
+                                                    </h6>
+                                                    <div class="alert alert-soft-success">
+                                                        @if ($project->summary)
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <span>
+                                                                <i class="mdi mdi-cash me-2 text-success"></i>
+                                                                <strong>Total Summary:</strong>
+                                                            </span>
+                                                            <span class="h5 mb-0 text-primary">{{
+                                                                formatRupiah($project->summary->total_summary) }}</span>
+                                                        </div>
+                                                        @else
+                                                        No summary available
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div> --}}
-                            <div class="col-md-12 ">
-                                <h3 class="mt-4">{{ $projects->name }}</h3>
-                                <h6>{{ $projects->company->name }}</h6>
-                                <p>Mulai Project Sampai</p>
                             </div>
 
                             <div class="col-12 ">
-                                <div class="card mb-5">
+                                <div class="card">
                                     <div class="card-body">
-                                        <h5>File Project</h5>
-                                        <table id="datatablefileproject" class="table table-hover table-responsive"
+                                        <h5>Distribusi Project</h5>
+                                        <table id="datatabledistribusi" class="table table-hover table-responsive"
                                             style="width: 100%;">
                                             <thead>
                                                 <tr>
                                                     <th class="text-center" style="width: 5%">No</th>
-                                                    <th class="text-center">Excel</th>
-                                                    <th class="text-center">Kmz</th>
+                                                    <th>Project</th>
+                                                    <th>Tipe</th>
+                                                    <th>Code</th>
+                                                    <th>Name</th>
+                                                    <th>Deskripsi</th>
                                                 </tr>
                                             </thead>
                                         </table>
@@ -157,39 +238,15 @@
             $(document).ready(function() {
                 var project_id = @json($id)
                 // Initialize DataTable
-                let datatableFileProject = $("#datatablefileproject").DataTable({
-                    processing: true,
-                    serverSide: true,
-                    ajax: {
-                url: '{{ route('report.project.getdatafile') }}',
-                data: function (e) {
-                    e.project_id = project_id; 
-                }
-                },
-                    columns: [{
-                            data: 'DT_RowIndex',
-                            name: 'DT_RowIndex',
-                            orderable: false,
-                            searchable: false,
-                            className: 'text-center align-middle'
-                        },
-                        {
-                            data: 'excel',
-                            name: 'excel',
-                        },
-                        {
-                            data: 'kmz',
-                            name: 'kmz',
-                        },
-                    ],
-                });
-
-
-                //table review
               let tablereview =  $("#datatable").DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: '{{ route('review.getdata') }}',
+                    ajax: {
+                        url:'{{ route('report.project.getdatareview') }}',
+                        data:function(e){
+                            e.project_id = project_id
+                        }
+                    },
                     columns: [{
                             data: 'DT_RowIndex',
                             name: 'DT_RowIndex',
@@ -229,17 +286,49 @@
                     ],
                 });
 
-                $('#project_id').on('change', function () {
-                    console.log('Project ID Selected:', $(this).val());
-                    if ($(this).val() == '') {
-                        $('.detail').addClass('d-none');
-                    }else{
-                        $('.detail').removeClass('d-none');
-                        datatableFileProject.ajax.reload();
-                        tablereview.ajax.reload();
-                    } 
+                let tabledistribusi =  $("#datatabledistribusi").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url:'{{ route('report.project.getdetailproject') }}',
+                        data:function(e){
+                            e.project_id = project_id
+                        }
+                    },
+                    columns: [{
+                            data: 'DT_RowIndex',
+                            name: 'DT_RowIndex',
+                            orderable: false,
+                            searchable: false,
+                            className: 'text-center align-middle'
+                        },
+                        {
+                            data: 'project',
+                            name: 'project',
+                            className: 'align-middle'
+                        },
+                        {
+                            data: 'type',
+                            name: 'type',
+                            className: 'align-middle'
+                        },
+                        {
+                            data: 'code',
+                            name: 'code',
+                            className: 'align-middle'
+                        },
+                        {
+                            data: 'name',
+                            name: 'name',
+                            className: 'align-middle'
+                        },
+                        {
+                            data: 'description',
+                            name: 'description',
+                            className: 'align-middle'
+                        },
+                    ],
                 });
-
                 $(".dataTables_length select").addClass("form-select form-select-sm");
             });
 </script>

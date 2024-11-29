@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Project;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,6 +22,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::share('projects',Project::all());
+        $projects = Cache::remember('projects', 60, function () {
+            return Project::all();
+        });
+    
+        View::share('projects', $projects);
     }
 }
