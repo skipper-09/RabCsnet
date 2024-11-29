@@ -135,7 +135,7 @@ class TaskAssignController extends Controller
             DB::commit();
             Log::info('Transaction committed successfully');
             return redirect()->route('tasks.assign')->with('status', 'Task assignment successfully created.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             Log::error('Failed to store task assignment', ['error' => $e->getMessage()]);
             return redirect()->back()->withInput()->with('error', 'Failed to assign task: ' . $e->getMessage());
@@ -161,7 +161,7 @@ class TaskAssignController extends Controller
 
             // Ensure task exists
             if (!$taskAssign->task) {
-                throw new \Exception('No associated task found for this assignment.');
+                throw new Exception('No associated task found for this assignment.');
             }
 
             // Update the progress
@@ -194,7 +194,7 @@ class TaskAssignController extends Controller
                 'task_status' => $task->status,
                 'project_progress' => $projectProgress
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             Log::error('Failed to update progress', ['error' => $e->getMessage()]);
             return response()->json([

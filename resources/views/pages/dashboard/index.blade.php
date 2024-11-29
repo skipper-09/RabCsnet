@@ -1,5 +1,5 @@
 @extends('layout.base')
-@section('tittle',$tittle)
+@section('tittle', $tittle)
 @section('content')
     <!-- start page title -->
     <div class="page-title-box">
@@ -15,27 +15,19 @@
                         </ol>
                     </div>
                 </div>
-               
+
             </div>
         </div>
     </div>
     <!-- end page title -->
 
-
     <div class="container-fluid">
-
         <div class="page-content-wrapper">
-
-
             <div class="row">
-                <div class="col-xl-8">
+                {{-- <div class="col-xl-8">
                     <div class="card">
                         <div class="card-body">
-
-
-
                             <h4 class="header-title mb-4 float-sm-start">Quick Summary</h4>
-
                             <div class="float-sm-end">
                                 <ul class="nav nav-pills">
                                     <li class="nav-item">
@@ -52,25 +44,16 @@
                                     </li>
                                 </ul>
                             </div>
-
                             <div class="clearfix"></div>
-
-
                             <div class="row align-items-center">
                                 <div class="col-xl-9">
-
                                     <div>
                                         <div id="stacked-column-chart" class="apex-charts" dir="ltr"></div>
                                     </div>
-
                                 </div>
-
 
                                 <div class="col-xl-3">
                                     <div class="dash-info-widget mt-4 mt-lg-0 py-4 px-3 rounded">
-
-
-
                                         <div class="media dash-main-border pb-2 mt-2">
                                             <div class="avatar-sm mb-3 mt-2">
                                                 <span class="avatar-title rounded-circle bg-white shadow">
@@ -78,20 +61,13 @@
                                                 </span>
                                             </div>
                                             <div class="media-body ps-3">
-
                                                 <h4 class="font-size-20">$2354</h4>
                                                 <p class="text-muted">Earning <a href="#"
                                                         class="text-primary">Withdraw <i
                                                             class="mdi mdi-arrow-right"></i></a>
                                                 </p>
-
                                             </div>
-
                                         </div>
-
-
-
-
 
                                         <div class="media mt-4 dash-main-border pb-2">
                                             <div class="avatar-sm mb-3 mt-2">
@@ -105,8 +81,6 @@
                                                             class="mdi mdi-arrow-right"></i></a></p>
                                             </div>
                                         </div>
-
-
 
                                         <div class="media mt-4">
                                             <div class="avatar-sm mb-2 mt-2">
@@ -123,112 +97,76 @@
                                         </div>
                                     </div>
                                 </div>
-
-
                             </div>
-
-
                         </div>
                     </div>
-                </div>
-
-
-                <div class="col-xl-4">
+                </div> --}}
+                <div class="col-md-12">
                     <div class="row">
-                        <div class="col-xl-6 col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="text-center">
-                                        <p class="font-size-16">Orders</p>
-                                        <div class="mini-stat-icon mx-auto mb-4 mt-3">
-                                            <span class="avatar-title rounded-circle bg-soft-primary">
-                                                <i class="mdi mdi-cart-outline text-primary font-size-20"></i>
-                                            </span>
-                                        </div>
-                                        <h5 class="font-size-22">58</h5>
-
-                                        <p class="text-muted">70% Target</p>
-
-                                        <div class="progress mt-3" style="height: 4px;">
-                                            <div class="progress-bar progress-bar bg-primary" role="progressbar"
-                                                style="width: 70%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="70">
+                        <!-- Kartu: Total Proyek Belum Direview -->
+                        <div class="col-xl-4 col-md-4">
+                            <a href="{{ route('review') }}">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="text-center">
+                                            <p class="font-size-16">Proyek Belum Direview</p>
+                                            <div class="mini-stat-icon mx-auto mb-4 mt-3">
+                                                <span class="avatar-title rounded-circle bg-soft-primary">
+                                                    <i class="mdi mdi-alert-outline text-primary font-size-20"></i>
+                                                </span>
                                             </div>
-
+                                            <h5 class="font-size-22">{{ $totalProjectsNotReviewed }}</h5>
+                                            <p class="text-muted">Proyek yang menunggu review</p>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-
+                            </a>
                         </div>
 
-                        <div class="col-xl-6 col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="text-center">
-                                        <p class="font-size-16">Users</p>
-                                        <div class="mini-stat-icon mx-auto mb-4 mt-3">
-                                            <span class="avatar-title rounded-circle bg-soft-success">
-                                                <i class="mdi mdi-account-outline text-success font-size-20"></i>
-                                            </span>
-                                        </div>
-                                        <h5 class="font-size-22">136</h5>
-
-                                        <p class="text-muted">80% Target</p>
-
-                                        <div class="progress mt-3" style="height: 4px;">
-                                            <div class="progress-bar progress-bar bg-success" role="progressbar"
-                                                style="width: 80%" aria-valuenow="80" aria-valuemin="0"
-                                                aria-valuemax="80">
+                        <!-- Kartu: Total Proyek Selesai -->
+                        <div class="col-xl-4 col-md-4">
+                            <a href="{{ route('project') }}">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="text-center">
+                                            <p class="font-size-16">Proyek Selesai</p>
+                                            <div class="mini-stat-icon mx-auto mb-4 mt-3">
+                                                <span class="avatar-title rounded-circle bg-soft-success">
+                                                    <i class="mdi mdi-check-circle-outline text-success font-size-20"></i>
+                                                </span>
                                             </div>
-
+                                            <h5 class="font-size-22">{{ $totalCompletedProjects }}</h5>
+                                            <p class="text-muted">Proyek berhasil diselesaikan</p>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-
+                            </a>
                         </div>
-                    </div>
 
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="header-title mb-4">Revenue Stastics</h4>
-
-                            <div class="media">
-
-                                <h4>$14,235 </h4>
-
-
-                                <div class="media-body ps-3">
-
-                                    <div class="dropdown">
-                                        <button class="btn btn-light btn-sm dropdown-toggle" type="button"
-                                            id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true"
-                                            aria-expanded="false">
-                                            Today<i class="mdi mdi-chevron-down ms-1"></i>
-                                        </button>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                            <a class="dropdown-item" href="#">Yesterday</a>
-                                            <a class="dropdown-item" href="#">Last Week</a>
-                                            <a class="dropdown-item" href="#">last Month</a>
+                        <!-- Kartu: Proyek untuk Direview (Berdasarkan Role) -->
+                        <div class="col-xl-4 col-md-4">
+                            <a href="{{ route('review') }}">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="text-center">
+                                            <p class="font-size-16">Proyek untuk Direview</p>
+                                            <div class="mini-stat-icon mx-auto mb-4 mt-3">
+                                                <span class="avatar-title rounded-circle bg-soft-warning">
+                                                    <i class="mdi mdi-pencil-outline text-warning font-size-20"></i>
+                                                </span>
+                                            </div>
+                                            <h5 class="font-size-22">{{ $projectsToReview }}</h5>
+                                            <p class="text-muted">Proyek yang ditugaskan untuk direview</p>
                                         </div>
                                     </div>
-
                                 </div>
-                            </div>
-
-                            <div class="mt-3">
-                                <div id="stastics-chart"></div>
-                            </div>
-
+                            </a>
                         </div>
                     </div>
                 </div>
-
             </div>
 
-            <div class="row">
+            {{-- <div class="row">
 
                 <div class="col-xl-4">
                     <div class="card">
@@ -649,28 +587,16 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
-
-
                 </div>
-
-
-
-
-
             </div>
-
             <div class="row">
-
                 <div class="col-xl-4">
                     <div class="card">
                         <div class="card-body">
                             <h4 class="header-title mb-4">Sales By Social Source
-
                             </h4>
-
                             <ul class="inbox-wid list-unstyled mb-0">
                                 <li class="inbox-list-item">
                                     <a href="#">
@@ -776,8 +702,6 @@
                                     </a>
                                 </li>
                             </ul>
-
-
                         </div>
                     </div>
                 </div>
@@ -792,7 +716,6 @@
                                         <tr>
                                             <th>ID</th>
                                             <th>Product</th>
-
                                             <th>Customer</th>
                                             <th>Price</th>
                                             <th>Invoice</th>
@@ -823,8 +746,6 @@
                                                     class="badge badge-pill badge-soft-success font-size-13">Active</span>
                                             </td>
                                         </tr>
-
-
 
                                         <tr>
                                             <td>#2125</td>
@@ -861,8 +782,6 @@
                                                     class="badge badge-pill badge-soft-primary font-size-13">Pending</span>
                                             </td>
                                         </tr>
-
-
                                     </tbody>
                                 </table>
                             </div>
@@ -870,13 +789,7 @@
                         </div>
                     </div>
                 </div>
-
-
-            </div>
-
-
+            </div> --}}
         </div>
-
-
     </div> <!-- container-fluid -->
 @endsection
