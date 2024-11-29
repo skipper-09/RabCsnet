@@ -47,12 +47,15 @@ class ProjectController extends Controller
                 $button .= '<a href="' . route('project.start', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
                     <i class="fas fa-upload"></i> Start Project</a>';
                 }
-                $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
-                <i class="fas fa-pencil-alt"></i>
-            </a>';
-                $button .= '<a href="' . route('project.detail', $data->id) . '" class="btn btn-sm btn-warning action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
-                <i class="fas fa-eye"></i>
-            </a>';
+                //sembunyikan edit dan detail ketika project sudah di start
+                if($data->start_status == 0){
+                    $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
+                    <i class="fas fa-pencil-alt"></i>
+                </a>';
+                    $button .= '<a href="' . route('project.detail', $data->id) . '" class="btn btn-sm btn-warning action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
+                    <i class="fas fa-eye"></i>
+                </a>';
+                }
                 $button .= '<button class="btn btn-sm btn-danger action" data-id="' . $data->id . '" data-type="delete" data-route="' . route('project.delete', $data->id) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data">
                 <i class="fas fa-trash-alt"></i>
             </button>';
@@ -288,7 +291,7 @@ class ProjectController extends Controller
 
         $request->validate([
             'excel' => 'required|file|mimes:xlsx,xls,csv|max:10240',
-            'kmz' => 'required|file|max:10240',
+           'kmz' => 'required|file|mimetypes:application/vnd.google-earth.kmz,application/vnd.google-earth.kml+xml,application/zip|max:10240',
             'total_material' => 'required|numeric|min:0',
             'total_service' => 'required|numeric|min:0',
             'ppn' => 'required|numeric|min:0',
@@ -324,6 +327,8 @@ class ProjectController extends Controller
                 'total_ppn_cost' => $request->ppn,
                 'total_summary' => $request->total_with_ppn
             ]);
+
+            Project::find($id)->update(['amount' => $request->total_with_ppn]);
 
             DB::commit();
             return redirect()->route('project')->with(['status' => 'Success', 'message' => 'Pengajuan Berhasil Terkirim!']);
@@ -369,6 +374,7 @@ class ProjectController extends Controller
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'status'=>'in_progres',
+                'start_status'=>1,
             ]);
             return redirect()->route('project')->with(['status' => 'Success', 'message' => 'Project Berhasil Di Start!']);
         } catch (Exception $e) {

@@ -33,12 +33,14 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <div class="mb-3">
-                            <a href="{{ route('item.add') }}" class="btn btn-primary btn-sm">Tambah
-                                {{ $tittle }}</a>
+                        <div class="mb-3 d-flex gap-2">
+                            <div>
+                                <a href="{{ route('item.add') }}" class="btn btn-primary btn-sm">Tambah
+                                    {{ $tittle }}</a>
+                            </div>
                             @can('export-items')
-                            <div class="align-self-end ">
-                                <a href="{{ route('item.export') }}" class="btn btn-primary btn-sm">Export
+                            <div class="align-self-end">
+                                <a href="{{ route('item.export') }}" class="btn btn-success btn-sm">Export
                                     {{ $tittle }}</a>
                                 @endcan
                             </div>

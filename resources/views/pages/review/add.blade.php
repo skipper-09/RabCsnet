@@ -115,7 +115,7 @@
                                                             data-project-file="{{ json_encode($project->Projectfile ?? []) }}"
                                                             data-project-summary="{{ $project->formatted_total_summary ?? '0' }}"
                                                             data-project-vendor="{{ $project->vendor->name ?? 'Belum ditentukan' }}"
-                                                            data-project-amount="{{ $project->formatted_total_amount ?? '0' }}"
+                                                            data-project-amount="{{ $project->amount ?? '0' }}"
                                                             data-project-reviewer="{{ $project->reviewed_by }}"
                                                             data-project-review-note="{{ $project->review_note }}"
                                                             {{ old('project_id') == $project->id ? 'selected' : '' }}>
