@@ -28,7 +28,6 @@
     </div>
     <!-- end page title -->
 
-
     <div class="container-fluid">
         <div class="page-content-wrapper">
             <div class="row">
@@ -59,10 +58,14 @@
                                             </label>
                                             <select name="project_id"
                                                 class="form-control select2 @error('project_id') is-invalid @enderror"
-                                                aria-label="Default select example">
+                                                aria-label="Default select example" id="project_select">
                                                 <option selected>Pilih Project</option>
                                                 @foreach ($projects as $project)
-                                                    <option value="{{ $project->id }}">{{ $project->name }}</option>
+                                                    <option value="{{ $project->id }}"
+                                                        data-start="{{ $project->start_date }}"
+                                                        data-end="{{ $project->end_date }}">
+                                                        {{ $project->name }}
+                                                    </option>
                                                 @endforeach
                                             </select>
                                             @error('project_id')
@@ -168,7 +171,44 @@
                 </div>
             </div>
             <!-- end row -->
+        </div>
+    </div>
 
+    <!-- Validation Modal -->
+    <div class="modal fade" id="validationModal" tabindex="-1" aria-labelledby="validationModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="validationModalLabel">Peringatan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="validationMessage"></p> <!-- This will display the validation error message -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification modal -->
+    <div class="modal fade" id="projectAlertModal" tabindex="-1" aria-labelledby="projectAlertModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="projectAlertModalLabel">Perhatian</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Project yang Anda pilih belum dimulai. Harap mulai project terlebih dahulu.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -183,5 +223,60 @@
         <script src="{{ asset('assets/js/pages/form-validation.init.js') }}"></script>
         <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
         <script src="{{ asset('assets/js/pages/form-advanced.init.js') }}"></script>
+        <script>
+            // Script to handle project selection and validation
+            $('#project_select').on('change', function() {
+                var selectedProject = $(this).find('option:selected');
+                var projectStartDate = selectedProject.data('start');
+                var projectEndDate = selectedProject.data('end');
+
+                // Validate and set dates if project dates are available
+                if (!projectStartDate || !projectEndDate) {
+                    $('#projectAlertModal').modal('show');
+                    // Disable start and end dates input if project dates are missing
+                    $('#start_date').prop('disabled', true);
+                    $('#end_date').prop('disabled', true);
+                } else {
+                    // Enable the date fields and set values
+                    $('#start_date').prop('disabled', false);
+                    $('#end_date').prop('disabled', false);
+                    $('#start_date').val(projectStartDate);
+                    $('#end_date').val(projectEndDate);
+                }
+            });
+
+            // Validate start_date and end_date to be within project dates
+            $('form').on('submit', function(e) {
+                var projectStartDate = $('#project_select').find('option:selected').data('start');
+                var projectEndDate = $('#project_select').find('option:selected').data('end');
+                var taskStartDate = $('#start_date').val();
+                var taskEndDate = $('#end_date').val();
+
+                // Check if start date is before project start date
+                if (new Date(taskStartDate) < new Date(projectStartDate)) {
+                    e.preventDefault(); // Prevent form submission
+                    showValidationModal('Tanggal mulai task tidak boleh lebih awal dari tanggal mulai project.');
+                    return false;
+                }
+
+                // Check if end date is after project end date
+                if (new Date(taskEndDate) > new Date(projectEndDate)) {
+                    e.preventDefault(); // Prevent form submission
+                    showValidationModal('Tanggal selesai task tidak boleh lebih lambat dari tanggal selesai project.');
+                    return false;
+                }
+            });
+
+            // Function to show the validation modal
+            function showValidationModal(message) {
+                $('#validationMessage').text(message); // Set custom validation message
+                $('#validationModal').modal('show'); // Show the modal
+            }
+
+            // Reload page after modal is closed (optional)
+            $('#validationModal').on('hidden.bs.modal', function() {
+                location.reload();  // Uncomment if you want to reload the page after closing
+            });
+        </script>
     @endpush
 @endsection
