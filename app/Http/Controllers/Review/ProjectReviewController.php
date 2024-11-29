@@ -363,29 +363,37 @@ class ProjectReviewController extends Controller
     public function show($id)
     {
         try {
-            // Pastikan user sudah login
+            // Ensure the user is logged in
             if (!Auth::check()) {
                 return redirect()->route('login')->with('error', 'Anda harus login terlebih dahulu.');
             }
 
-            // Dapatkan user yang sedang login
+            // Get the logged-in user
             $currentUser = Auth::user();
 
-            // Pastikan user memiliki role
+            // Ensure the user has a role
             if (!$currentUser->roles->first()) {
                 return redirect()->back()->with('error', 'User tidak memiliki role yang valid.');
             }
 
-            // Dapatkan role user saat ini
+            // Get the current user's role
             $currentUserRole = $currentUser->roles->first()->name;
 
-            // Cek akses berdasarkan role
+            // Check if the user has access to view this review based on their role
             $allowedRoles = ['Developer', 'Accounting', 'Owner'];
             if (!in_array($currentUserRole, $allowedRoles)) {
                 return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk melihat detail review.');
             }
 
-            // Find the project review with detailed relations
+            // Determine if the current user can edit the review
+            $canEdit = false;  // Default to false (cannot edit)
+            if (in_array($currentUserRole, ['Developer', 'Owner'])) {
+                $canEdit = true;
+            } elseif ($currentUserRole == 'Accounting') {
+                $canEdit = true;
+            }
+
+            // Fetch the project review with detailed relations
             $projectReview = ProjectReview::with([
                 'project',
                 'project.Projectfile',
@@ -393,10 +401,10 @@ class ProjectReviewController extends Controller
                 'reviewer'
             ])->findOrFail($id);
 
-            // Ambil project terkait
+            // Get the related project
             $project = $projectReview->project;
 
-            // Format total summary
+            // Format the total summary
             $project->formatted_total_summary = number_format(
                 $project->summary->first()->total_summary ?? 0,
                 2,
@@ -404,7 +412,7 @@ class ProjectReviewController extends Controller
                 '.'
             );
 
-            // Tambahkan informasi siapa yang sudah melakukan review
+            // Add review information
             $project->reviewed_by = $project->ProjectReview->isEmpty()
                 ? 'Belum Direview'
                 : $project->ProjectReview->last()->reviewer->name;
@@ -412,11 +420,12 @@ class ProjectReviewController extends Controller
                 ? 'Tidak ada catatan'
                 : $project->ProjectReview->last()->review_note;
 
-            // Persiapkan data untuk view
+            // Prepare data for the view
             $data = [
                 'tittle' => 'Detail Project Review',
                 'review' => $projectReview,
-                'project' => $project
+                'project' => $project,
+                'canEdit' => $canEdit // Pass the canEdit variable to the view
             ];
 
             return view('pages.review.edit', $data);
@@ -427,6 +436,7 @@ class ProjectReviewController extends Controller
             ]);
         }
     }
+
 
     public function update(Request $request, $id)
     {

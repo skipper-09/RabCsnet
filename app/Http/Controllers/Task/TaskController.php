@@ -123,6 +123,25 @@ class TaskController extends Controller
             'priority.in' => 'Priority is invalid',
         ]);
 
+        // Cek apakah project yang dipilih memiliki start_date dan end_date yang valid
+        $project = Project::find($request->project_id);
+
+        // Jika start_date atau end_date pada project tersebut kosong
+        if (is_null($project->start_date) || is_null($project->end_date)) {
+            // Kembalikan pesan error dan jangan lanjutkan pembuatan task
+            return redirect()->back()->with('error', 'The selected project does not have both start date and end date set. Please set these dates before creating a task.')->withInput();
+        }
+
+        // Cek apakah start_date task lebih kecil dari start_date project
+        if (strtotime($request->start_date) < strtotime($project->start_date)) {
+            return redirect()->back()->with('error', 'The start date of the task cannot be earlier than the project start date.')->withInput();
+        }
+
+        // Cek apakah end_date task lebih besar dari end_date project
+        if (strtotime($request->end_date) > strtotime($project->end_date)) {
+            return redirect()->back()->with('error', 'The end date of the task cannot be later than the project end date.')->withInput();
+        }
+
         try {
             Task::create([
                 'project_id' => $request->project_id,
@@ -142,6 +161,7 @@ class TaskController extends Controller
                 ->withInput();
         }
     }
+
     public function show($id)
     {
         $data = [
