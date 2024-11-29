@@ -7,14 +7,13 @@ use App\Models\User;
 use App\Models\Task;
 use App\Models\TaskAssign;
 use App\Models\Vendor;
-use App\Models\Project;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
 use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Validation\ValidationException;
 
 class TaskAssignController extends Controller
 {
@@ -136,7 +135,7 @@ class TaskAssignController extends Controller
             DB::commit();
             Log::info('Transaction committed successfully');
             return redirect()->route('tasks.assign')->with('status', 'Task assignment successfully created.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             Log::error('Failed to store task assignment', ['error' => $e->getMessage()]);
             return redirect()->back()->withInput()->with('error', 'Failed to assign task: ' . $e->getMessage());
@@ -162,7 +161,7 @@ class TaskAssignController extends Controller
 
             // Ensure task exists
             if (!$taskAssign->task) {
-                throw new \Exception('No associated task found for this assignment.');
+                throw new Exception('No associated task found for this assignment.');
             }
 
             // Update the progress
@@ -195,7 +194,7 @@ class TaskAssignController extends Controller
                 'task_status' => $task->status,
                 'project_progress' => $projectProgress
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             Log::error('Failed to update progress', ['error' => $e->getMessage()]);
             return response()->json([
@@ -212,16 +211,25 @@ class TaskAssignController extends Controller
     {
         DB::beginTransaction();
         try {
+            // Temukan data task assignment
             $taskAssign = TaskAssign::findOrFail($id);
 
-            // Save project ID before deletion
-            $projectId = optional($taskAssign->task)->project_id;
+            // Ambil task terkait
+            $task = $taskAssign->task;
 
-            // Delete task assignment
+            // Set status task menjadi 'pending' jika task ditemukan
+            if ($task) {
+                $task->status = 'pending';
+                $task->save();
+                Log::info('Task status updated to pending', ['task_id' => $task->id]);
+            }
+
+            // Hapus task assignment
             $taskAssign->delete();
             Log::info('Task assignment deleted', ['task_assign_id' => $taskAssign->id]);
 
-            // Update project progress if applicable
+            // Perbarui progress proyek terkait jika ada
+            $projectId = $task?->project_id;
             if ($projectId) {
                 $this->updateProjectProgress($projectId);
             }
@@ -229,12 +237,13 @@ class TaskAssignController extends Controller
             DB::commit();
             Log::info('Transaction committed successfully');
             return response()->json(['status' => 'success', 'message' => 'Task assignment deleted successfully.']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             Log::error('Failed to delete task assignment', ['error' => $e->getMessage()]);
             return response()->json(['status' => 'error', 'message' => 'Failed to delete task assignment: ' . $e->getMessage()], 500);
         }
     }
+
 
     /**
      * Update project progress based on task assignments' progress
