@@ -49,9 +49,7 @@ $("#datatable").on("click", ".action", function () {
     }
 });
 
-
 $("#datatabledistribusi").on("click", ".action", function () {
-    //  let route = $(this).data("route");
     let data = $(this).data();
     let id = data.id;
     let type = data.type;
@@ -61,23 +59,31 @@ $("#datatabledistribusi").on("click", ".action", function () {
         // Tampilkan modal
         $(".exampleModalFullscreen").modal("show");
 
-        // if ($.fn.DataTable.isDataTable('#datatabledistribusi')) {
-        //     $('#datatabledistribusi').DataTable().clear().destroy();
-        // }
+        // Destroy any existing DataTable instance on the modal table
+        if ($.fn.DataTable.isDataTable('#datatablemodal')) {
+            $('#datatablemodal').DataTable().clear().destroy();
+        }
+
+        $('#datatablemodal tbody').empty();
+
+        // Make AJAX request to load data into the modal's DataTable
         $.ajax({
-            url: route, 
+            url: route,
             method: "GET",
             headers: {
-                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
-                    "content"
-                ),
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
             },
             success: function (res) {
+                if ($.fn.DataTable.isDataTable('#datatablemodal')) {
+                    $('#datatablemodal').DataTable().clear().destroy();
+                }
+                // Initialize DataTable on the modal's table
                 $("#datatablemodal").DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: route,
-                    columns: [{
+                    ajax: route, // This should be the same route used to load the data
+                    columns: [
+                        {
                             data: 'DT_RowIndex',
                             orderable: false,
                             searchable: false,
@@ -99,12 +105,16 @@ $("#datatabledistribusi").on("click", ".action", function () {
                             data: 'service_price',
                             name: 'service_price'
                         },
-                        
                     ],
                 });
+
+                // Optional: Apply styling to the length select box (if necessary)
                 $(".dataTables_length select").addClass("form-select form-select-sm");
             },
+            error: function () {
+                // Handle any errors if the AJAX call fails
+                alert("Failed to load data for the table.");
+            }
         });
     }
-   
 });
