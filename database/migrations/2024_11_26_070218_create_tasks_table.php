@@ -15,11 +15,13 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('project_id')->references('id')->on('projects')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignUuid('vendor_id')->references('id')->on('vendors')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignUuid('parent_id')->nullable()->references('id')->on('tasks')->onDelete('cascade');
             $table->string('title');
             $table->longText('description');
             $table->date('start_date');
             $table->date('end_date');
-            $table->enum('status',['pending','in_progres','complated','canceled'])->default('pending');
+            $table->date('complated_date');
+            $table->enum('status',['pending','in_progres','complated','overdue'])->default('pending');
             $table->enum('priority',['low','medium','high'])->default('low');
             $table->timestamps();
         });

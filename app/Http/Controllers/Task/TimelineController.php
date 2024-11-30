@@ -19,32 +19,44 @@ class TimelineController extends Controller
 
 
     public function timeline(Request $request)
-    {
-        // Ambil data project tasks beserta assignee
-        $tasks = Task::with(['taskassign','vendor','project'])->get();
+{
+    // Ambil data project tasks beserta relasi terkait
+    $tasks = Task::with(['taskassign', 'vendor', 'project'])->get();
 
-        $events = $tasks->map(function ($task) {
-            return [
-                'id' => $task->id,
-                'title' => $task->title,
-                'start' => $task->start_date,
-                'end' => $task->end_date,
-                
-            ];
-        });
+    // Map data tasks menjadi events
+    $events = $tasks->map(function ($task) {
+        return [
+            'id' => $task->id,
+            'resourceId' => $task->id, // ID dari task atau sub-task
+            'title' => $task->title,
+            'start' => $task->start_date,
+            'end' => $task->end_date,
+            // 'color' => $task->status == 'completed' ? '#28a745' : '#dc3545', // Warna sesuai status
+            // 'textColor' => '#ffffff',
+        ];
+    });
+
+    // Strukturkan resources dengan sub-task
+    $resources = $tasks->groupBy('project.id')->map(function ($groupedTasks, $projectId) {
+        $projectName = $groupedTasks->first()->project->name;
+
+        return [
+            'id' => $projectId, // ID unik untuk project
+            'task' => $projectName, // Nama project (task utama)
+            'children' => $groupedTasks->map(function ($task) {
+                return [
+                    'id' => $task->id,
+                    'task' => $task->title, // Sub-task
+                ];
+            })->values()->toArray(),
+        ];
+    })->values()->toArray();
+
     
-        // Ambil data resources (misalnya gedung atau ruangan)
-        $resources = Task::with('project', 'vendor')->get()->map(function ($task) {
-            return [
-                'id' => $task->id,
-                'project' => $task->project->name,
-                'task' => $task->title,
-            ];
-        });
-    
-        return response()->json([
-            'events' => $events,
-            'resources' => $resources,
-        ]);
-    }
+    return response()->json([
+        'events' => $events,
+        'resources' => $resources,
+    ]);
+}
+
 }

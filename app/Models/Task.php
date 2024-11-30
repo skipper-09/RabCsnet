@@ -12,7 +12,7 @@ class Task extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['project_id','vendor_id','title','description','start_date','end_date','status','priority'];
+    protected $fillable = ['project_id','vendor_id','parent_id','title','description','start_date','end_date','status','priority','complated_date'];
     protected static function boot()
     {
         parent::boot();

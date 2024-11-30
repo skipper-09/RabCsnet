@@ -66,83 +66,85 @@
 <!-- Calendar init -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-    
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialDate: new Date(), // Set tanggal awal
-            editable: false,
-            selectable: false,
-            nowIndicator: false,
-            aspectRatio: 1.8,
-            headerToolbar: {
-                left: 'today prev,next',
-                center: 'title',
-                right: 'resourceTimelineYear,resourceTimelineMonth,resourceTimelineWeek'
-            },
-            initialView: 'resourceTimelineYear', // Default ke Year
-            views: {
-                resourceTimelineYear: {
-                    type: 'resourceTimeline',
-                    duration: { years: 3 }, // Durasi 3 tahun
-                    buttonText: 'Year',
-                    slotDuration: { months: 1 },
-                    slotLabelFormat: [{ year: 'numeric', month: 'short' }],
-                    slotLabelInterval: { months: 1 }
-                },
-                resourceTimelineMonth: {
-                    type: 'resourceTimeline',
-                    duration: { weeks: 12 }, // Durasi 12 minggu
-                    buttonText: 'Month',
-                    slotDuration: { days: 7 },
-                    slotLabelFormat: [{ weekday: 'short', month: 'numeric', day: 'numeric', omitCommas: true }]
-                },
-                resourceTimelineWeek: {
-                    type: 'resourceTimeline',
-                    duration: { days: 20 }, // Durasi 1 bulan
-                    buttonText: 'Week',
-                    slotDuration: { days: 7 },
-                    slotLabelFormat: [{ weekday: 'long', month: 'numeric', day: 'numeric', omitCommas: true }],
-                    slotLabelInterval: { days: 1 }
-                }
-            },
-            resourceAreaWidth: '40%',
-            resourceAreaColumns: [
-                {
-                    group: true,
-                    headerContent: 'Project',
-                    field: 'project'
-                },
-                {
-                    headerContent: 'Task',
-                    field: 'task',
-                }
-            ],
-            resources: [],
-            events: function(fetchInfo, successCallback, failureCallback) {
-                fetch('{{ route('tasks.data') }}') 
-                    .then(response => response.json())
-                    .then(data => {
-                      
-                        successCallback(data.events);
+    var calendarEl = document.getElementById('calendar');
 
-                        const resources = data.resources.map(resource => ({
-                        id: resource.id,
-                        project: resource.project,
-                        task: resource.task,
-                    }));
-                    calendar.setOption('resources', resources);
-                       
-                    })
-                    .catch(error => {
-                        console.error('Error fetching events:', error);
-                        failureCallback(error);
-                    });
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialDate: new Date(),
+        editable: false,
+        selectable: false,
+        nowIndicator: false,
+        aspectRatio: 2.0,
+        headerToolbar: {
+            left: 'today prev,next',
+            center: 'title',
+            right: 'resourceTimelineYear,resourceTimelineMonth,resourceTimelineWeek'
+        },
+        initialView: 'resourceTimelineYear',
+        views: {
+            resourceTimelineYear: {
+                type: 'resourceTimeline',
+                duration: { years: 1 },
+                buttonText: 'Year',
+                slotDuration: { months: 1 },
+                slotLabelFormat: [{ year: 'numeric' }, { month: 'short' }]
             },
-        });
-    
-        calendar.render();
+            resourceTimelineMonth: {
+                type: 'resourceTimeline',
+                duration: { month: 2 },
+                buttonText: 'Month',
+                slotDuration: { days: 1 },
+                slotLabelFormat: [{month:'long'},{ weekday: 'short', day: 'numeric', omitCommas: true }]
+            },
+            resourceTimelineWeek: {
+                type: 'resourceTimeline',
+                duration: { days: 7 },
+                buttonText: 'Week',
+                slotDuration: { days: 1 },
+                slotLabelFormat: [{ weekday: 'long', month: 'short', day: 'numeric', omitCommas: true }]
+            }
+        },
+        resourceAreaWidth: '40%',
+        resourceAreaColumns: [
+            {
+                headerContent: 'Task',
+                field: 'task'
+            },
+            {
+                headerContent: 'Progress',
+                field: 'progress'
+            }
+        ],
+        resources: function(fetchInfo, successCallback, failureCallback) {
+            // Fetch resources from the server
+            fetch('{{ route('tasks.data') }}')
+                .then(response => response.json())
+                .then(data => {
+                    successCallback(data.resources); // Pass the resources to FullCalendar
+                })
+                .catch(error => {
+                    console.error('Error fetching resources:', error);
+                    failureCallback(error); // Call failure callback in case of error
+                });
+        },
+        events: function(fetchInfo, successCallback, failureCallback) {
+            // Fetch events from the server
+            fetch('{{ route('tasks.data') }}')
+                .then(response => response.json())
+                .then(data => {
+                    successCallback(data.events); // Pass the events to FullCalendar
+                })
+                .catch(error => {
+                    console.error('Error fetching events:', error);
+                    failureCallback(error); // Call failure callback in case of error
+                });
+        }
     });
+
+    calendar.render();
+});
+
 </script>
+
 
 
 
