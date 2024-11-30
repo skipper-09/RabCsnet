@@ -75,6 +75,27 @@
                                             @enderror
                                         </div>
                                     </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="validationCustom01" class="form-label required">
+                                                Vendor
+                                            </label>
+                                            <select name="vendor_id"
+                                                class="form-control  @error('vendor_id') is-invalid @enderror select2"
+                                                aria-label="Default select example">
+                                                <option selected value="">Pilih Vendor</option>
+                                                @foreach ($vendor as $item)
+                                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('vendor_id')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
                                     {{-- <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label required">
