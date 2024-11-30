@@ -263,7 +263,7 @@ class ProjectReviewController extends Controller
 
                     // Set status ke in_review untuk review accounting
                     $project->status_pengajuan = 'in_review';
-                    $project->start_status = 0;
+                    // $project->start_status = 0;
                     break;
 
                 case 'Owner':
@@ -285,15 +285,15 @@ class ProjectReviewController extends Controller
                     // Jika status pengajuan rejected, maka status adalah canceled
                     if ($project->status_pengajuan == 'rejected') {
                         $project->status = 'canceled';
-                        $project->start_status = 1;
+                        $project->start_status = 0;
 
                         // Hapus file project dan summary berdasarkan project id
                         ProjectFile::where('project_id', $project->id)->delete();
                         Summary::where('project_id', $project->id)->delete();
                     } elseif ($project->status_pengajuan == 'revision') {
                         $project->status = 'canceled';
-                        $project->start_status = 1; // 0 = false, 1 = true
-                    
+                        $project->start_status = 0;
+
                         // Hapus file project dan summary berdasarkan project id
                         ProjectFile::where('project_id', $project->id)->delete();
                         Summary::where('project_id', $project->id)->delete();
@@ -318,7 +318,7 @@ class ProjectReviewController extends Controller
                     // Jika status pengajuan rejected, maka status adalah canceled
                     if ($project->status_pengajuan == 'rejected' || $project->status_pengajuan == 'revision') {
                         $project->status = 'canceled';
-                        $project->start_status = 1;
+                        $project->start_status = 0;
 
                         // Hapus file project dan summary berdasarkan project id
                         ProjectFile::where('project_id', $project->id)->delete();
@@ -504,7 +504,7 @@ class ProjectReviewController extends Controller
 
                             if ($validated['status_pengajuan'] == 'rejected') {
                                 $project->status = 'canceled';
-                                $project->start_status = 1;
+                                $project->start_status = 0;
 
                                 // Delete related project files and summaries
                                 ProjectFile::where('project_id', $project->id)->delete();
@@ -512,7 +512,7 @@ class ProjectReviewController extends Controller
                             } elseif ($validated['status_pengajuan'] == 'revision') {
                                 $project->status = 'canceled';
                                 $project->start_status = 0; // 0 = false, 1 = true
-                            
+
                                 // Delete related project files and summaries
                                 ProjectFile::where('project_id', $project->id)->delete();
                                 Summary::where('project_id', $project->id)->delete();
@@ -534,7 +534,7 @@ class ProjectReviewController extends Controller
 
                         if ($validated['status_pengajuan'] == 'rejected' || $validated['status_pengajuan'] == 'revision') {
                             $project->status = 'canceled';
-                            $project->start_status = 1;
+                            $project->start_status = 0;
 
                             // Delete related project files and summaries
                             ProjectFile::where('project_id', $project->id)->delete();
