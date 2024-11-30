@@ -92,6 +92,7 @@ class TaskController extends Controller
             'tittle' => 'Task',
             'projects' => Project::where('status_pengajuan', 'approved')->get(), // Changed from Task to Project
             'vendors' => Vendor::all(),
+            'parentTasks' => Task::whereNull('parent_id')->get(),
         ];
 
         return view('pages.tasks.add', $data);
@@ -107,6 +108,7 @@ class TaskController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'priority' => 'required|in:low,medium,high',
+            'parent_id' => 'nullable|exists:tasks,id',
         ], [
             'project_id.required' => 'Project is required',
             'project_id.exists' => 'Project not found',
@@ -152,6 +154,7 @@ class TaskController extends Controller
                 'end_date' => $request->end_date,
                 'status' => 'pending',
                 'priority' => $request->priority,
+                'parent_id' => $request->parent_id,
             ]);
 
             return redirect()->route('tasks')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Task!']);
@@ -169,6 +172,7 @@ class TaskController extends Controller
             'tasks' => Task::findOrFail($id), // Changed from 'tasks' to 'task'
             'projects' => Project::where('status_pengajuan', 'approved')->get(),
             'vendors' => Vendor::all(),
+            'parentTasks' => Task::whereNull('parent_id')->get(),
         ];
 
         return view('pages.tasks.edit', $data);
@@ -185,6 +189,7 @@ class TaskController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
             'status' => 'required|in:pending,in_progres,complated,canceled',
             'priority' => 'required|in:low,medium,high',
+            'parent_id' => 'nullable|exists:tasks,id',
         ], [
             'project_id.required' => 'Project is required',
             'project_id.exists' => 'Project not found',
@@ -215,6 +220,7 @@ class TaskController extends Controller
                 'end_date' => $request->end_date,
                 'status' => $request->status,
                 'priority' => $request->priority,
+                'parent_id' => $request->parent_id,
             ]);
 
             return redirect()->route('tasks')->with(['status' => 'Success', 'message' => 'Berhasil Mengupdate Task!']);

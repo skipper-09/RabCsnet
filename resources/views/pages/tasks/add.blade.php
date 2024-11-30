@@ -37,20 +37,41 @@
                             <form action="{{ route('tasks.store') }}" method="POST" enctype="multipart/form-data"
                                 class="needs-validation" novalidate>
                                 @csrf
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label for="validationCustom01" class="form-label required">Judul</label>
-                                        <input type="text" name="title" value="{{ old('title') }}"
-                                            class="form-control @error('title') is-invalid @enderror"
-                                            id="validationCustom01">
-                                        @error('title')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-                                </div>
                                 <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="validationCustom01" class="form-label required">Judul</label>
+                                            <input type="text" name="title" value="{{ old('title') }}"
+                                                class="form-control @error('title') is-invalid @enderror"
+                                                id="validationCustom01">
+                                            @error('title')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="validationCustom01" class="form-label required">
+                                                Sub Tugas
+                                            </label>
+                                            <select name="parent_id"
+                                                class="form-control select2 @error('parent_id') is-invalid @enderror"
+                                                aria-label="Default select example" id="parent_id">
+                                                <option selected>Pilih Sub Tugas</option>
+                                                @foreach ($parentTasks as $project)
+                                                    <option value="{{ $parentTask->id }}">{{ $parentTask->title }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('parent_id')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label required">
@@ -275,7 +296,7 @@
 
             // Reload page after modal is closed (optional)
             $('#validationModal').on('hidden.bs.modal', function() {
-                location.reload();  // Uncomment if you want to reload the page after closing
+                location.reload(); // Uncomment if you want to reload the page after closing
             });
         </script>
     @endpush
