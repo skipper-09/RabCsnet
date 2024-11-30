@@ -20,7 +20,7 @@ return new class extends Migration
             $table->longText('description');
             $table->date('start_date');
             $table->date('end_date');
-            $table->date('complated_date');
+            $table->date('complated_date')->nullable();
             $table->enum('status',['pending','in_progres','complated','overdue'])->default('pending');
             $table->enum('priority',['low','medium','high'])->default('low');
             $table->timestamps();

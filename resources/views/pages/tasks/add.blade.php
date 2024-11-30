@@ -53,15 +53,14 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label required">
+                                            <label for="validationCustom01" class="form-label">
                                                 Sub Tugas
                                             </label>
-                                            <select name="parent_id"
-                                                class="form-control select2 @error('parent_id') is-invalid @enderror"
-                                                aria-label="Default select example" id="parent_id">
-                                                <option selected>Pilih Sub Tugas</option>
-                                                @foreach ($parentTasks as $project)
-                                                    <option value="{{ $parentTask->id }}">{{ $parentTask->title }}
+                                            <select name="parent_id" class="form-control select2 @error('parent_id') is-invalid @enderror" aria-label="Default select example" id="parent_id">
+                                                <option value="">Pilih Sub Tugas (Opsional)</option>
+                                                @foreach ($parentTasks as $parentTask)
+                                                    <option value="{{ $parentTask->id }}" {{ old('parent_id') == $parentTask->id ? 'selected' : '' }}>
+                                                        {{ $parentTask->title }}
                                                     </option>
                                                 @endforeach
                                             </select>

@@ -108,7 +108,7 @@ class TaskController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'priority' => 'required|in:low,medium,high',
-            'parent_id' => 'nullable|exists:tasks,id',
+            'parent_id' => 'nullable|exists:tasks,id|sometimes'
         ], [
             'project_id.required' => 'Project is required',
             'project_id.exists' => 'Project not found',
@@ -145,7 +145,7 @@ class TaskController extends Controller
         }
 
         try {
-            Task::create([
+            $task = Task::create([
                 'project_id' => $request->project_id,
                 'vendor_id' => $request->vendor_id,
                 'title' => $request->title,
@@ -157,8 +157,19 @@ class TaskController extends Controller
                 'parent_id' => $request->parent_id,
             ]);
 
+            // Log task creation
+            \Log::info('Task Created Successfully', [
+                'task_id' => $task->id,
+                'task_title' => $task->title
+            ]);
+
             return redirect()->route('tasks')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Task!']);
         } catch (Exception $e) {
+            \Log::error('Task Creation Failed', [
+                'error_message' => $e->getMessage(),
+                'error_trace' => $e->getTraceAsString()
+            ]);
+    
             return redirect()->back()
                 ->with('error', 'Failed to add data: ' . $e->getMessage())
                 ->withInput();
