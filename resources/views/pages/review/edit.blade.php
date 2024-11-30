@@ -71,6 +71,7 @@
                                                 <option value="in_review" {{ $review->project->status_pengajuan == 'in_review' ? 'selected' : '' }}>In Review</option>
                                                 <option value="approved" {{ $review->project->status_pengajuan == 'approved' ? 'selected' : '' }}>Approved</option>
                                                 <option value="rejected" {{ $review->project->status_pengajuan == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                                <option value="revision" {{ $review->project->status_pengajuan == 'revision' ? 'selected' : '' }}>Revisi</option>
                                             </select>
                                         </div>
                                     </div>
