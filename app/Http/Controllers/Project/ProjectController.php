@@ -83,6 +83,8 @@ class ProjectController extends Controller
                     $status_pengajuan = '<span class="badge badge-pill badge-soft-info font-size-13">In Review</span>';
                 } else if ($data->status_pengajuan == 'approved') {
                     $status_pengajuan = '<span class="badge badge-pill badge-soft-success font-size-13">Approved</span>';
+                } else if ($data->status_pengajuan == 'revision') {
+                    $status_pengajuan = '<span class="badge badge-pill badge-soft-warning font-size-13">Revision</span>';
                 } else {
                     $status_pengajuan = '<span class="badge badge-pill badge-soft-danger font-size-13">Rejected</span>';
                 }

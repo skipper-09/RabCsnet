@@ -65,6 +65,8 @@ class ProjectReviewController extends Controller
                         return '<span class="badge bg-success">Approved</span>';
                     case 'rejected':
                         return '<span class="badge bg-danger">Rejected</span>';
+                    case 'revision':
+                        return '<span class="badge bg-warning">Revision</span>';
                     default:
                         return '<span class="badge bg-secondary">Unknown</span>';
                 }
@@ -170,7 +172,7 @@ class ProjectReviewController extends Controller
 
             case 'Developer':
                 // Untuk Developer, ambil SEMUA project yang belum fully reviewed
-                $projects = Project::whereIn('status_pengajuan', ['pending', 'in_review'])
+                $projects = Project::whereIn('status_pengajuan', ['pending', 'in_review', 'revision'])
                     ->whereHas('Projectfile')
                     ->with([
                         'Projectfile',
@@ -288,6 +290,13 @@ class ProjectReviewController extends Controller
                         // Hapus file project dan summary berdasarkan project id
                         ProjectFile::where('project_id', $project->id)->delete();
                         Summary::where('project_id', $project->id)->delete();
+                    } elseif ($project->status_pengajuan == 'revision') {
+                        $project->status = 'canceled';
+                        $project->start_status = 1; // 0 = false, 1 = true
+                    
+                        // Hapus file project dan summary berdasarkan project id
+                        ProjectFile::where('project_id', $project->id)->delete();
+                        Summary::where('project_id', $project->id)->delete();
                     }
                     break;
 
@@ -307,7 +316,7 @@ class ProjectReviewController extends Controller
                     // Developer bisa merubah status ke in_review atau approved
                     $project->status_pengajuan = $request->input('status_pengajuan', 'in_review');
                     // Jika status pengajuan rejected, maka status adalah canceled
-                    if ($project->status_pengajuan == 'rejected') {
+                    if ($project->status_pengajuan == 'rejected' || $project->status_pengajuan == 'revision') {
                         $project->status = 'canceled';
                         $project->start_status = 1;
 
@@ -500,7 +509,15 @@ class ProjectReviewController extends Controller
                                 // Delete related project files and summaries
                                 ProjectFile::where('project_id', $project->id)->delete();
                                 Summary::where('project_id', $project->id)->delete();
+                            } elseif ($validated['status_pengajuan'] == 'revision') {
+                                $project->status = 'canceled';
+                                $project->start_status = 0; // 0 = false, 1 = true
+                            
+                                // Delete related project files and summaries
+                                ProjectFile::where('project_id', $project->id)->delete();
+                                Summary::where('project_id', $project->id)->delete();
                             }
+
                             $project->save();
                         } else {
                             throw new Exception('Owner hanya dapat mengubah status menjadi approved atau rejected.');
@@ -515,7 +532,7 @@ class ProjectReviewController extends Controller
                     if (isset($validated['status_pengajuan'])) {
                         $project->status_pengajuan = $validated['status_pengajuan'];
 
-                        if ($validated['status_pengajuan'] == 'rejected') {
+                        if ($validated['status_pengajuan'] == 'rejected' || $validated['status_pengajuan'] == 'revision') {
                             $project->status = 'canceled';
                             $project->start_status = 1;
 

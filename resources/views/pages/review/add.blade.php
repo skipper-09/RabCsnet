@@ -142,9 +142,11 @@
                                                             <option value="in_review">In Review</option>
                                                             <option value="approved">Approved</option>
                                                             <option value="rejected">Rejected</option>
+                                                            <option value="revision">Revisi</option>
                                                         @else
                                                             <option value="approved">Approved</option>
                                                             <option value="rejected">Rejected</option>
+                                                            <option value="revision">Revisi</option>
                                                         @endif
                                                     </select>
                                                 </div>
