@@ -4,6 +4,11 @@
 
 @push('css')
 <!-- Plugin css -->
+<style>
+    .fc-license-message{
+        display: none;
+    }
+</style>
 
 @endpush
 

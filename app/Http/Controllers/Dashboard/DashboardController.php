@@ -57,7 +57,7 @@ class DashboardController extends Controller
 
         // Data yang akan diteruskan ke view
         $data = [
-            'tittle' => 'Dashboard', // Perbaiki typo 'tittle' menjadi 'title'
+            'tittle' => 'Dashboard', 
             'totalProjectsNotReviewed' => $totalProjectsNotReviewed,
             'totalCompletedProjects' => $totalCompletedProjects,
             'projectsToReview' => $projectsToReview,

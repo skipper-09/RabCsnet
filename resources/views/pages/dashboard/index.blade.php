@@ -1,5 +1,12 @@
 @extends('layout.base')
 @section('tittle', $tittle)
+
+@push('css')
+    <!-- DataTables CSS -->
+    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet"
+        type="text/css" />
+    <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+@endpush
 @section('content')
     <!-- start page title -->
     <div class="page-title-box">
@@ -24,83 +31,7 @@
     <div class="container-fluid">
         <div class="page-content-wrapper">
             <div class="row">
-                {{-- <div class="col-xl-8">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="header-title mb-4 float-sm-start">Quick Summary</h4>
-                            <div class="float-sm-end">
-                                <ul class="nav nav-pills">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">Day</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">Week</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">Month</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link active" href="#">Year</a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="clearfix"></div>
-                            <div class="row align-items-center">
-                                <div class="col-xl-9">
-                                    <div>
-                                        <div id="stacked-column-chart" class="apex-charts" dir="ltr"></div>
-                                    </div>
-                                </div>
-
-                                <div class="col-xl-3">
-                                    <div class="dash-info-widget mt-4 mt-lg-0 py-4 px-3 rounded">
-                                        <div class="media dash-main-border pb-2 mt-2">
-                                            <div class="avatar-sm mb-3 mt-2">
-                                                <span class="avatar-title rounded-circle bg-white shadow">
-                                                    <i class="mdi mdi-currency-inr text-primary font-size-18"></i>
-                                                </span>
-                                            </div>
-                                            <div class="media-body ps-3">
-                                                <h4 class="font-size-20">$2354</h4>
-                                                <p class="text-muted">Earning <a href="#"
-                                                        class="text-primary">Withdraw <i
-                                                            class="mdi mdi-arrow-right"></i></a>
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div class="media mt-4 dash-main-border pb-2">
-                                            <div class="avatar-sm mb-3 mt-2">
-                                                <span class="avatar-title rounded-circle bg-white shadow">
-                                                    <i class="mdi mdi-credit-card-outline text-primary font-size-18"></i>
-                                                </span>
-                                            </div>
-                                            <div class="media-body ps-3">
-                                                <h4 class="font-size-20">$1598</h4>
-                                                <p class="text-muted">To Paid <a href="#" class="text-primary">Pay <i
-                                                            class="mdi mdi-arrow-right"></i></a></p>
-                                            </div>
-                                        </div>
-
-                                        <div class="media mt-4">
-                                            <div class="avatar-sm mb-2 mt-2">
-                                                <span class="avatar-title rounded-circle bg-white shadow">
-                                                    <i class="mdi mdi-eye-outline text-primary font-size-18"></i>
-                                                </span>
-                                            </div>
-                                            <div class="media-body ps-3">
-                                                <h4 class="font-size-20">1230</h4>
-                                                <p class="text-muted mb-0">To Online <a href="#"
-                                                        class="text-primary">View <i class="mdi mdi-arrow-right"></i></a>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> --}}
+                
                 <div class="col-md-12">
                     <div class="row">
                         <!-- Kartu: Total Proyek Belum Direview -->
@@ -161,6 +92,50 @@
                                     </div>
                                 </div>
                             </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="header-title mb-4 float-sm-start">Project Summary</h4>
+                            {{-- <div class="float-sm-end">
+                                <ul class="nav nav-pills">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#">Day</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#">Week</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#">Month</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link active" href="#">Year</a>
+                                    </li>
+                                </ul>
+                            </div> --}}
+                            <div class="clearfix"></div>
+                            <div class="row align-items-center">
+                                <div class="col-xl-12">
+                                    <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Nama Projek</th>
+                                                <th>Perusahaan</th>
+                                                <th>Status</th>
+                                                <th>Penanggung Jawab</th>
+                                                <th>Tanggal Selesai</th>
+                                                <th>Status</th>
+                                                <th>Progress</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+
+                               
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -792,4 +767,56 @@
             </div> --}}
         </div>
     </div> <!-- container-fluid -->
+
+
+    @push('js')
+    <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
+        <script>
+             $(document).ready(function() {
+                // Initialize DataTable
+                $("#datatable").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: '{{ route('project.getdata') }}',
+                    columns: [
+                        {
+                            data: 'DT_RowIndex',
+                            orderable: false,
+                            searchable: false,
+                            class: 'text-center',
+                        },
+                        {
+                            data: 'name',
+                            name: 'name'
+                        },
+                        {
+                            data: 'company',
+                            name: 'company'
+                        },
+                        {
+                            data: 'status',
+                            name: 'status'
+                        },
+                        {
+                            data: 'status_pengajuan',
+                            name: 'status_pengajuan'
+                        },
+                        {
+                            data: 'review',
+                            name: 'review'
+                        },
+                        {
+                            data: 'reviewer',
+                            name: 'reviewer'
+                        },
+                        
+                    ],
+                });
+                $(".dataTables_length select").addClass("form-select form-select-sm");
+            });
+        </script>
+    @endpush
 @endsection
