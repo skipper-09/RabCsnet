@@ -95,7 +95,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-8">
                     <div class="card">
                         <div class="card-body">
                             <h4 class="header-title mb-4 float-sm-start">Project Summary</h4>
