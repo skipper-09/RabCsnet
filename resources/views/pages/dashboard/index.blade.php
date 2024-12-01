@@ -95,47 +95,25 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-8">
+                <div class="col-md-12">
                     <div class="card">
                         <div class="card-body">
                             <h4 class="header-title mb-4 float-sm-start">Project Summary</h4>
-                            {{-- <div class="float-sm-end">
-                                <ul class="nav nav-pills">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">Day</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">Week</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">Month</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link active" href="#">Year</a>
-                                    </li>
-                                </ul>
-                            </div> --}}
                             <div class="clearfix"></div>
-                            <div class="row align-items-center">
-                                <div class="col-xl-12">
-                                    <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
-                                        <thead>
-                                            <tr>
-                                                <th>No</th>
-                                                <th>Nama Projek</th>
-                                                <th>Perusahaan</th>
-                                                <th>Status</th>
-                                                <th>Penanggung Jawab</th>
-                                                <th>Tanggal Selesai</th>
-                                                <th>Status</th>
-                                                <th>Progress</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                </div>
-
-                               
-                            </div>
+                            <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Project</th>
+                                        <th>Perusahaan</th>
+                                        <th>Status</th>
+                                        <th>Penanggung Jawab</th>
+                                        <th>Tanggal Selesai</th>
+                                        <th>Status</th>
+                                        <th>Progress</th>
+                                    </tr>
+                                </thead>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -807,12 +785,7 @@
                         {
                             data: 'review',
                             name: 'review'
-                        },
-                        {
-                            data: 'reviewer',
-                            name: 'reviewer'
-                        },
-                        
+                        }
                     ],
                 });
                 $(".dataTables_length select").addClass("form-select form-select-sm");
