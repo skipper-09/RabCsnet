@@ -31,7 +31,7 @@
     <div class="container-fluid">
         <div class="page-content-wrapper">
             <div class="row">
-                
+
                 <div class="col-md-12">
                     <div class="row">
                         <!-- Kartu: Total Proyek Belum Direview -->
@@ -101,8 +101,8 @@
                             <h4 class="header-title mb-4 float-sm-start">Project Summary</h4>
                             <div class="clearfix"></div>
                             <div class="row align-items-center">
-                                <div class="col-12">
-                                    <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
+                                <div class="col-12 table-responsive">
+                                    <table id="datatable" class="table  table-hover" style="width: 100%;">
                                         <thead>
                                             <tr>
                                                 <th>Nama Projek</th>
@@ -113,7 +113,7 @@
                                                 <th>Progress</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        {{-- <tbody>
                                             @foreach ($project as $item)
                                                 <tr>
                                                     <td>{{ $item->name }}</td>
@@ -124,46 +124,46 @@
                                                     <td>{{ $item->end_date }}</td>
                                                 </tr>
                                             @endforeach
-                                        </tbody>
+                                        </tbody> --}}
                                     </table>
-                                </div>                             
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-xl-4 col-md-4">
-                    
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="text-left">
-                                    <p class="font-size-16 fw-bold">Overall Progress</p>
-                                    <div id="list-chart-2" class="apex-charts" dir="ltr"></div>
-                                    <div class="row no-gutters mt-4">
-                                        <div class="col-4">
-                                            <div class="mt-1 fw-bold">
-                                                <h4>{{ $projectall }}</h4>
-                                                <p class="text-muted mb-1">Total Project</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="mt-1">
-                                                <h4 class="text-success">{{ $projeccomplate }}</h4>
-                                                <p class="text-success mb-1">Complate</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="mt-1">
-                                                <h4 class="text-primary">{{ $projectinprogres }}</h4>
-                                                <p class="text-primary mb-1">In Progress</p>
-                                            </div>
-                                        </div>
 
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="text-left">
+                                <p class="font-size-16 fw-bold">Overall Progress</p>
+                                <div id="list-chart-2" class="apex-charts" dir="ltr"></div>
+                                <div class="row no-gutters mt-4">
+                                    <div class="col-4">
+                                        <div class="mt-1 fw-bold">
+                                            <h4>{{ $projectall }}</h4>
+                                            <p class="text-muted mb-1">Total Project</p>
+                                        </div>
                                     </div>
+                                    <div class="col-4">
+                                        <div class="mt-1">
+                                            <h4 class="text-success">{{ $projeccomplate }}</h4>
+                                            <p class="text-success mb-1">Complate</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="mt-1">
+                                            <h4 class="text-primary">{{ $projectinprogres }}</h4>
+                                            <p class="text-primary mb-1">In Progress</p>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
-                    
-                </div>  
+                    </div>
+
+                </div>
             </div>
 
             {{-- <div class="row">
@@ -795,26 +795,26 @@
 
 
     @push('js')
-    <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ asset('assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
 
-    <script src="{{ asset('assets/libs/apexcharts/apexcharts.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/apexcharts/apexcharts.min.js') }}"></script>
         <script>
-             $(document).ready(function() {
+            $(document).ready(function() {
                 // Initialize DataTable
                 $("#datatable").DataTable({
                     processing: true,
                     serverSide: true,
                     ajax: '{{ route('dashboard.data') }}',
                     columns: [
-                        {
-                            data: 'DT_RowIndex',
-                            orderable: false,
-                            searchable: false,
-                            class: 'text-center',
-                        },
+                        // {
+                        //     data: 'DT_RowIndex',
+                        //     orderable: false,
+                        //     searchable: false,
+                        //     class: 'text-center',
+                        // },
                         {
                             data: 'name',
                             name: 'name'
@@ -839,11 +839,11 @@
                             data: 'status',
                             name: 'status'
                         },
-                        {
-                            data: 'progres',
-                            name: 'progres'
-                        },
-                        
+                        // {
+                        //     data: 'progres',
+                        //     name: 'progres'
+                        // },
+
                     ],
                 });
                 $(".dataTables_length select").addClass("form-select form-select-sm");
