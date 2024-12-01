@@ -119,11 +119,11 @@ class TaskController extends Controller
         // Vendors logic based on user role
         if (in_array($currentUserRole, ['Accounting', 'Owner', 'Developer'])) {
             $baseData['projects'] = Project::where('status_pengajuan', 'approved')->get();
-            $baseData['vendors'] = Vendor::all();
         } else {
             // For Vendor role or other roles
-            $baseData['projects'] = Project::where('status_pengajuan', 'approved')->where('vendor_id', $currentUser->vendor_id)->get();
-            $baseData['vendors'] = Vendor::where('id', $currentUser->vendor_id)->get();
+            $baseData['projects'] = Project::where('status_pengajuan', 'approved')
+                ->where('vendor_id', $currentUser->vendor_id)
+                ->get();
         }
 
         return view('pages.tasks.add', $baseData);
@@ -134,7 +134,6 @@ class TaskController extends Controller
         // Validate input
         $validatedData = $request->validate([
             'project_id' => 'required|exists:projects,id',
-            'vendor_id' => 'required|exists:vendors,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'start_date' => 'required|date',
@@ -144,8 +143,6 @@ class TaskController extends Controller
         ], [
             'project_id.required' => 'Project is required',
             'project_id.exists' => 'Project not found',
-            'vendor_id.required' => 'Vendor is required',
-            'vendor_id.exists' => 'Vendor not found',
             'title.required' => 'Title is required',
             'title.max' => 'Title is too long',
             'start_date.required' => 'Start date is required',
@@ -160,6 +157,9 @@ class TaskController extends Controller
         // Retrieve the project
         $project = Project::findOrFail($request->project_id);
 
+        // Get vendor_id from the project
+        $vendor_id = $project->vendor_id;
+
         // Validate project dates
         $this->validateProjectDates($project, $request->start_date, $request->end_date);
 
@@ -169,7 +169,7 @@ class TaskController extends Controller
 
         // Additional vendor validation for non-admin roles
         if (!in_array($currentUserRole, ['Accounting', 'Owner', 'Developer'])) {
-            if ($request->vendor_id != $currentUser->vendor_id) {
+            if ($vendor_id != $currentUser->vendor_id) {
                 return redirect()->back()
                     ->with('error', 'You are not authorized to create tasks for this vendor.')
                     ->withInput();
@@ -181,7 +181,7 @@ class TaskController extends Controller
 
             $task = Task::create([
                 'project_id' => $request->project_id,
-                'vendor_id' => $request->vendor_id,
+                'vendor_id' => $vendor_id, // Use vendor_id from project
                 'title' => $request->title,
                 'description' => $request->description,
                 'start_date' => $request->start_date,
@@ -261,14 +261,14 @@ class TaskController extends Controller
             'parentTasks' => Task::whereNull('parent_id')->get(),
         ];
 
-        // Vendors logic based on user role
+        // Projects logic based on user role
         if (in_array($currentUserRole, ['Accounting', 'Owner', 'Developer'])) {
             $baseData['projects'] = Project::where('status_pengajuan', 'approved')->get();
-            $baseData['vendors'] = Vendor::all();
         } else {
             // For Vendor role or other roles
-            $baseData['projects'] = Project::where('status_pengajuan', 'approved')->where('vendor_id', $currentUser->vendor_id)->get();
-            $baseData['vendors'] = Vendor::where('id', $currentUser->vendor_id)->get();
+            $baseData['projects'] = Project::where('status_pengajuan', 'approved')
+                ->where('vendor_id', $currentUser->vendor_id)
+                ->get();
         }
 
         return view('pages.tasks.edit', $baseData);
@@ -279,7 +279,6 @@ class TaskController extends Controller
         // Validate input
         $validatedData = $request->validate([
             'project_id' => 'required|exists:projects,id',
-            'vendor_id' => 'required|exists:vendors,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'start_date' => 'required|date',
@@ -290,8 +289,6 @@ class TaskController extends Controller
         ], [
             'project_id.required' => 'Project is required',
             'project_id.exists' => 'Project not found',
-            'vendor_id.required' => 'Vendor is required',
-            'vendor_id.exists' => 'Vendor not found',
             'title.required' => 'Title is required',
             'title.max' => 'Title is too long',
             'start_date.required' => 'Start date is required',
@@ -309,13 +306,16 @@ class TaskController extends Controller
         $task = Task::findOrFail($id);
         $project = Project::findOrFail($request->project_id);
 
+        // Get vendor_id from the project
+        $vendor_id = $project->vendor_id;
+
         // Current authenticated user
         $currentUser = Auth::user();
         $currentUserRole = $currentUser->roles->first()->name;
 
         // Additional vendor validation for non-admin roles
         if (!in_array($currentUserRole, ['Accounting', 'Owner', 'Developer'])) {
-            if ($request->vendor_id != $currentUser->vendor_id) {
+            if ($vendor_id != $currentUser->vendor_id) {
                 return redirect()->back()
                     ->with('error', 'You are not authorized to update tasks for this vendor.')
                     ->withInput();
@@ -330,7 +330,7 @@ class TaskController extends Controller
 
             $task->update([
                 'project_id' => $request->project_id,
-                'vendor_id' => $request->vendor_id,
+                'vendor_id' => $vendor_id, // Use vendor_id from project
                 'title' => $request->title,
                 'description' => $request->description,
                 'start_date' => $request->start_date,
