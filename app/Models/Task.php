@@ -12,7 +12,7 @@ class Task extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['project_id','vendor_id','parent_id','title','description','start_date','end_date','status','priority','complated_date'];
+    protected $fillable = ['project_id', 'vendor_id', 'parent_id', 'title', 'description', 'start_date', 'end_date', 'status', 'priority', 'complated_date'];
     protected static function boot()
     {
         parent::boot();
@@ -37,5 +37,38 @@ class Task extends Model
     public function taskassign()
     {
         return $this->hasMany(TaskAssign::class);
+    }
+
+
+    public function subTasks()
+    {
+        return $this->hasMany(Task::class, 'parent_id');
+    }
+
+    public function mainTask()
+    {
+        return $this->belongsTo(Task::class, 'parent_id');
+    }
+
+    public function isCompleted()
+    {
+        return $this->status === 'complated';
+    }
+
+    public function progress()
+    {
+        // Hitung total sub-task
+        $totalSubTasks = $this->subTasks()->count();
+    
+        // Jika tidak ada sub-task, gunakan status task ini
+        if ($totalSubTasks == 0) {
+            return $this->status === 'complated' ? 100 : 0;
+        }
+    
+        // Hitung sub-task yang selesai
+        $completedSubTasks = $this->subTasks()->where('status', 'completed')->count();
+    
+        // Hitung progres dalam persen
+        return ($completedSubTasks / $totalSubTasks) * 100;
     }
 }

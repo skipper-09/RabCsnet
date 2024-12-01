@@ -33,7 +33,15 @@ class TaskController extends Controller
         $currentUserRole = $currentUser->roles->first()->name;
 
         // Base query for tasks
-        $query = Task::with(['project', 'vendor']);
+       $query = Task::with(['project', 'vendor']);
+
+       // Ambil semua main task (task tanpa parent_id)
+$mainTasks = Task::whereNull('parent_id')->get();
+
+// Hitung progres untuk setiap main task
+$totalProgress = $mainTasks->map(function ($task) {
+    return $task->progress();
+})->avg();
 
         // Filter tasks based on user role
         if ($currentUserRole === 'Accounting') {
