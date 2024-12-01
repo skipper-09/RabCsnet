@@ -12,6 +12,7 @@ use App\Models\Vendor;
 use Exception;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 {
@@ -26,12 +27,31 @@ class TaskController extends Controller
 
     public function getData(Request $request)
     {
-        // Get task data that contain project status is approved
-        $dataType = Task::with(['project', 'vendor'])->whereHas('project', function ($query) {
-            $query->where('status_pengajuan', 'approved');
-        })->orderByDesc('id')->get();
+        // Get the authenticated user
+        $currentUser = Auth::user();
 
-        return DataTables::of($dataType)
+        $currentUserRole = $currentUser->roles->first()->name;
+
+        // Base query for tasks
+        $query = Task::with(['project', 'vendor']);
+
+        // Filter tasks based on user role
+        if ($currentUserRole === 'Accounting') {
+            $query->whereHas('project', function ($query) {
+                $query->where('status_pengajuan', 'approved');
+            })->orderBy('created_at', 'desc');
+        } elseif ($currentUserRole === 'Owner') {
+            $query->whereHas('project', function ($query) {
+                $query->where('status_pengajuan', 'approved');
+            })->orderBy('created_at', 'desc');
+        } elseif ($currentUserRole === 'Vendor') {
+            $query->where('vendor_id', $currentUser->vendor_id)->whereHas('project', function ($query) {
+                $query->where('status_pengajuan', 'approved');
+            })->orderBy('created_at', 'desc');
+        }
+
+
+        return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('project', function ($row) {
                 return $row->project ? $row->project->name : '-';
@@ -88,19 +108,31 @@ class TaskController extends Controller
 
     public function create()
     {
-        $data = [
+        $currentUser = Auth::user();
+        $currentUserRole = $currentUser->roles->first()->name;
+
+        $baseData = [
             'tittle' => 'Task',
-            'projects' => Project::where('status_pengajuan', 'approved')->get(), // Changed from Task to Project
-            'vendors' => Vendor::all(),
             'parentTasks' => Task::whereNull('parent_id')->get(),
         ];
 
-        return view('pages.tasks.add', $data);
+        // Vendors logic based on user role
+        if (in_array($currentUserRole, ['Accounting', 'Owner', 'Developer'])) {
+            $baseData['projects'] = Project::where('status_pengajuan', 'approved')->get();
+            $baseData['vendors'] = Vendor::all();
+        } else {
+            // For Vendor role or other roles
+            $baseData['projects'] = Project::where('status_pengajuan', 'approved')->where('vendor_id', $currentUser->vendor_id)->get();
+            $baseData['vendors'] = Vendor::where('id', $currentUser->vendor_id)->get();
+        }
+
+        return view('pages.tasks.add', $baseData);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        // Validate input
+        $validatedData = $request->validate([
             'project_id' => 'required|exists:projects,id',
             'vendor_id' => 'required|exists:vendors,id',
             'title' => 'required|string|max:255',
@@ -108,7 +140,7 @@ class TaskController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'priority' => 'required|in:low,medium,high',
-            'parent_id' => 'nullable|exists:tasks,id|sometimes'
+            'parent_id' => 'nullable|exists:tasks,id'
         ], [
             'project_id.required' => 'Project is required',
             'project_id.exists' => 'Project not found',
@@ -125,26 +157,28 @@ class TaskController extends Controller
             'priority.in' => 'Priority is invalid',
         ]);
 
-        // Cek apakah project yang dipilih memiliki start_date dan end_date yang valid
-        $project = Project::find($request->project_id);
+        // Retrieve the project
+        $project = Project::findOrFail($request->project_id);
 
-        // Jika start_date atau end_date pada project tersebut kosong
-        if (is_null($project->start_date) || is_null($project->end_date)) {
-            // Kembalikan pesan error dan jangan lanjutkan pembuatan task
-            return redirect()->back()->with('error', 'The selected project does not have both start date and end date set. Please set these dates before creating a task.')->withInput();
-        }
+        // Validate project dates
+        $this->validateProjectDates($project, $request->start_date, $request->end_date);
 
-        // Cek apakah start_date task lebih kecil dari start_date project
-        if (strtotime($request->start_date) < strtotime($project->start_date)) {
-            return redirect()->back()->with('error', 'The start date of the task cannot be earlier than the project start date.')->withInput();
-        }
+        // Current authenticated user
+        $currentUser = Auth::user();
+        $currentUserRole = $currentUser->roles->first()->name;
 
-        // Cek apakah end_date task lebih besar dari end_date project
-        if (strtotime($request->end_date) > strtotime($project->end_date)) {
-            return redirect()->back()->with('error', 'The end date of the task cannot be later than the project end date.')->withInput();
+        // Additional vendor validation for non-admin roles
+        if (!in_array($currentUserRole, ['Accounting', 'Owner', 'Developer'])) {
+            if ($request->vendor_id != $currentUser->vendor_id) {
+                return redirect()->back()
+                    ->with('error', 'You are not authorized to create tasks for this vendor.')
+                    ->withInput();
+            }
         }
 
         try {
+            DB::beginTransaction();
+
             $task = Task::create([
                 'project_id' => $request->project_id,
                 'vendor_id' => $request->vendor_id,
@@ -160,38 +194,90 @@ class TaskController extends Controller
             // Log task creation
             \Log::info('Task Created Successfully', [
                 'task_id' => $task->id,
-                'task_title' => $task->title
+                'task_title' => $task->title,
+                'created_by' => $currentUser->id
             ]);
 
-            return redirect()->route('tasks')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Task!']);
+            DB::commit();
+
+            return redirect()->route('tasks')
+                ->with('status', 'Success')
+                ->with('message', 'Successfully Added Task!');
         } catch (Exception $e) {
+            DB::rollBack();
+
             \Log::error('Task Creation Failed', [
                 'error_message' => $e->getMessage(),
-                'error_trace' => $e->getTraceAsString()
+                'error_trace' => $e->getTraceAsString(),
+                'user_id' => $currentUser->id
             ]);
-    
+
             return redirect()->back()
                 ->with('error', 'Failed to add data: ' . $e->getMessage())
                 ->withInput();
         }
     }
 
+    /**
+     * Validate project dates against task dates
+     *
+     * @param Project $project
+     * @param string $taskStartDate
+     * @param string $taskEndDate
+     * @throws \Exception
+     */
+    private function validateProjectDates($project, $taskStartDate, $taskEndDate)
+    {
+        // Check if project has start and end dates
+        if (is_null($project->start_date) || is_null($project->end_date)) {
+            throw new Exception('The selected project does not have both start date and end date set.');
+        }
+
+        // Convert dates to timestamps for comparison
+        $projectStartTimestamp = strtotime($project->start_date);
+        $projectEndTimestamp = strtotime($project->end_date);
+        $taskStartTimestamp = strtotime($taskStartDate);
+        $taskEndTimestamp = strtotime($taskEndDate);
+
+        // Validate task dates are within project dates
+        if ($taskStartTimestamp < $projectStartTimestamp) {
+            throw new Exception('The start date of the task cannot be earlier than the project start date.');
+        }
+
+        if ($taskEndTimestamp > $projectEndTimestamp) {
+            throw new Exception('The end date of the task cannot be later than the project end date.');
+        }
+    }
+
     public function show($id)
     {
-        $data = [
+        $currentUser = Auth::user();
+        $currentUserRole = $currentUser->roles->first()->name;
+
+        // Base data for the view
+        $baseData = [
             'tittle' => 'Task',
-            'tasks' => Task::findOrFail($id), // Changed from 'tasks' to 'task'
-            'projects' => Project::where('status_pengajuan', 'approved')->get(),
-            'vendors' => Vendor::all(),
+            'tasks' => Task::findOrFail($id),
             'parentTasks' => Task::whereNull('parent_id')->get(),
         ];
 
-        return view('pages.tasks.edit', $data);
+        // Vendors logic based on user role
+        if (in_array($currentUserRole, ['Accounting', 'Owner', 'Developer'])) {
+            $baseData['projects'] = Project::where('status_pengajuan', 'approved')->get();
+            $baseData['vendors'] = Vendor::all();
+        } else {
+            // For Vendor role or other roles
+            $baseData['projects'] = Project::where('status_pengajuan', 'approved')->where('vendor_id', $currentUser->vendor_id)->get();
+            $baseData['vendors'] = Vendor::where('id', $currentUser->vendor_id)->get();
+        }
+
+        return view('pages.tasks.edit', $baseData);
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        // Validate input
+        $validatedData = $request->validate([
             'project_id' => 'required|exists:projects,id',
             'vendor_id' => 'required|exists:vendors,id',
             'title' => 'required|string|max:255',
@@ -219,10 +305,30 @@ class TaskController extends Controller
             'priority.in' => 'Priority is invalid',
         ]);
 
-        try {
-            $tasks = Task::findOrFail($id); // Added error handling
+        // Retrieve the task and project
+        $task = Task::findOrFail($id);
+        $project = Project::findOrFail($request->project_id);
 
-            $tasks->update([
+        // Current authenticated user
+        $currentUser = Auth::user();
+        $currentUserRole = $currentUser->roles->first()->name;
+
+        // Additional vendor validation for non-admin roles
+        if (!in_array($currentUserRole, ['Accounting', 'Owner', 'Developer'])) {
+            if ($request->vendor_id != $currentUser->vendor_id) {
+                return redirect()->back()
+                    ->with('error', 'You are not authorized to update tasks for this vendor.')
+                    ->withInput();
+            }
+        }
+
+        // Validate project dates
+        $this->validateProjectDates($project, $request->start_date, $request->end_date);
+
+        try {
+            DB::beginTransaction();
+
+            $task->update([
                 'project_id' => $request->project_id,
                 'vendor_id' => $request->vendor_id,
                 'title' => $request->title,
@@ -234,9 +340,30 @@ class TaskController extends Controller
                 'parent_id' => $request->parent_id,
             ]);
 
-            return redirect()->route('tasks')->with(['status' => 'Success', 'message' => 'Berhasil Mengupdate Task!']);
+            // Log task update
+            \Log::info('Task Updated Successfully', [
+                'task_id' => $task->id,
+                'task_title' => $task->title,
+                'updated_by' => $currentUser->id
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('tasks')
+                ->with('status', 'Success')
+                ->with('message', 'Successfully Updated Task!');
         } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Failed to update data');
+            DB::rollBack();
+
+            \Log::error('Task Update Failed', [
+                'error_message' => $e->getMessage(),
+                'error_trace' => $e->getTraceAsString(),
+                'user_id' => $currentUser->id
+            ]);
+
+            return redirect()->back()
+                ->with('error', 'Failed to update data: ' . $e->getMessage())
+                ->withInput();
         }
     }
 
