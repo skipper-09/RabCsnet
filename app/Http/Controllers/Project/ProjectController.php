@@ -44,11 +44,11 @@ class ProjectController extends Controller
                 </a>';
                 }
                 if ($data->status_pengajuan == 'approved' && !$data->vendor_id) {
-                $button .= '<a href="' . route('project.start', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
+                    $button .= '<a href="' . route('project.start', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
                     <i class="fas fa-upload"></i> Start Project</a>';
                 }
                 //sembunyikan edit dan detail ketika project sudah di start
-                if($data->start_status == 0){
+                if ($data->start_status == 0) {
                     $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
                     <i class="fas fa-pencil-alt"></i>
                 </a>';
@@ -226,15 +226,10 @@ class ProjectController extends Controller
         }
     }
 
-
-
-
-
-
     public function ProsesProject($id)
     {
         $project = Project::find($id);
-        $detailProjects = DetailProject::with(['detailitemporject','projecttype'])->where('project_id', $id)->get();
+        $detailProjects = DetailProject::with(['detailitemporject', 'projecttype'])->where('project_id', $id)->get();
         $ratebackup = Setting('backup') / 100;
         $ppnRate = Setting('ppn') / 100;
 
@@ -250,7 +245,6 @@ class ProjectController extends Controller
                 $totalService += $detailItem->cost_service;
             }
 
-
             $subTotal = $totalMaterial + $totalService;
             $ppn = $subTotal * $ppnRate;
             $backup = $subTotal * $ratebackup;
@@ -258,7 +252,7 @@ class ProjectController extends Controller
             $totalWithbackup = $subTotal + $backup;
 
             return [
-                'distribusi' => $detail->name . ' - '. $detail->projecttype->name,
+                'distribusi' => $detail->name . ' - ' . $detail->projecttype->name,
                 'total_material' => $totalMaterial,
                 'total_service' => $totalService,
                 'total' => $subTotal,
@@ -270,9 +264,6 @@ class ProjectController extends Controller
             ];
         });
 
-
-
-
         $data = [
             'tittle' => $project->name,
             'project' => $detailProjects,
@@ -282,33 +273,43 @@ class ProjectController extends Controller
             'id_project' => $project->id
 
         ];
+
         return view('pages.project.proses', $data);
     }
 
-
     public function ProsesProjectStore(Request $request, $id)
     {
-
-        
-
         $request->validate([
             'excel' => 'required|file|mimes:xlsx,xls,csv|max:10240',
-           'kmz' => 'required|file|mimetypes:application/vnd.google-earth.kmz,application/vnd.google-earth.kml+xml,application/zip|max:10240',
+            'kmz' => 'required|file|mimetypes:application/vnd.google-earth.kmz,application/vnd.google-earth.kml+xml,application/zip|max:10240',
             'total_material' => 'required|numeric|min:0',
             'total_service' => 'required|numeric|min:0',
             'ppn' => 'required|numeric|min:0',
             'total_with_ppn' => 'required|numeric|min:0',
         ]);
 
-
         try {
             DB::beginTransaction();
+
+            // Fetch the project to check its current status
+            $project = Project::findOrFail($id);
+
+            // Check if status is canceled and status_pengajuan is rejected
+            if ($project->status === 'canceled' && $project->status_pengajuan === 'rejected') {
+                // Update project status to pending
+                $project->update([
+                    'status' => 'pending',
+                    'status_pengajuan' => 'pending'
+                ]);
+            }
+
             $fileexcel = '';
             if ($request->hasFile('excel')) {
                 $file = $request->file('excel');
                 $fileexcel = 'excel_' . rand(0, 999999999) . '.' . $file->getClientOriginalExtension();
                 $file->move(public_path('storage/files/excel/'), $fileexcel);
             }
+
             $filekmz = '';
             if ($request->hasFile('kmz')) {
                 $file = $request->file('kmz');
@@ -330,18 +331,17 @@ class ProjectController extends Controller
                 'total_summary' => $request->total_with_ppn
             ]);
 
-            Project::find($id)->update(['amount' => $request->total_with_ppn]);
+            // Update project amount
+            $project->update(['amount' => $request->total_with_ppn]);
 
             DB::commit();
             return redirect()->route('project')->with(['status' => 'Success', 'message' => 'Pengajuan Berhasil Terkirim!']);
         } catch (Exception $e) {
-            \Log::info("Errro $e");
+            \Log::info("Error: $e");
             DB::rollBack();
             return redirect()->back()->with(['status' => 'Error', 'message' => 'Gagal Proses Pengajuan!']);
         }
     }
-
-
 
     public function StartProject($id)
     {
@@ -357,11 +357,9 @@ class ProjectController extends Controller
         return view('pages.project.startproject', $data);
     }
 
-
-
     public function ProjectStart(Request $request, $id)
     {
-        
+
         $request->validate([
             'vendor_id' => 'required',
             'responsible_person' => 'required',
@@ -375,8 +373,8 @@ class ProjectController extends Controller
                 'responsible_person' => $request->responsible_person,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
-                'status'=>'in_progres',
-                'start_status'=>1,
+                'status' => 'in_progres',
+                'start_status' => 1,
             ]);
             return redirect()->route('project')->with(['status' => 'Success', 'message' => 'Project Berhasil Di Start!']);
         } catch (Exception $e) {
