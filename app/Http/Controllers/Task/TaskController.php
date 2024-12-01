@@ -38,15 +38,15 @@ class TaskController extends Controller
         // Filter tasks based on user role
         if ($currentUserRole === 'Accounting') {
             $query->whereHas('project', function ($query) {
-                $query->where('status_pengajuan', 'approved');
+                $query->where('start_status', 1);
             })->orderBy('created_at', 'desc');
         } elseif ($currentUserRole === 'Owner') {
             $query->whereHas('project', function ($query) {
-                $query->where('status_pengajuan', 'approved');
+                $query->where('start_status', 1);
             })->orderBy('created_at', 'desc');
         } elseif ($currentUserRole === 'Vendor') {
             $query->where('vendor_id', $currentUser->vendor_id)->whereHas('project', function ($query) {
-                $query->where('status_pengajuan', 'approved');
+                $query->where('start_status', 1);
             })->orderBy('created_at', 'desc');
         }
 
@@ -118,10 +118,10 @@ class TaskController extends Controller
 
         // Vendors logic based on user role
         if (in_array($currentUserRole, ['Accounting', 'Owner', 'Developer'])) {
-            $baseData['projects'] = Project::where('status_pengajuan', 'approved')->get();
+            $baseData['projects'] = Project::where('start_status', 1)->get();
         } else {
             // For Vendor role or other roles
-            $baseData['projects'] = Project::where('status_pengajuan', 'approved')
+            $baseData['projects'] = Project::where('start_status', 1)
                 ->where('vendor_id', $currentUser->vendor_id)
                 ->get();
         }
@@ -263,10 +263,10 @@ class TaskController extends Controller
 
         // Projects logic based on user role
         if (in_array($currentUserRole, ['Accounting', 'Owner', 'Developer'])) {
-            $baseData['projects'] = Project::where('status_pengajuan', 'approved')->get();
+            $baseData['projects'] = Project::where('start_status', 1)->get();
         } else {
             // For Vendor role or other roles
-            $baseData['projects'] = Project::where('status_pengajuan', 'approved')
+            $baseData['projects'] = Project::where('start_status', 1)
                 ->where('vendor_id', $currentUser->vendor_id)
                 ->get();
         }
