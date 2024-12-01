@@ -105,6 +105,10 @@ $("#datatabledistribusi").on("click", ".action", function () {
                             data: 'service_price',
                             name: 'service_price'
                         },
+                        {
+                            data: 'quantity',
+                            name: 'quantity'
+                        },
                     ],
                 });
 

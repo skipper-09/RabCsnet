@@ -21,6 +21,7 @@
                             <th>Nama Barang</th>
                             <th>Harga Material</th>
                             <th>Harga Jasa</th>
+                            <th>Quantity</th>
                         </tr>
                     </thead>
                 </table>

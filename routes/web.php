@@ -40,6 +40,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     });
 
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('can:read-dashboard');
+    Route::get('dashboard/data', [DashboardController::class, 'getData'])->name('dashboard.data')->middleware('can:read-dashboard');
 
 
     //route project

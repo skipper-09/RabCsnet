@@ -117,7 +117,7 @@
                             </div> --}}
                             <div class="clearfix"></div>
                             <div class="row align-items-center">
-                                <div class="col-xl-12">
+                                <div class="col-12">
                                     <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
                                         <thead>
                                             <tr>
@@ -132,13 +132,44 @@
                                             </tr>
                                         </thead>
                                     </table>
-                                </div>
-
-                               
+                                </div>                             
                             </div>
                         </div>
                     </div>
                 </div>
+                <div class="col-xl-4 col-md-4">
+                    
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="text-left">
+                                    <p class="font-size-16 fw-bold">Overall Progress</p>
+                                    <div id="list-chart-2" class="apex-charts" dir="ltr"></div>
+                                    <div class="row no-gutters mt-4">
+                                        <div class="col-4">
+                                            <div class="mt-1">
+                                                <h4>1200</h4>
+                                                <p class="text-muted mb-1">Total Project</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="mt-1">
+                                                <h4>450</h4>
+                                                <p class="text-muted mb-1">Complate</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="mt-1">
+                                                <h4>450</h4>
+                                                <p class="text-muted mb-1">In Progress</p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                </div>  
             </div>
 
             {{-- <div class="row">
@@ -774,13 +805,15 @@
     <script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
     <script src="{{ asset('assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
+
+    <script src="{{ asset('assets/libs/apexcharts/apexcharts.min.js') }}"></script>
         <script>
              $(document).ready(function() {
                 // Initialize DataTable
                 $("#datatable").DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: '{{ route('project.getdata') }}',
+                    ajax: '{{ route('dashboard.data') }}',
                     columns: [
                         {
                             data: 'DT_RowIndex',
@@ -801,16 +834,20 @@
                             name: 'status'
                         },
                         {
-                            data: 'status_pengajuan',
-                            name: 'status_pengajuan'
+                            data: 'responsible_person',
+                            name: 'responsible_person'
                         },
                         {
-                            data: 'review',
-                            name: 'review'
+                            data: 'end_date',
+                            name: 'end_date'
                         },
                         {
-                            data: 'reviewer',
-                            name: 'reviewer'
+                            data: 'status',
+                            name: 'status'
+                        },
+                        {
+                            data: 'progres',
+                            name: 'progres'
                         },
                         
                     ],
