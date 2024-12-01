@@ -186,6 +186,9 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::get('/edit/{id}', [TaskController::class, 'show'])->name('tasks.edit')->middleware('can:update-tasks');
         Route::put('/update/{id}', [TaskController::class, 'update'])->name('tasks.update');
         Route::delete('/delete/{id}', [TaskController::class, 'destroy'])->name('tasks.delete')->middleware('can:delete-tasks');
+        Route::post('/{id}/toggle-completion', [TaskController::class, 'toggleCompletion'])
+            ->name('tasks.toggle-completion')
+            ->middleware('can:update-tasks');
     });
 
     Route::prefix('assign')->group(function () {

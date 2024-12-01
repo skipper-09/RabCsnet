@@ -33,15 +33,15 @@ class TaskController extends Controller
         $currentUserRole = $currentUser->roles->first()->name;
 
         // Base query for tasks
-       $query = Task::with(['project', 'vendor']);
+        $query = Task::with(['project', 'vendor']);
 
-       // Ambil semua main task (task tanpa parent_id)
-$mainTasks = Task::whereNull('parent_id')->get();
+        // Ambil semua main task (task tanpa parent_id)
+        $mainTasks = Task::whereNull('parent_id')->get();
 
-// Hitung progres untuk setiap main task
-$totalProgress = $mainTasks->map(function ($task) {
-    return $task->progress();
-})->avg();
+        // Hitung progres untuk setiap main task
+        $totalProgress = $mainTasks->map(function ($task) {
+            return $task->progress();
+        })->avg();
 
         // Filter tasks based on user role
         if ($currentUserRole === 'Accounting') {
@@ -96,6 +96,19 @@ $totalProgress = $mainTasks->map(function ($task) {
                     $priority = '<span class="badge badge-pill badge-soft-danger font-size-13">High</span>';
                 }
                 return $priority;
+            })->addColumn('completion', function ($data) {
+                $userauth = User::with('roles')->where('id', Auth::id())->first();
+
+                // Check if user has permission to update tasks
+                $isDisabled = $userauth->can('update-tasks') ? '' : 'disabled';
+                $isChecked = $data->status === 'complated' ? 'checked' : '';
+
+                return '<div class="form-check">
+                    <input type="checkbox" class="form-check-input task-completion-checkbox" 
+                           data-id="' . $data->id . '" 
+                           ' . $isChecked . '
+                           ' . $isDisabled . '>
+                </div>';
             })
             ->addColumn('action', function ($data) {
                 $userauth = User::with('roles')->where('id', Auth::id())->first();
@@ -110,7 +123,7 @@ $totalProgress = $mainTasks->map(function ($task) {
                 }
                 return '<div class="d-flex gap-2">' . $button . '</div>';
             })
-            ->rawColumns(['action', 'project', 'vendor', 'start_date', 'end_date', 'status', 'priority'])
+            ->rawColumns(['action', 'project', 'vendor', 'start_date', 'end_date', 'status', 'priority', 'completion'])
             ->make(true);
     }
 
@@ -194,7 +207,7 @@ $totalProgress = $mainTasks->map(function ($task) {
                 'description' => $request->description,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
-                'status' => 'pending',
+                'status' => 'in_progres',
                 'priority' => $request->priority,
                 'parent_id' => $request->parent_id,
             ]);
@@ -391,6 +404,115 @@ $totalProgress = $mainTasks->map(function ($task) {
             return response()->json([
                 'message' => 'Gagal Menghapus Data !',
                 'trace' => $e->getTrace()
+            ]);
+        }
+    }
+
+    public function toggleCompletion($id)
+    {
+        try {
+            // Find the task
+            $task = Task::findOrFail($id);
+
+            // Current authenticated user
+            $currentUser = Auth::user();
+
+            // Check if user has permission to update tasks
+            if (!$currentUser->can('update-tasks')) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'You are not authorized to update this task.'
+                ], 403);
+            }
+
+            // Toggle completion status
+            if ($task->status !== 'complated') {
+                $task->status = 'complated';
+                $task->complated_date = now(); // Set completion date
+            } else {
+                $task->status = 'in_progres'; // Revert to in progress
+                $task->complated_date = null; // Clear completion date
+            }
+
+            // Save the task
+            $task->save();
+
+            // Log the status change
+            \Log::info('Task Completion Toggled', [
+                'task_id' => $task->id,
+                'task_title' => $task->title,
+                'new_status' => $task->status,
+                'updated_by' => $currentUser->id
+            ]);
+
+            // Handle sub-tasks and parent task progress
+            $this->handleTaskProgressAndSubTasks($task);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Task completion status updated successfully.',
+                'task_status' => $task->status,
+                'completed' => $task->status === 'complated'
+            ]);
+        } catch (Exception $e) {
+            // Log the error
+            \Log::error('Task Completion Toggle Failed', [
+                'error_message' => $e->getMessage(),
+                'error_trace' => $e->getTraceAsString(),
+                'user_id' => Auth::id()
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to update task completion status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Handle task progress for parent and sub-tasks
+     * 
+     * @param Task $task
+     */
+    private function handleTaskProgressAndSubTasks($task)
+    {
+        // If this task has a parent, update parent task status
+        if ($task->parent_id) {
+            $parentTask = Task::find($task->parent_id);
+            if ($parentTask) {
+                $subTasks = $parentTask->subTasks;
+
+                // Check if all subtasks are completed
+                $allSubTasksCompleted = $subTasks->every(function ($subTask) {
+                    return $subTask->status === 'complated';
+                });
+
+                // Update parent task status if all subtasks are completed
+                if ($allSubTasksCompleted) {
+                    $parentTask->status = 'complated';
+                    $parentTask->complated_date = now();
+                    $parentTask->save();
+                } else {
+                    // If not all subtasks are completed, ensure parent is not marked as completed
+                    $parentTask->status = 'in_progres';
+                    $parentTask->complated_date = null;
+                    $parentTask->save();
+                }
+            }
+        }
+
+        // If this task has sub-tasks, update their status accordingly
+        if ($task->status === 'complated') {
+            // Mark all subtasks as completed when parent is completed
+            $task->subTasks()->update([
+                'status' => 'complated',
+                'complated_date' => now()
+            ]);
+        } else {
+            // If parent task is uncompleted, reset subtask statuses
+            $task->subTasks()->update([
+                'status' => 'in_progres',
+                'complated_date' => null
             ]);
         }
     }
