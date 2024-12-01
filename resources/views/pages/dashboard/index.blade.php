@@ -105,16 +105,26 @@
                                     <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
                                         <thead>
                                             <tr>
-                                                <th>No</th>
                                                 <th>Nama Projek</th>
                                                 <th>Perusahaan</th>
                                                 <th>Status</th>
                                                 <th>Penanggung Jawab</th>
                                                 <th>Tanggal Selesai</th>
-                                                <th>Status</th>
                                                 <th>Progress</th>
                                             </tr>
                                         </thead>
+                                        <tbody>
+                                            @foreach ($project as $item)
+                                                <tr>
+                                                    <td>{{ $item->name }}</td>
+                                                    <td>{{ $item->company->name }}</td>
+                                                    <td>{{ $item->status }}</td>
+                                                    <td>{{ $item->responsible_person }}</td>
+                                                    <td>{{ $item->end_date }}</td>
+                                                    <td>{{ $item->end_date }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
                                     </table>
                                 </div>                             
                             </div>
@@ -130,21 +140,21 @@
                                     <div id="list-chart-2" class="apex-charts" dir="ltr"></div>
                                     <div class="row no-gutters mt-4">
                                         <div class="col-4">
-                                            <div class="mt-1">
-                                                <h4>1200</h4>
+                                            <div class="mt-1 fw-bold">
+                                                <h4>{{ $projectall }}</h4>
                                                 <p class="text-muted mb-1">Total Project</p>
                                             </div>
                                         </div>
                                         <div class="col-4">
                                             <div class="mt-1">
-                                                <h4>450</h4>
-                                                <p class="text-muted mb-1">Complate</p>
+                                                <h4 class="text-success">{{ $projeccomplate }}</h4>
+                                                <p class="text-success mb-1">Complate</p>
                                             </div>
                                         </div>
                                         <div class="col-4">
                                             <div class="mt-1">
-                                                <h4>450</h4>
-                                                <p class="text-muted mb-1">In Progress</p>
+                                                <h4 class="text-primary">{{ $projectinprogres }}</h4>
+                                                <p class="text-primary mb-1">In Progress</p>
                                             </div>
                                         </div>
 
