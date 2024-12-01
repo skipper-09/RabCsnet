@@ -39,20 +39,43 @@
                                 enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="validationCustom01" class="form-label required">Judul</label>
-                                        <input type="text" name="title" value="{{ $tasks->title }}"
-                                            class="form-control @error('title') is-invalid @enderror"
-                                            id="validationCustom01">
-                                        @error('title')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-                                </div>
                                 <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label for="validationCustom01" class="form-label required">Judul</label>
+                                            <input type="text" name="title" value="{{ $tasks->title }}"
+                                                class="form-control @error('title') is-invalid @enderror"
+                                                id="validationCustom01">
+                                            @error('title')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="validationCustom01" class="form-label">
+                                                Sub Tugas
+                                            </label>
+                                            <select name="parent_id"
+                                                class="form-control select2 @error('parent_id') is-invalid @enderror"
+                                                id="parent_id">
+                                                <option value="">Pilih Sub Tugas (Opsional)</option>
+                                                @foreach ($parentTasks as $parentTask)
+                                                    <option value="{{ $parentTask->id }}"
+                                                        {{ old('parent_id', $tasks->parent_id) == $parentTask->id ? 'selected' : '' }}>
+                                                        {{ $parentTask->title }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('parent_id')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label required">
@@ -70,29 +93,6 @@
                                                 @endforeach
                                             </select>
                                             @error('project_id')
-                                                <div class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label required">
-                                                Vendor
-                                            </label>
-                                            <select name="vendor_id"
-                                                class="form-control select2 @error('vendor_id') is-invalid @enderror"
-                                                aria-label="Default select example">
-                                                <option selected>Pilih Vendor</option>
-                                                @foreach ($vendors as $vendor)
-                                                    <option value="{{ $vendor->id }}"
-                                                        {{ old('vendor_id', $tasks->vendor_id) == $vendor->id ? 'selected' : '' }}>
-                                                        {{ $vendor->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            @error('vendor_id')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
                                                 </div>

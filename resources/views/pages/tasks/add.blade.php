@@ -38,7 +38,7 @@
                                 class="needs-validation" novalidate>
                                 @csrf
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label required">Judul</label>
                                             <input type="text" name="title" value="{{ old('title') }}"
@@ -89,26 +89,6 @@
                                                 @endforeach
                                             </select>
                                             @error('project_id')
-                                                <div class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label required">
-                                                Vendor
-                                            </label>
-                                            <select name="vendor_id"
-                                                class="form-control select2 @error('vendor_id') is-invalid @enderror"
-                                                aria-label="Default select example">
-                                                <option selected>Pilih Vendor</option>
-                                                @foreach ($vendors as $vendor)
-                                                    <option value="{{ $vendor->id }}">{{ $vendor->name }}</option>
-                                                @endforeach
-                                            </select>
-                                            @error('vendor_id')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
                                                 </div>
