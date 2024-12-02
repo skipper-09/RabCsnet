@@ -34,10 +34,12 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="mb-3 d-flex gap-2">
+                            @can('create-items')
                             <div>
                                 <a href="{{ route('item.add') }}" class="btn btn-primary btn-sm">Tambah
                                     {{ $tittle }}</a>
                             </div>
+                            @endcan
                             @can('export-items')
                             <div class="align-self-end">
                                 <a href="{{ route('item.export') }}" class="btn btn-success btn-sm">Export
@@ -45,20 +47,22 @@
                                 @endcan
                             </div>
                         </div>
-                        <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>Item Code</th>
-                                    <th>Name</th>
-                                    <th>Type</th>
-                                    <th>Unit</th>
-                                    <th>Material Price</th>
-                                    <th>Service Price</th>
-                                    <th>Deskripsi</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                        </table>
+                        <div class="table-responsive">
+                            <table id="datatable" class="table table-hover" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Item Code</th>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Unit</th>
+                                        <th>Material Price</th>
+                                        <th>Service Price</th>
+                                        <th>Deskripsi</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -34,19 +34,23 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
+                            @can('create-itemtypes')
                             <div class="mb-3">
                                 <a href="{{ route('itemtype.add') }}" class="btn btn-primary btn-sm">Tambah
                                     {{ $tittle }}</a>
                             </div>
-                            <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Name</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                            </table>
+                            @endcan
+                            <div class="table-responsive">
+                                <table id="datatable" class="table  table-hover" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Name</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

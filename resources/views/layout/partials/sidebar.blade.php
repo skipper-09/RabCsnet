@@ -21,15 +21,15 @@
             <!-- Left Menu Start -->
             <ul class="metismenu list-unstyled" id="side-menu">
                 <li class="menu-title">Menu</li>
-
+                @can('read-dashboard')
                 <li>
                     <a href="{{ route('dashboard') }}" class="waves-effect">
                         <i class="dripicons-home"></i>
-                        {{-- <span
-                            class="badge rounded-pill bg-info float-end">3</span> --}}
+                        {{-- <span class="badge rounded-pill bg-info float-end">3</span> --}}
                         <span>Dashboard</span>
                     </a>
                 </li>
+                @endcan
 
                 <li class="{{ request()->is('admin/project') ? 'mm-activate' : '' }}">
                     <a href="{{ route('project') }}" class=" waves-effect">
@@ -38,19 +38,24 @@
                     </a>
                 </li>
 
-
+                @canany(['read-vendors','read-paymentvendors'])
                 <li>
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
                         <i class="dripicons-browser"></i>
                         <span>Vendor Data</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
+                        @can('read-vendors')
                         <li><a href="{{ route('vendor') }}">Vendor</a></li>
+                        @endcan
+                        @can('read-paymentvendors')
                         <li><a href="{{ route('payment') }}">Payment Vendor</a></li>
+                        @endcan
                     </ul>
                 </li>
+                @endcanany
 
-
+                @canany(['read-itemtypes','read-companies','read-units','read-items','read-projecttypes'])
                 <li class="menu-title">Data Master</li>
                 <li>
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
@@ -58,13 +63,24 @@
                         <span>Master Data</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
+                        @can('read-items')
                         <li><a href="{{ route('item') }}">Items</a></li>
+                        @endcan
+                        @can('read-itemtypes')
                         <li><a href="{{ route('itemtype') }}">Items Type</a></li>
+                        @endcan
+                        @can('read-units')
                         <li><a href="{{ route('unit') }}">Unit/Satuan</a></li>
+                        @endcan
+                        @can('read-companies')
                         <li><a href="{{ route('company') }}">Company</a></li>
+                        @endcan
+                        @can('read-projecttypes')
                         <li><a href="{{ route('projecttype') }}">Tipe Project</a></li>
+                        @endcan
                     </ul>
                 </li>
+                @endcanany
 
                 <li class="menu-title">Review</li>
                 <li class="{{ request()->is('admin/review') ? 'mm-activate' : '' }}">
@@ -84,11 +100,6 @@
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
                         <li><a href="{{ route('tasks') }}">Tasks</a></li>
-                        {{-- <li><a href="{{ route('tasks.assign') }}">Task Assign</a></li> --}}
-                        {{-- <li><a href="{{ route('itemtype') }}">Items Type</a></li>
-                        <li><a href="{{ route('unit') }}">Unit/Satuan</a></li>
-                        <li><a href="{{ route('company') }}">Company</a></li>
-                        <li><a href="{{ route('projecttype') }}">Tipe Project</a></li> --}}
                     </ul>
                 </li>
                 <li class="{{ request()->is('/admin/timeline') ? 'mm-activate' : '' }}">
