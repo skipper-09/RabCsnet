@@ -3,15 +3,11 @@
 @section('tittle', $tittle)
 
 @push('css')
-    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}"
+        rel="stylesheet" />
+    <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
     <style>
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
         .action-buttons {
             white-space: nowrap;
         }
@@ -56,19 +52,21 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <table id="datatable" class="table table-hover" style="width: 100%;">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center" style="width: 5%">No</th>
-                                        <th style="width: 15%">Project</th>
-                                        <th style="width: 15%">Reviewer</th>
-                                        <th>Note</th>
-                                        <th style="width: 10%">Status</th>
-                                        <th style="width: 15%">Tanggal Review</th>
-                                        <th class="text-center" style="width: 10%">Aksi</th>
-                                    </tr>
-                                </thead>
-                            </table>
+                            <div class="table-responsive">
+                                <table id="datatable" class="table table-hover" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center" style="width: 5%">No</th>
+                                            <th style="width: 15%">Project</th>
+                                            <th style="width: 15%">Reviewer</th>
+                                            <th>Note</th>
+                                            <th style="width: 10%">Status</th>
+                                            <th style="width: 15%">Tanggal Review</th>
+                                            <th class="text-center" style="width: 10%">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -138,13 +136,15 @@
                             name: 'review_date',
                             className: 'align-middle'
                         },
-                        {
-                            data: 'action',
-                            name: 'action',
-                            orderable: false,
-                            searchable: false,
-                            className: 'text-center align-middle action-buttons'
-                        }
+                        @canany(['update-projectreviews', 'delete-projectreviews'])
+                            {
+                                data: 'action',
+                                name: 'action',
+                                orderable: false,
+                                searchable: false,
+                                className: 'text-center align-middle action-buttons'
+                            }
+                        @endcanany
                     ],
                 });
 

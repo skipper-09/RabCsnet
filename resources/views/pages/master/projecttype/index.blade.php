@@ -3,9 +3,9 @@
 @section('tittle', $tittle)
 
 @push('css')
-    <!-- DataTables CSS -->
-    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet"
-        type="text/css" />
+    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}"
+        rel="stylesheet" />
     <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endpush
 
@@ -35,10 +35,10 @@
                     <div class="card">
                         <div class="card-body">
                             @can('create-projecttypes')
-                            <div class="mb-3">
-                                <a href="{{ route('projecttype.add') }}" class="btn btn-primary btn-sm">Tambah
-                                    {{ $tittle }}</a>
-                            </div>
+                                <div class="mb-3">
+                                    <a href="{{ route('projecttype.add') }}" class="btn btn-primary btn-sm">Tambah
+                                        {{ $tittle }}</a>
+                                </div>
                             @endcan
                             <div class="table-responsive">
                                 <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
@@ -95,15 +95,16 @@
                             data: 'name',
                             name: 'name'
                         },
-                        {
-                            data: 'action',
-                            name: 'action',
-                            orderable: false,
-                            searchable: false
-                        }
+                        @canany(['update-projecttypes', 'delete-projecttypes'])
+                            {
+                                data: 'action',
+                                name: 'action',
+                                orderable: false,
+                                searchable: false
+                            }
+                        @endcanany
                     ],
                 });
-
 
                 $(".dataTables_length select").addClass("form-select form-select-sm");
             });

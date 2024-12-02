@@ -3,15 +3,11 @@
 @section('tittle', $tittle)
 
 @push('css')
-    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}"
+        rel="stylesheet" />
+    <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
     <style>
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
         .image-thumbnail {
             max-width: 100px;
             height: auto;
@@ -48,24 +44,28 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <div class="mb-3">
-                                <a href="{{ route('payment.add') }}" class="btn btn-primary btn-sm">Tambah
-                                    {{ $tittle }}</a>
+                            @can('create-paymentvendors')
+                                <div class="mb-3">
+                                    <a href="{{ route('payment.add') }}" class="btn btn-primary btn-sm">Tambah
+                                        {{ $tittle }}</a>
+                                </div>
+                            @endcan
+                            <div class="table-responsive">
+                                <table id="datatable" class="table table-hover" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center" style="width: 5%">No</th>
+                                            <th style="width: 15%">Bukti Pembayaran</th>
+                                            <th style="width: 15%">Tanggal Pembayaran</th>
+                                            {{-- <th style="width: 15%">Project</th> --}}
+                                            <th style="width: 15%">Vendor</th>
+                                            <th style="width: 15%">Amount</th>
+                                            <th>Note</th>
+                                            <th class="text-center" style="width: 10%">Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
                             </div>
-                            <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center" style="width: 5%">No</th>
-                                        <th style="width: 15%">Bukti Pembayaran</th>
-                                        <th style="width: 15%">Tanggal Pembayaran</th>
-                                        {{-- <th style="width: 15%">Project</th> --}}
-                                        <th style="width: 15%">Vendor</th>
-                                        <th style="width: 15%">Amount</th>
-                                        <th>Note</th>
-                                        <th class="text-center" style="width: 10%">Action</th>
-                                    </tr>
-                                </thead>
-                            </table>
                         </div>
                     </div>
                 </div>
@@ -92,7 +92,6 @@
                     showConfirmButton: false,
                     timer: 3000
                 });
-                // Swal.fire(`{{ Session::get('status') }}`, `{{ Session::get('message') }}`, "success");
             @endif
             $(document).ready(function() {
                 // Initialize DataTable
@@ -149,13 +148,15 @@
                                     '') : '-';
                             }
                         },
-                        {
-                            data: 'action',
-                            name: 'action',
-                            orderable: false,
-                            searchable: false,
-                            className: 'text-center align-middle action-buttons'
-                        }
+                        @canany(['update-paymentvendors', 'delete-paymentvendors'])
+                            {
+                                data: 'action',
+                                name: 'action',
+                                orderable: false,
+                                searchable: false,
+                                className: 'text-center align-middle action-buttons'
+                            }
+                        @endcanany
                     ],
                 });
 

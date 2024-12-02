@@ -69,6 +69,7 @@ class RoleSeeder extends Seeder
             'delete-roles',
             'read-logs',
             'clean-logs',
+            'read-settings',
         ]);
 
         $admin = Role::create(['name' => 'Administrator']);

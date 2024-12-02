@@ -238,7 +238,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
         //setting aplication
         Route::prefix('application')->group(function () {
-            Route::get('/', [SettingAplicationController::class, 'index'])->name('aplication');
+            Route::get('/', [SettingAplicationController::class, 'index'])->name('aplication')->middleware('can:read-settings');
             Route::post('/update', [SettingAplicationController::class, 'update'])->name('aplication.update');
         });
 

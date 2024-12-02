@@ -3,15 +3,11 @@
 @section('tittle', $tittle)
 
 @push('css')
-    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}"
+        rel="stylesheet" />
+    <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
     <style>
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
         .image-thumbnail {
             max-width: 100px;
             height: auto;
@@ -49,23 +45,27 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <div class="mb-3">
-                                <a href="{{ route('report.add') }}" class="btn btn-primary btn-sm">Tambah
-                                    {{ $tittle }}</a>
+                            @can('create-reportvendors')
+                                <div class="mb-3">
+                                    <a href="{{ route('report.add') }}" class="btn btn-primary btn-sm">Tambah
+                                        {{ $tittle }}</a>
+                                </div>
+                            @endcan
+                            <div class="table-responsive">
+                                <table id="datatable" class="table table-hover" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center" style="width: 5%">No</th>
+                                            <th style="width: 15%">Gambar</th>
+                                            <th style="width: 15%">Project</th>
+                                            <th style="width: 15%">Vendor</th>
+                                            <th style="width: 15%">Nama</th>
+                                            <th>Deskripsi</th>
+                                            <th class="text-center" style="width: 10%">Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
                             </div>
-                            <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center" style="width: 5%">No</th>
-                                        <th style="width: 15%">Gambar</th>
-                                        <th style="width: 15%">Project</th>
-                                        <th style="width: 15%">Vendor</th>
-                                        <th style="width: 15%">Nama</th>
-                                        <th>Deskripsi</th>
-                                        <th class="text-center" style="width: 10%">Action</th>
-                                    </tr>
-                                </thead>
-                            </table>
                         </div>
                     </div>
                 </div>
@@ -92,7 +92,6 @@
                     showConfirmButton: false,
                     timer: 3000
                 });
-                // Swal.fire(`{{ Session::get('status') }}`, `{{ Session::get('message') }}`, "success");
             @endif
             $(document).ready(function() {
                 // Initialize DataTable
@@ -114,7 +113,8 @@
                             className: 'align-middle',
                             render: function(data, type, row) {
                                 if (data) {
-                                    const imageUrl = `{{ asset('storage/images/reportvendor') }}/${data}`;
+                                    const imageUrl =
+                                        `{{ asset('storage/images/reportvendor') }}/${data}`;
                                     return `<img src="${imageUrl}" alt="Report Image" class="image-thumbnail">`;
                                 }
                                 return '<span class="text-muted">No image</span>';
@@ -144,13 +144,15 @@
                                     '') : '-';
                             }
                         },
-                        {
-                            data: 'action',
-                            name: 'action',
-                            orderable: false,
-                            searchable: false,
-                            className: 'text-center align-middle action-buttons'
-                        }
+                        @canany(['update-reportvendors', 'delete-reportvendors'])
+                            {
+                                data: 'action',
+                                name: 'action',
+                                orderable: false,
+                                searchable: false,
+                                className: 'text-center align-middle action-buttons'
+                            }
+                        @endcanany
                     ],
                 });
 

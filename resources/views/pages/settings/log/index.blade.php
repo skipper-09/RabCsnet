@@ -3,9 +3,9 @@
 @section('tittle', $tittle)
 
 @push('css')
-    <!-- DataTables CSS -->
-    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet"
-        type="text/css" />
+    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}"
+        rel="stylesheet" />
     <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endpush
 
@@ -33,21 +33,25 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <div class="mb-3">
-                                <button onclick="clearLog()" class="btn btn-danger btn-sm">
-                                    <i class="fas fa-trash-alt me-1"></i>Clear Log
-                                </button>
+                            @can('clean-logs')
+                                <div class="mb-3">
+                                    <button onclick="clearLog()" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash-alt me-1"></i>Clear Log
+                                    </button>
+                                </div>
+                            @endcan
+                            <div class="table-responsive">
+                                <table id="datatable" class="table table-hover" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Pengguna</th>
+                                            <th>Deskripsi</th>
+                                            <th>Waktu</th>
+                                        </tr>
+                                    </thead>
+                                </table>
                             </div>
-                            <table id="datatable" class="table table-responsive table-hover" style="width: 100%;">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Pengguna</th>
-                                        <th>Deskripsi</th>
-                                        <th>Waktu</th>
-                                    </tr>
-                                </thead>
-                            </table>
                         </div>
                     </div>
                 </div>

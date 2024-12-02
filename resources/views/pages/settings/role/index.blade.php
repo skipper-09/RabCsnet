@@ -3,9 +3,9 @@
 @section('tittle', $tittle)
 
 @push('css')
-    <!-- DataTables CSS -->
-    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet"
-        type="text/css" />
+    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}"
+        rel="stylesheet" />
     <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endpush
 
@@ -34,19 +34,23 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <div class="mb-3">
-                                <a href="{{ route('role.add') }}" class="btn btn-primary btn-sm">Tambah
-                                    {{ $tittle }}</a>
+                            @can('create-roles')
+                                <div class="mb-3">
+                                    <a href="{{ route('role.add') }}" class="btn btn-primary btn-sm">Tambah
+                                        {{ $tittle }}</a>
+                                </div>
+                            @endcan
+                            <div class="table-responsive">
+                                <table id="datatable" class="table table-hover" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Name</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
                             </div>
-                            <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Name</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                            </table>
                         </div>
                     </div>
                 </div>
@@ -73,7 +77,6 @@
                     showConfirmButton: false,
                     timer: 3000
                 });
-                // Swal.fire(`{{ Session::get('status') }}`, `{{ Session::get('message') }}`, "success");
             @endif
             $(document).ready(function() {
                 // Initialize DataTable
@@ -92,15 +95,16 @@
                             name: 'name',
 
                         },
-                        {
-                            data: 'action',
-                            name: 'action',
-                            orderable: false,
-                            searchable: false
-                        }
+                        @canany(['update-roles', 'delete-roles'])
+                            {
+                                data: 'action',
+                                name: 'action',
+                                orderable: false,
+                                searchable: false
+                            }
+                        @endcanany
                     ],
                 });
-
 
                 $(".dataTables_length select").addClass("form-select form-select-sm");
             });
