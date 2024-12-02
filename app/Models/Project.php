@@ -109,8 +109,8 @@ class Project extends Model
             $totalProgress += $task->progress();
         }
 
-        $task = $totalTasks - $subtask;
-        return round(($totalProgress / $task), 2);
+        // $task = $totalTasks - $subtask;
+        return round(($totalProgress / $totalTasks), 2);
     }
 
 }
