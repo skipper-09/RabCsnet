@@ -18,47 +18,58 @@
 
         <!--- Sidemenu -->
         <div id="sidebar-menu">
-            <!-- Left Menu Start -->
-            <ul class="metismenu list-unstyled" id="side-menu">
-                <li class="menu-title">Menu</li>
+            <ul class="metismenu list-unstyled" id="side-menu" aria-label="Main Navigation">
+                {{-- Dashboard --}}
                 @can('read-dashboard')
-                <li>
+                <li class="menu-title">Master Data</li>
+                <li class="{{ request()->routeIs('dashboard') ? 'mm-active' : '' }}">
                     <a href="{{ route('dashboard') }}" class="waves-effect">
                         <i class="dripicons-home"></i>
-                        {{-- <span class="badge rounded-pill bg-info float-end">3</span> --}}
                         <span>Dashboard</span>
                     </a>
                 </li>
                 @endcan
-
-                <li class="{{ request()->is('admin/project') ? 'mm-activate' : '' }}">
-                    <a href="{{ route('project') }}" class=" waves-effect">
+        
+                {{-- Project Management --}}
+                <li class="{{ request()->routeIs('project') ? 'mm-active' : '' }}">
+                    <a href="{{ route('project') }}" class="waves-effect">
                         <i class="dripicons-calendar"></i>
-                        <span>Project</span>
+                        <span>Projects</span>
                     </a>
                 </li>
-
+                {{-- @can('read-project')
+                <li class="{{ request()->routeIs('project') ? 'mm-active' : '' }}">
+                    <a href="{{ route('project') }}" class="waves-effect">
+                        <i class="dripicons-calendar"></i>
+                        <span>Projects</span>
+                    </a>
+                </li>
+                @endcan --}}
+        
+                {{-- Vendor Data --}}
                 @canany(['read-vendors','read-paymentvendors'])
                 <li>
-                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect">
                         <i class="dripicons-browser"></i>
                         <span>Vendor Data</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
                         @can('read-vendors')
-                        <li><a href="{{ route('vendor') }}">Vendor</a></li>
+                        <li><a href="{{ route('vendor') }}">Vendors</a></li>
                         @endcan
+                        
                         @can('read-paymentvendors')
-                        <li><a href="{{ route('payment') }}">Payment Vendor</a></li>
+                        <li><a href="{{ route('payment') }}">Payment Vendors</a></li>
                         @endcan
                     </ul>
                 </li>
                 @endcanany
-
+        
+                {{-- Master Data --}}
                 @canany(['read-itemtypes','read-companies','read-units','read-items','read-projecttypes'])
-                <li class="menu-title">Data Master</li>
+                <li class="menu-title">Master Data</li>
                 <li>
-                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect">
                         <i class="dripicons-suitcase"></i>
                         <span>Master Data</span>
                     </a>
@@ -66,103 +77,113 @@
                         @can('read-items')
                         <li><a href="{{ route('item') }}">Items</a></li>
                         @endcan
+        
                         @can('read-itemtypes')
-                        <li><a href="{{ route('itemtype') }}">Items Type</a></li>
+                        <li><a href="{{ route('itemtype') }}">Item Types</a></li>
                         @endcan
+        
                         @can('read-units')
-                        <li><a href="{{ route('unit') }}">Unit/Satuan</a></li>
+                        <li><a href="{{ route('unit') }}">Units</a></li>
                         @endcan
+        
                         @can('read-companies')
-                        <li><a href="{{ route('company') }}">Company</a></li>
+                        <li><a href="{{ route('company') }}">Companies</a></li>
                         @endcan
+        
                         @can('read-projecttypes')
-                        <li><a href="{{ route('projecttype') }}">Tipe Project</a></li>
+                        <li><a href="{{ route('projecttype') }}">Project Types</a></li>
                         @endcan
                     </ul>
                 </li>
                 @endcanany
-
+        
+                {{-- Project Review --}}
                 @can('read-projectreviews')
                 <li class="menu-title">Review</li>
-                @can('read-projectreviews')
-                <li class="{{ request()->is('admin/review') ? 'mm-activate' : '' }}">
-                    <a href="{{ route('review') }}" class=" waves-effect">
+                <li class="{{ request()->routeIs('review') ? 'mm-active' : '' }}">
+                    <a href="{{ route('review') }}" class="waves-effect">
                         <i class="dripicons-blog"></i>
                         <span>Project Review</span>
                     </a>
                 </li>
                 @endcan
-                @endcan
-
+        
+                {{-- Task Management --}}
                 @canany(['read-tasks','read-project-timeline'])
                 <li class="menu-title">Task Management</li>
+                
                 @can('read-task')
                 <li>
-                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect">
                         <i class="dripicons-suitcase"></i>
-                        <span>
-                            Task Data
-                        </span>
+                        <span>Task Data</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
                         <li><a href="{{ route('tasks') }}">Tasks</a></li>
                     </ul>
                 </li>
                 @endcan
+        
                 @can('read-project-timeline')
-                <li class="{{ request()->is('/admin/timeline') ? 'mm-activate' : '' }}">
-                    <a href="{{ route('timeline') }}" class=" waves-effect">
+                <li class="{{ request()->routeIs('timeline') ? 'mm-active' : '' }}">
+                    <a href="{{ route('timeline') }}" class="waves-effect">
                         <i class="dripicons-blog"></i>
                         <span>Project Timeline</span>
                     </a>
                 </li>
                 @endcan
                 @endcanany
+        
+                {{-- Reporting --}}
                 @canany(['read-report-project','read-reportvendors'])
-                <li class="menu-title">Laporan</li>
+                <li class="menu-title">Reports</li>
+                
                 @can('read-reportvendors')
-                <li class="{{ request()->is('admin/report') ? 'mm-activate' : '' }}">
-                    <a href="{{ route('report') }}" class=" waves-effect">
+                <li class="{{ request()->routeIs('report') ? 'mm-active' : '' }}">
+                    <a href="{{ route('report') }}" class="waves-effect">
                         <i class="dripicons-to-do"></i>
-                        <span>Report</span>
+                        <span>Reports</span>
                     </a>
                 </li>
                 @endcan
+        
                 @can('read-report-project')
-                <li class="{{ request()->is('admin/report/project') ? 'mm-activate' : '' }}">
-                    <a type="button" data-bs-toggle="modal" data-bs-target="#ReportProjectModal" class=" waves-effect">
+                <li>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#ReportProjectModal" class="waves-effect">
                         <i class="dripicons-to-do"></i>
-                        <span>Report Project</span>
+                        <span>Project Reports</span>
                     </a>
                 </li>
                 @endcan
                 @endcanany
-
-                @canany(['read-roles','read-users','setting-aplication','read-logs'])
-                    
-                @endcanany
-                <li class="menu-title">SETTING</li>
+        
+                {{-- System Settings --}}
+                @canany(['read-users','read-roles','setting-aplication','read-logs'])
+                <li class="menu-title">System Settings</li>
                 <li>
-                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect">
                         <i class="dripicons-gear"></i>
-                        <span>Setting</span>
+                        <span>Settings</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="true">
                         @can('read-users')
-                        <li><a href="{{ route('user') }}">User</a></li>
+                        <li><a href="{{ route('user') }}">Users</a></li>
                         @endcan
+        
                         @can('read-roles')
-                        <li><a href="{{ route('role') }}">Role</a></li>
+                        <li><a href="{{ route('role') }}">Roles</a></li>
                         @endcan
+        
                         @can('setting-aplication')
-                        <li><a href="{{ route('aplication') }}">Setting Aplikasi</a></li>
+                        <li><a href="{{ route('aplication') }}">Application Settings</a></li>
                         @endcan
+        
                         @can('read-logs')
-                        <li><a href="{{ route('log') }}">Log Aplikasi</a></li>
+                        <li><a href="{{ route('log') }}">Application Logs</a></li>
                         @endcan
                     </ul>
                 </li>
-
+                @endcanany
             </ul>
         </div>
         <!-- Sidebar -->
