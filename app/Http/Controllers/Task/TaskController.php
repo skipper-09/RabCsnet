@@ -64,21 +64,6 @@ class TaskController extends Controller
             ->addColumn('vendor', function ($row) {
                 return $row->vendor ? $row->vendor->name : '-';
             })
-            ->addColumn('parent_tasks', function ($row) {
-                // Safely check if childTasks relationship exists and has items
-                if ($row->childTasks && $row->childTasks->count() > 0) {
-                    $childTasksHtml = '<ul class="list-unstyled parent-tasks-list">';
-                    foreach ($row->childTasks as $childTask) {
-                        $childTasksHtml .= '<li>' .
-                            htmlspecialchars($childTask->name ?? 'Unnamed Task') .
-                            ' <span class="badge badge-soft-info">' . ($childTask->status ?? 'No Status') . '</span>' .
-                            '</li>';
-                    }
-                    $childTasksHtml .= '</ul>';
-                    return $childTasksHtml;
-                }
-                return '<span class="text-muted">None</span>';
-            })
             ->editColumn('start_date', function ($data) {
                 return $data->start_date ? Carbon::parse($data->start_date)->format('d-m-Y') : '-';
             })
@@ -128,19 +113,69 @@ class TaskController extends Controller
             ->addColumn('action', function ($data) {
                 $userauth = User::with('roles')->where('id', Auth::id())->first();
                 $button = '';
+            
+                // Details button for main tasks WITH subtasks
+                if ($data->parent_id === null && $data->subTasks->count() > 0) {
+                    // Add details button only if there are subtasks
+                    $button .= ' <a href="' . route('tasks.details', ['id' => $data->id]) . '" class="btn btn-sm btn-info action mr-1" data-id=' . $data->id . ' data-type="details" data-toggle="tooltip" data-placement="bottom" title="View Details"><i
+                    class="fas fa-eye"></i></a>';
+                }
+            
                 if ($userauth->can('update-tasks')) {
                     $button .= ' <a href="' . route('tasks.edit', ['id' => $data->id]) . '" class="btn btn-sm btn-success action mr-1" data-id=' . $data->id . ' data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data"><i
-                class="fas fa-pencil-alt"></i></a>';
+                    class="fas fa-pencil-alt"></i></a>';
                 }
                 if ($userauth->can('delete-tasks')) {
                     $button .= ' <button  class="btn btn-sm btn-danger  action" data-id=' . $data->id . ' data-type="delete" data-route="' . route('tasks.delete', ['id' => $data->id]) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data"><i
-                class="fas fa-trash-alt "></i></button>';
+                    class="fas fa-trash-alt "></i></button>';
                 }
+            
                 return '<div class="d-flex gap-2">' . $button . '</div>';
             })
             ->rawColumns(['action', 'project', 'vendor', 'start_date', 'end_date', 'status', 'priority', 'completion', 'parent_tasks'])
             ->make(true);
     }
+
+    public function details($id)
+    {
+        $task = Task::with([
+            'project',
+            'vendor',
+            'subTasks' => function ($query) {
+                $query->orderBy('created_at', 'desc');
+            },
+            'mainTask',
+            // 'taskassign.user'
+        ])->findOrFail($id);
+
+        // Calculate overall task progress
+        $totalSubTasks = $task->subTasks->count();
+        $completedSubTasks = $task->subTasks->where('status', 'complated')->count();
+        $progressPercentage = $totalSubTasks > 0
+            ? round(($completedSubTasks / $totalSubTasks) * 100, 2)
+            : ($task->status === 'complated' ? 100 : 0);
+
+        // Prepare assigned users
+        // $assignedUsers = $task->taskassign->map(function ($assignment) {
+        //     return $assignment->user;
+        // });
+
+        // Determine if the task is a subtask
+        $isSubTask = $task->parent_id !== null;
+        $parentTask = $isSubTask ? $task->mainTask : null;
+
+        $data = [
+            'tittle' => "Task {$task->title} Details",
+            'task' => $task,
+            'progressPercentage' => $progressPercentage,
+            // 'assignedUsers' => $assignedUsers,
+            'isSubTask' => $isSubTask,
+            'parentTask' => $parentTask
+        ];
+
+        return view('pages.tasks.detail', $data);
+    }
+
 
     public function create()
     {

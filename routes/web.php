@@ -180,6 +180,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::prefix('tasks')->group(function () {
         Route::get('/', [TaskController::class, 'index'])->name('tasks')->middleware('can:read-tasks');
         Route::get('getData', [TaskController::class, 'getData'])->name('tasks.getdata');
+        Route::get('/detail/{id}', [TaskController::class, 'details'])->name('tasks.details');
         Route::get('/tambah', [TaskController::class, 'create'])->name('tasks.add')->middleware('can:create-tasks');
         Route::post('store', [TaskController::class, 'store'])->name('tasks.store');
         Route::get('/edit/{id}', [TaskController::class, 'show'])->name('tasks.edit')->middleware('can:update-tasks');
