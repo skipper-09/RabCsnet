@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\Task;
 use App\Models\User;
 use App\Models\Project;
 use App\Models\ProjectReview;
@@ -19,6 +20,7 @@ class DashboardController extends Controller
 
         // Dapatkan role pengguna saat ini
         $currentUserRole = $currentUser->roles->first()?->name; // Menggunakan null coalescing operator
+
 
         // Hitung jumlah proyek yang belum direview
         $totalProjectsNotReviewed = Project::where('status_pengajuan', 'pending')->count();
@@ -76,8 +78,29 @@ class DashboardController extends Controller
             'projeccomplate' => $projectcomplate,
             'projectinprogres' => $projectinprogres,
         ];
+        
+        
+        if ($currentUserRole == 'Vendor') {
+            
+             $vendor = Project::where('vendor_id',$currentUser->id)->get();
+             $task = Task::where('vendor_id',$currentUser->id);
+             $taskall = $task->get();
+             $taskgfinish = $task->where('status','complated')->get();
+             $taskpending = $task->where('status','pending')->get();
+            $data = [
+                'tittle' => 'Dashboard',
+                'project' => $vendor->count(),
+                'taskall' => $taskall->count(),
+                'taskfinish' => $taskgfinish->count(),
+                'taskpending' => $taskpending->count(),
+                
+            ];
+            return view('pages.dashboard.vendordashboard', $data);
+        }
 
         return view('pages.dashboard.index', $data);
+
+
     }
 
 
@@ -127,4 +150,5 @@ class DashboardController extends Controller
             ->rawColumns(['action', 'company', 'status', 'responsible_person', 'status_pengajuan'])
             ->make(true);
     }
+
 }
