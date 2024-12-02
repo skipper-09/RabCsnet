@@ -33,13 +33,10 @@ class TaskController extends Controller
         $currentUserRole = $currentUser->roles->first()->name;
 
         // Base query for tasks
-        $query = Task::with(['project', 'vendor']);
-
-        // Ambil semua main task (task tanpa parent_id)
-        $mainTasks = Task::whereNull('parent_id')->get();
+        $query = Task::with(['project', 'vendor', 'subTasks'])->whereNull('parent_id');
 
         // Hitung progres untuk setiap main task
-        $totalProgress = $mainTasks->map(function ($task) {
+        $totalProgress = $query->get()->map(function ($task) {
             return $task->progress();
         })->avg();
 
@@ -53,11 +50,11 @@ class TaskController extends Controller
                 $query->where('start_status', 1);
             })->orderBy('created_at', 'desc');
         } elseif ($currentUserRole === 'Vendor') {
-            $query->where('vendor_id', $currentUser->vendor_id)->whereHas('project', function ($query) {
-                $query->where('start_status', 1);
-            })->orderBy('created_at', 'desc');
+            $query->where('vendor_id', $currentUser->vendor_id)
+                ->whereHas('project', function ($query) {
+                    $query->where('start_status', 1);
+                })->orderBy('created_at', 'desc');
         }
-
 
         return DataTables::of($query)
             ->addIndexColumn()
@@ -67,12 +64,28 @@ class TaskController extends Controller
             ->addColumn('vendor', function ($row) {
                 return $row->vendor ? $row->vendor->name : '-';
             })
+            ->addColumn('parent_tasks', function ($row) {
+                // Safely check if childTasks relationship exists and has items
+                if ($row->childTasks && $row->childTasks->count() > 0) {
+                    $childTasksHtml = '<ul class="list-unstyled parent-tasks-list">';
+                    foreach ($row->childTasks as $childTask) {
+                        $childTasksHtml .= '<li>' .
+                            htmlspecialchars($childTask->name ?? 'Unnamed Task') .
+                            ' <span class="badge badge-soft-info">' . ($childTask->status ?? 'No Status') . '</span>' .
+                            '</li>';
+                    }
+                    $childTasksHtml .= '</ul>';
+                    return $childTasksHtml;
+                }
+                return '<span class="text-muted">None</span>';
+            })
             ->editColumn('start_date', function ($data) {
-                return Carbon::parse($data->start_date)->format('d-m-Y');
+                return $data->start_date ? Carbon::parse($data->start_date)->format('d-m-Y') : '-';
             })
             ->editColumn('end_date', function ($data) {
-                return Carbon::parse($data->end_date)->format('d-m-Y');
-            })->editColumn('status', function ($data) {
+                return $data->end_date ? Carbon::parse($data->end_date)->format('d-m-Y') : '-';
+            })
+            ->editColumn('status', function ($data) {
                 $status = '';
 
                 if ($data->status == 'pending') {
@@ -86,7 +99,8 @@ class TaskController extends Controller
                 }
 
                 return $status;
-            })->editColumn('priority', function ($data) {
+            })
+            ->editColumn('priority', function ($data) {
                 $priority = '';
                 if ($data->priority == 'low') {
                     $priority = '<span class="badge badge-pill badge-soft-primary font-size-13">Low</span>';
@@ -96,7 +110,8 @@ class TaskController extends Controller
                     $priority = '<span class="badge badge-pill badge-soft-danger font-size-13">High</span>';
                 }
                 return $priority;
-            })->addColumn('completion', function ($data) {
+            })
+            ->addColumn('completion', function ($data) {
                 $userauth = User::with('roles')->where('id', Auth::id())->first();
 
                 // Check if user has permission to update tasks
@@ -104,26 +119,26 @@ class TaskController extends Controller
                 $isChecked = $data->status === 'complated' ? 'checked' : '';
 
                 return '<div class="form-check">
-                    <input type="checkbox" class="form-check-input task-completion-checkbox" 
-                           data-id="' . $data->id . '" 
-                           ' . $isChecked . '
-                           ' . $isDisabled . '>
-                </div>';
+                <input type="checkbox" class="form-check-input task-completion-checkbox" 
+                       data-id="' . $data->id . '" 
+                       ' . $isChecked . '
+                       ' . $isDisabled . '>
+            </div>';
             })
             ->addColumn('action', function ($data) {
                 $userauth = User::with('roles')->where('id', Auth::id())->first();
                 $button = '';
                 if ($userauth->can('update-tasks')) {
                     $button .= ' <a href="' . route('tasks.edit', ['id' => $data->id]) . '" class="btn btn-sm btn-success action mr-1" data-id=' . $data->id . ' data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data"><i
-                    class="fas fa-pencil-alt"></i></a>';
+                class="fas fa-pencil-alt"></i></a>';
                 }
                 if ($userauth->can('delete-tasks')) {
                     $button .= ' <button  class="btn btn-sm btn-danger  action" data-id=' . $data->id . ' data-type="delete" data-route="' . route('tasks.delete', ['id' => $data->id]) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data"><i
-                    class="fas fa-trash-alt "></i></button>';
+                class="fas fa-trash-alt "></i></button>';
                 }
                 return '<div class="d-flex gap-2">' . $button . '</div>';
             })
-            ->rawColumns(['action', 'project', 'vendor', 'start_date', 'end_date', 'status', 'priority', 'completion'])
+            ->rawColumns(['action', 'project', 'vendor', 'start_date', 'end_date', 'status', 'priority', 'completion', 'parent_tasks'])
             ->make(true);
     }
 

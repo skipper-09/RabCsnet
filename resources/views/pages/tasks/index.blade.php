@@ -6,6 +6,16 @@
     <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
+    <style>
+        .parent-tasks-list {
+            padding-left: 15px;
+            margin-bottom: 0;
+            font-size: 0.8em;
+        }
+        .parent-tasks-list li {
+            margin-bottom: 5px;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -47,6 +57,7 @@
                                         <th style="width: 10%">Selesai</th>
                                         <th style="width: 10%">Status</th>
                                         <th style="width: 10%">Prioritas</th>
+                                        <th style="width: 10%">Sub Tasks</th>
                                         <th style="width: 5%" class="text-center">Selesai</th>
                                         <th style="width: 10%" class="text-center">Action</th>
                                     </tr>
@@ -119,6 +130,12 @@
                         {
                             data: 'priority',
                             name: 'priority'
+                        },
+                        {
+                            data: 'parent_tasks', // New column for sub tasks
+                            name: 'parent_tasks',
+                            orderable: false,
+                            searchable: false
                         },
                         {
                             data: 'completion',
