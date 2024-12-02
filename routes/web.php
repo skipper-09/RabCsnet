@@ -161,7 +161,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::delete('/delete/{id}', [ReportVendorController::class, 'destroy'])->name('report.delete');
 
         Route::prefix('project')->group(function () {
-            Route::post('/', [ProjectReportController::class, 'index'])->name('report.project');
+            Route::post('/', [ProjectReportController::class, 'index'])->name('report.project')->middleware('can:read-report-project');
             Route::get('getDataReview', [ProjectReportController::class, 'getDataReview'])->name('report.project.getdatareview');
             Route::get('getDataDetail', [ProjectReportController::class, 'DetailProjectReport'])->name('report.project.getdetailproject');
             Route::get('getDataDetailItem/{id}', [ProjectReportController::class, 'DetailItem'])->name('report.project.getdetailitem');
@@ -205,7 +205,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
 
     Route::prefix('timeline')->group(function () {
-        Route::get('/', [TimelineController::class, 'index'])->name('timeline');
+        Route::get('/', [TimelineController::class, 'index'])->name('timeline')->middleware('can:read-project-timeline');
         Route::get('data', [TimelineController::class, 'timeline'])->name('tasks.data');
         // Route::get('/tambah', [TaskController::class, 'create'])->name('tasks.add')->middleware('can:create-tasks');
         // Route::post('store', [TaskController::class, 'store'])->name('tasks.store');
@@ -238,7 +238,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
         //setting aplication
         Route::prefix('application')->group(function () {
-            Route::get('/', [SettingAplicationController::class, 'index'])->name('aplication');
+            Route::get('/', [SettingAplicationController::class, 'index'])->name('aplication')->middleware('can:setting-aplication');
             Route::post('/update', [SettingAplicationController::class, 'update'])->name('aplication.update');
         });
 

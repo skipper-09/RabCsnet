@@ -53,10 +53,12 @@ class PermissionSeeder extends Seeder
             'create-tasks',
             'update-tasks',
             'delete-tasks',
+            'read-project-timeline',
             'read-reportvendors',
             'create-reportvendors',
             'update-reportvendors',
             'delete-reportvendors',
+            'read-report-project',
             'read-users',
             'create-users',
             'update-users',
@@ -67,6 +69,7 @@ class PermissionSeeder extends Seeder
             'delete-roles',
             'read-logs',
             'clean-logs',
+            'setting-aplication'
         ];
         $permissions = collect($arrayOfPermissionNames)->map(function ($permission) {
             return ['name' => $permission, 'guard_name' => 'web'];
