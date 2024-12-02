@@ -1,5 +1,12 @@
 @extends('layout.base')
 @section('tittle', $tittle)
+
+@push('css')
+    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
+@endpush
+
 @section('content')
     <div class="page-title-box">
         <div class="container-fluid">
@@ -86,7 +93,7 @@
                         <div class="card-body">
                             <h4 class="card-title mb-4">Subtasks ({{ $task->subTasks->count() }})</h4>
                             <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
+                                <table class="table table-bordered table-striped" id="datatable">
                                     <thead>
                                         <tr>
                                             <th>Title</th>
@@ -106,10 +113,14 @@
                                                 <td>{{ $subtask->end_date ? \Carbon\Carbon::parse($subtask->end_date)->format('d M, Y') : '-' }}
                                                 </td>
                                                 <td>
-                                                    <a href="{{ route('tasks.edit', $subtask->id) }}"
-                                                        class="btn btn-sm btn-success action">
-                                                        <i class="fas fa-pencil-alt"></i>
-                                                    </a>
+                                                    <form
+                                                        action="{{ route('tasks.toggle-completion', ['id' => $subtask->id]) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        <input type="checkbox" class="task-completion-checkbox"
+                                                            data-id="{{ $subtask->id }}"
+                                                            {{ $subtask->status === 'complated' ? 'checked' : '' }}>
+                                                    </form>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -145,4 +156,87 @@
             </div>
         </div>
     </div>
+    @push('js')
+        <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
+        {{-- custom sweetalert --}}
+        <script src="{{ asset('assets/js/custom.js') }}"></script>
+
+        <script>
+            @if (Session::has('message'))
+                Swal.fire({
+                    title: `{{ Session::get('status') }}`,
+                    text: `{{ Session::get('message') }}`,
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            @endif
+
+            $(document).ready(function() {
+                // Handle task completion toggle
+                $('#datatable').on('change', '.task-completion-checkbox', function() {
+                    const taskId = $(this).data('id');
+                    const isChecked = $(this).is(':checked');
+                    const checkbox = $(this);
+                    const row = checkbox.closest('tr'); // The row containing this checkbox
+
+                    $.ajax({
+                        url: `{{ route('tasks.toggle-completion', ':id') }}`.replace(':id', taskId),
+                        type: 'POST',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            status: isChecked ? 'complated' : 'pending'
+                        },
+                        success: function(response) {
+                            if (response.status === 'success') {
+
+                                // Show success notification
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'top-end',
+                                    icon: 'success',
+                                    title: response.message,
+                                    showConfirmButton: false,
+                                    timer: 1000
+                                }).then(() => {
+                                    // Reload the page after the notification disappears
+                                    window.location.reload();
+                                });
+                            } else {
+                                // Revert checkbox if failed
+                                checkbox.prop('checked', !isChecked);
+
+                                // Show error notification
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'top-end',
+                                    icon: 'error',
+                                    title: response.message,
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                });
+                            }
+                        },
+                        error: function() {
+                            // Revert checkbox if failed
+                            checkbox.prop('checked', !isChecked);
+
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'error',
+                                title: 'Failed to update task status',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        }
+                    });
+                });
+            });
+        </script>
+    @endpush
 @endsection

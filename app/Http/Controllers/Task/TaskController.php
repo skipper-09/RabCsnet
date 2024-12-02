@@ -76,31 +76,17 @@ class TaskController extends Controller
             ->editColumn('priority', function ($data) {
                 return $data->getPriorityBadge();
             })
-            ->addColumn('completion', function ($data) {
-                $userauth = User::with('roles')->where('id', Auth::id())->first();
-
-                // Check if user has permission to update tasks
-                $isDisabled = $userauth->can('update-tasks') ? '' : 'disabled';
-                $isChecked = $data->status === 'complated' ? 'checked' : '';
-
-                return '<div class="form-check">
-                <input type="checkbox" class="form-check-input task-completion-checkbox" 
-                       data-id="' . $data->id . '" 
-                       ' . $isChecked . '
-                       ' . $isDisabled . '>
-            </div>';
-            })
             ->addColumn('action', function ($data) {
                 $userauth = User::with('roles')->where('id', Auth::id())->first();
                 $button = '';
-            
+
                 // Details button for main tasks WITH subtasks
                 if ($data->parent_id === null && $data->subTasks->count() > 0) {
                     // Add details button only if there are subtasks
                     $button .= ' <a href="' . route('tasks.details', ['id' => $data->id]) . '" class="btn btn-sm btn-info action mr-1" data-id=' . $data->id . ' data-type="details" data-toggle="tooltip" data-placement="bottom" title="View Details"><i
                     class="fas fa-eye"></i></a>';
                 }
-            
+
                 if ($userauth->can('update-tasks')) {
                     $button .= ' <a href="' . route('tasks.edit', ['id' => $data->id]) . '" class="btn btn-sm btn-success action mr-1" data-id=' . $data->id . ' data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data"><i
                     class="fas fa-pencil-alt"></i></a>';
@@ -109,10 +95,10 @@ class TaskController extends Controller
                     $button .= ' <button  class="btn btn-sm btn-danger  action" data-id=' . $data->id . ' data-type="delete" data-route="' . route('tasks.delete', ['id' => $data->id]) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data"><i
                     class="fas fa-trash-alt "></i></button>';
                 }
-            
+
                 return '<div class="d-flex gap-2">' . $button . '</div>';
             })
-            ->rawColumns(['action', 'project', 'vendor', 'start_date', 'end_date', 'status', 'priority', 'completion', 'parent_tasks'])
+            ->rawColumns(['action', 'project', 'vendor', 'start_date', 'end_date', 'status', 'priority', 'parent_tasks'])
             ->make(true);
     }
 
@@ -417,7 +403,6 @@ class TaskController extends Controller
                 ->withInput();
         }
     }
-
     public function destroy($id)
     {
         try {
@@ -506,10 +491,12 @@ class TaskController extends Controller
      */
     private function handleTaskProgressAndSubTasks($task)
     {
-        // If this task has a parent, update parent task status
+        // If this task has a parent, update parent task status only if it's a subtask
         if ($task->parent_id) {
+            // This is a subtask, so don't update parent task progress directly
             $parentTask = Task::find($task->parent_id);
             if ($parentTask) {
+                // Update the status of the parent task based on the subtask completion
                 $subTasks = $parentTask->subTasks;
 
                 // Check if all subtasks are completed
@@ -531,14 +518,14 @@ class TaskController extends Controller
             }
         }
 
-        // If this task has sub-tasks, update their status accordingly
-        if ($task->status === 'complated') {
-            // Mark all subtasks as completed when parent is completed
+        // If this task has sub-tasks, update their status accordingly (only if it's a parent task)
+        if ($task->status === 'complated' && !$task->parent_id) {
+            // Mark all subtasks as completed when parent task is completed
             $task->subTasks()->update([
                 'status' => 'complated',
                 'complated_date' => now()
             ]);
-        } else {
+        } elseif ($task->status !== 'complated' && !$task->parent_id) {
             // If parent task is uncompleted, reset subtask statuses
             $task->subTasks()->update([
                 'status' => 'in_progres',

@@ -47,7 +47,7 @@
                                         <th style="width: 10%">Selesai</th>
                                         <th style="width: 10%">Status</th>
                                         <th style="width: 10%">Prioritas</th>
-                                        <th style="width: 5%" class="text-center">Selesai</th>
+                                        {{-- <th style="width: 5%" class="text-center">Selesai</th> --}}
                                         <th style="width: 10%" class="text-center">Action</th>
                                     </tr>
                                 </thead>
@@ -120,13 +120,13 @@
                             data: 'priority',
                             name: 'priority'
                         },
-                        {
-                            data: 'completion',
-                            name: 'completion',
-                            orderable: false,
-                            searchable: false,
-                            class: 'text-center'
-                        },
+                        // {
+                        //     data: 'completion',
+                        //     name: 'completion',
+                        //     orderable: false,
+                        //     searchable: false,
+                        //     class: 'text-center'
+                        // },
                         {
                             data: 'action',
                             name: 'action',
@@ -139,61 +139,61 @@
 
                 $(".dataTables_length select").addClass("form-select form-select-sm");
 
-                // Handle task completion toggle
-                $('#datatable').on('change', '.task-completion-checkbox', function() {
-                    const taskId = $(this).data('id');
-                    const checkbox = $(this);
+                // // Handle task completion toggle
+                // $('#datatable').on('change', '.task-completion-checkbox', function() {
+                //     const taskId = $(this).data('id');
+                //     const checkbox = $(this);
                     
-                    $.ajax({
-                        url: `{{ route('tasks.toggle-completion', ':id') }}`.replace(':id', taskId),
-                        type: 'POST',
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            if (response.status === 'success') {
-                                // Reload the datatable to reflect changes
-                                table.ajax.reload(null, false);
+                //     $.ajax({
+                //         url: `{{ route('tasks.toggle-completion', ':id') }}`.replace(':id', taskId),
+                //         type: 'POST',
+                //         data: {
+                //             _token: $('meta[name="csrf-token"]').attr('content')
+                //         },
+                //         success: function(response) {
+                //             if (response.status === 'success') {
+                //                 // Reload the datatable to reflect changes
+                //                 table.ajax.reload(null, false);
                                 
-                                // Show success toast
-                                Swal.fire({
-                                    toast: true,
-                                    position: 'top-end',
-                                    icon: 'success',
-                                    title: response.message,
-                                    showConfirmButton: false,
-                                    timer: 3000
-                                });
-                            } else {
-                                // Revert checkbox if failed
-                                checkbox.prop('checked', !checkbox.is(':checked'));
+                //                 // Show success toast
+                //                 Swal.fire({
+                //                     toast: true,
+                //                     position: 'top-end',
+                //                     icon: 'success',
+                //                     title: response.message,
+                //                     showConfirmButton: false,
+                //                     timer: 3000
+                //                 });
+                //             } else {
+                //                 // Revert checkbox if failed
+                //                 checkbox.prop('checked', !checkbox.is(':checked'));
                                 
-                                // Show error toast
-                                Swal.fire({
-                                    toast: true,
-                                    position: 'top-end',
-                                    icon: 'error',
-                                    title: response.message,
-                                    showConfirmButton: false,
-                                    timer: 3000
-                                });
-                            }
-                        },
-                        error: function() {
-                            // Revert checkbox if failed
-                            checkbox.prop('checked', !checkbox.is(':checked'));
+                //                 // Show error toast
+                //                 Swal.fire({
+                //                     toast: true,
+                //                     position: 'top-end',
+                //                     icon: 'error',
+                //                     title: response.message,
+                //                     showConfirmButton: false,
+                //                     timer: 3000
+                //                 });
+                //             }
+                //         },
+                //         error: function() {
+                //             // Revert checkbox if failed
+                //             checkbox.prop('checked', !checkbox.is(':checked'));
                             
-                            Swal.fire({
-                                toast: true,
-                                position: 'top-end',
-                                icon: 'error',
-                                title: 'Failed to update task status',
-                                showConfirmButton: false,
-                                timer: 3000
-                            });
-                        }
-                    });
-                });
+                //             Swal.fire({
+                //                 toast: true,
+                //                 position: 'top-end',
+                //                 icon: 'error',
+                //                 title: 'Failed to update task status',
+                //                 showConfirmButton: false,
+                //                 timer: 3000
+                //             });
+                //         }
+                //     });
+                // });
             });
         </script>
     @endpush

@@ -66,7 +66,7 @@ class Task extends Model
         }
 
         // Hitung sub-task yang selesai
-        $completedSubTasks = $this->subTasks()->where('status', 'completed')->count();
+        $completedSubTasks = $this->subTasks()->where('status', 'complated')->count();
 
         // Hitung progres dalam persen
         return ($completedSubTasks / $totalSubTasks) * 100;
