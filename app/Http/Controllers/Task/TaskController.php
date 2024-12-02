@@ -71,30 +71,10 @@ class TaskController extends Controller
                 return $data->end_date ? Carbon::parse($data->end_date)->format('d-m-Y') : '-';
             })
             ->editColumn('status', function ($data) {
-                $status = '';
-
-                if ($data->status == 'pending') {
-                    $status = '<span class="badge badge-pill badge-soft-primary font-size-13">Pending</span>';
-                } else if ($data->status == 'in_progres') {
-                    $status = '<span class="badge badge-pill badge-soft-info font-size-13">In Progress</span>';
-                } else if ($data->status == 'complated') {
-                    $status = '<span class="badge badge-pill badge-soft-success font-size-13">Completed</span>';
-                } else {
-                    $status = '<span class="badge badge-pill badge-soft-danger font-size-13">Canceled</span>';
-                }
-
-                return $status;
+                return $data->getStatusBadge();
             })
             ->editColumn('priority', function ($data) {
-                $priority = '';
-                if ($data->priority == 'low') {
-                    $priority = '<span class="badge badge-pill badge-soft-primary font-size-13">Low</span>';
-                } else if ($data->priority == 'medium') {
-                    $priority = '<span class="badge badge-pill badge-soft-success font-size-13">Medium</span>';
-                } else {
-                    $priority = '<span class="badge badge-pill badge-soft-danger font-size-13">High</span>';
-                }
-                return $priority;
+                return $data->getPriorityBadge();
             })
             ->addColumn('completion', function ($data) {
                 $userauth = User::with('roles')->where('id', Auth::id())->first();
