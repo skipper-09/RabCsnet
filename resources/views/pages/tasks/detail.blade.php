@@ -1,22 +1,24 @@
 @extends('layout.base')
 @section('tittle', $tittle)
 @section('content')
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                    <h4 class="mb-sm-0 font-size-18">Task Details</h4>
-                    <div class="page-title-right">
-                        @if ($isSubTask && $parentTask)
-                            <a href="{{ route('tasks.details', $parentTask->id) }}"
-                                class="btn btn-soft-secondary waves-effect waves-light">
-                                <i class="bx bx-arrow-back"></i> Back to Parent Task
-                            </a>
-                        @endif
+    <div class="page-title-box">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-sm-6">
+                    <div class="page-title">
+                        <h4>{{ $tittle }}</h4>
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Task Management</li>
+                            <li class="breadcrumb-item active"><a href="{{ route('tasks') }}">Task</a></li>
+                            <li class="breadcrumb-item active">{{ $tittle }}</li>
+                        </ol>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="container-fluid">
         <div class="row">
             <div class="col-lg-8">
                 <div class="card">
