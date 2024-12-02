@@ -8,6 +8,8 @@
 
 <!-- apexcharts -->
 <script src="{{ asset('assets/libs/apexcharts/apexcharts.min.js') }}"></script>
+<script src="{{ asset('assets/libs/jquery-knob/jquery.knob.min.js') }}"></script> 
+
 
 <!-- Plugins js-->
 <script src="{{ asset('assets/libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.min.js') }}"></script>

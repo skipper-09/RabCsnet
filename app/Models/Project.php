@@ -76,6 +76,10 @@ class Project extends Model
     public function detailproject(){
         return $this->hasMany(DetailProject::class);
     }
+
+    public function taskdata(){
+        return $this->hasMany(Task::class); 
+    }
     
     
 }
