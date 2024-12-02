@@ -69,7 +69,6 @@ class PermissionSeeder extends Seeder
             'delete-roles',
             'read-logs',
             'clean-logs',
-            'read-settings',
             'setting-aplication'
         ];
         $permissions = collect($arrayOfPermissionNames)->map(function ($permission) {
