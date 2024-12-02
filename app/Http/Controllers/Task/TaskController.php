@@ -80,24 +80,43 @@ class TaskController extends Controller
                 $userauth = User::with('roles')->where('id', Auth::id())->first();
                 $button = '';
 
-                // Details button for main tasks WITH subtasks
+                // Show details button only for main tasks with subtasks
                 if ($data->parent_id === null && $data->subTasks->count() > 0) {
-                    // Add details button only if there are subtasks
-                    $button .= ' <a href="' . route('tasks.details', ['id' => $data->id]) . '" class="btn btn-sm btn-info action mr-1" data-id=' . $data->id . ' data-type="details" data-toggle="tooltip" data-placement="bottom" title="View Details"><i
-                    class="fas fa-eye"></i></a>';
+                    $button .= ' <a href="' . route('tasks.details', ['id' => $data->id]) . '" class="btn btn-sm btn-info action mr-1" data-id=' . $data->id . ' data-type="details" data-toggle="tooltip" data-placement="bottom" title="View Details"><i class="fas fa-eye"></i></a>';
                 }
 
-                if ($userauth->can('update-tasks')) {
-                    $button .= ' <a href="' . route('tasks.edit', ['id' => $data->id]) . '" class="btn btn-sm btn-success action mr-1" data-id=' . $data->id . ' data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data"><i
-                    class="fas fa-pencil-alt"></i></a>';
+                // Show button with icons for main tasks without subtasks
+                if ($data->parent_id === null && $data->subTasks->count() === 0) {
+                    // Cek apakah pengguna memiliki izin untuk memperbarui tugas
+                    $isDisabled = $userauth->can('update-tasks') ? '' : 'disabled';
+
+                    // Periksa status tugas
+                    $isInProgress = $data->status === 'in_progres'; // Tombol hanya akan tampil jika statusnya 'in_progress'
+
+                    // Jika statusnya 'in_progress', tampilkan tombol
+                    if ($isInProgress) {
+                        $button .= '<button type="button" class="btn btn-sm btn-success task-completion-button" 
+                                        data-id="' . $data->id . '" 
+                                        ' . $isDisabled . '>
+                                        <i class="fas ' . ($isInProgress ? 'fa-check' : '') . '"></i> 
+                                    </button>';
+                    } 
                 }
+
+
+                // Edit button
+                if ($userauth->can('update-tasks')) {
+                    $button .= ' <a href="' . route('tasks.edit', ['id' => $data->id]) . '" class="btn btn-sm btn-success action mr-1" data-id=' . $data->id . ' data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data"><i class="fas fa-pencil-alt"></i></a>';
+                }
+
+                // Delete button
                 if ($userauth->can('delete-tasks')) {
-                    $button .= ' <button  class="btn btn-sm btn-danger  action" data-id=' . $data->id . ' data-type="delete" data-route="' . route('tasks.delete', ['id' => $data->id]) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data"><i
-                    class="fas fa-trash-alt "></i></button>';
+                    $button .= ' <button class="btn btn-sm btn-danger action" data-id=' . $data->id . ' data-type="delete" data-route="' . route('tasks.delete', ['id' => $data->id]) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data"><i class="fas fa-trash-alt "></i></button>';
                 }
 
                 return '<div class="d-flex gap-2">' . $button . '</div>';
             })
+
             ->rawColumns(['action', 'project', 'vendor', 'start_date', 'end_date', 'status', 'priority', 'parent_tasks'])
             ->make(true);
     }
