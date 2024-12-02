@@ -12,7 +12,7 @@ class Project extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['name','start_status','company_id','vendor_id','responsible_person','start_date','end_date','description','status','code','amount','status_pengajuan'];
+    protected $fillable = ['name', 'start_status', 'company_id', 'vendor_id', 'responsible_person', 'start_date', 'end_date', 'description', 'status', 'code', 'amount', 'status_pengajuan'];
 
 
     protected static function boot()
@@ -47,39 +47,69 @@ class Project extends Model
         return 'PRJ-' . $newNumber;
     }
 
-    public function company(){
+    public function company()
+    {
         return $this->belongsTo(Company::class);
     }
 
-    public function vendor(){
+    public function vendor()
+    {
         return $this->belongsTo(Vendor::class);
     }
-    
-    public function summary(){
+
+    public function summary()
+    {
         return $this->hasOne(Summary::class);
     }
-    public function responsibleperson(){
-        return $this->belongsTo(User::class,'responsible_person','id');
+    public function responsibleperson()
+    {
+        return $this->belongsTo(User::class, 'responsible_person', 'id');
     }
 
 
-    public function projectlisence(){
+    public function projectlisence()
+    {
         return $this->hasMany(ProjectLisence::class);
     }
-    public function Projectfile(){
+    public function Projectfile()
+    {
         return $this->hasOne(ProjectFile::class);
     }
-    public function ProjectReview() {
+    public function ProjectReview()
+    {
         return $this->hasMany(ProjectReview::class, 'project_id');
     }
-    
-    public function detailproject(){
+
+    public function detailproject()
+    {
         return $this->hasMany(DetailProject::class);
     }
 
-    public function taskdata(){
-        return $this->hasMany(Task::class); 
+    public function taskdata()
+    {
+        return $this->hasMany(Task::class);
     }
-    
-    
+
+
+    public function progress()
+    {
+        $tasks = $this->taskdata; // Ambil semua tasks terkait
+        $totalTasks = $tasks->count();
+        
+        // Jika tidak ada task, progres adalah 0
+        if ($totalTasks == 0) {
+            return 0;
+        }
+
+        // Hitung rata-rata progres dari semua main tasks
+        $totalProgress = 0;
+        foreach ($tasks as $task) {
+
+            $totalProgress += $task->progress();
+        }
+
+
+        return $totalProgress / $totalTasks;
+    }
+
 }

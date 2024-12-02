@@ -108,6 +108,8 @@ class DashboardController extends Controller
         $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview', 'responsibleperson','taskdata'])->where('status', 'in_progres')
             ->orderByDesc('id')
             ->get();
+
+            
         return DataTables::of($dataType)
             ->addIndexColumn()
             ->editColumn('status', function ($data) {
@@ -146,8 +148,9 @@ class DashboardController extends Controller
                 return $data->responsibleperson->name ?? '-';
             })->editColumn('progress', function ($data) {
                 $tes = '';
+                
                 $tes = '<input data-plugin="knob" data-width="40" data-height="40" data-linecap=round
-                                                    data-fgColor="#846eff" value="40" data-skin="tron" 
+                                                    data-fgColor="#846eff" value='.$data->progress().' data-skin="tron" 
                                                     data-readOnly=true  />
                                             ';
                 return $tes;
