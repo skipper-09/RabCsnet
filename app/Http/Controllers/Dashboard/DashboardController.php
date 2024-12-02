@@ -67,6 +67,7 @@ class DashboardController extends Controller
         $projectall = Project::all()->count();
         $projectcomplate = Project::where('status', 'finish')->get()->count();
         $projectinprogres = Project::where('status', 'in_progres')->get()->count();
+        $projectpending = Project::where('status', 'pending')->get()->count();
         // Data yang akan diteruskan ke view
         $data = [
             'tittle' => 'Dashboard',
@@ -77,6 +78,7 @@ class DashboardController extends Controller
             'projectall' => $projectall,
             'projeccomplate' => $projectcomplate,
             'projectinprogres' => $projectinprogres,
+            'projectpending' => $projectpending,
         ];
 
 
@@ -150,7 +152,7 @@ class DashboardController extends Controller
                 $tes = '';
                 
                 $tes = '<input data-plugin="knob" data-width="40" data-height="40" data-linecap=round
-                                                    data-fgColor="#846eff" value='.$data->progress().' data-skin="tron" 
+                                                    data-fgColor="#34c38f" value='.$data->progress().' data-skin="tron" 
                                                     data-readOnly=true  />
                                             ';
                 return $tes;

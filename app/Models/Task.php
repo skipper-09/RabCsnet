@@ -59,7 +59,7 @@ class Task extends Model
     {
         // Hitung total sub-task
         $totalSubTasks = $this->subTasks()->count();
-
+        
         // Jika tidak ada sub-task, gunakan status task ini
         if ($totalSubTasks == 0) {
             return $this->status === 'complated' ? 100 : 0;

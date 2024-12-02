@@ -95,7 +95,7 @@ class Project extends Model
     {
         $tasks = $this->taskdata; // Ambil semua tasks terkait
         $totalTasks = $tasks->count();
-        
+
         // Jika tidak ada task, progres adalah 0
         if ($totalTasks == 0) {
             return 0;
@@ -103,13 +103,14 @@ class Project extends Model
 
         // Hitung rata-rata progres dari semua main tasks
         $totalProgress = 0;
+        $subtask = 0;
         foreach ($tasks as $task) {
-
+            $subtask += $task->subTasks->count();
             $totalProgress += $task->progress();
         }
 
-
-        return $totalProgress / $totalTasks;
+        $task = $totalTasks - $subtask;
+        return round(($totalProgress / $task), 2);
     }
 
 }

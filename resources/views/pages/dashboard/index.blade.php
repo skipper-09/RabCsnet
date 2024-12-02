@@ -144,22 +144,28 @@
                                 data-readOnly=true  />
                             </div>
                             <div class="row no-gutters mt-4">
-                                <div class="col-4">
+                                <div class="col-3">
                                     <div class="mt-1 fw-bold">
                                         <h4>{{ $projectall }}</h4>
                                         <p class="text-muted mb-1">Total Project</p>
                                     </div>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-3">
                                     <div class="mt-1">
                                         <h4 class="text-success">{{ $projeccomplate }}</h4>
                                         <p class="text-success mb-1">Complate</p>
                                     </div>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-3">
                                     <div class="mt-1">
                                         <h4 class="text-primary">{{ $projectinprogres }}</h4>
                                         <p class="text-primary mb-1">In Progress</p>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="mt-1">
+                                        <h4 class="text-primary">{{ $projectpending }}</h4>
+                                        <p class="text-primary mb-1">Pending</p>
                                     </div>
                                 </div>
 
