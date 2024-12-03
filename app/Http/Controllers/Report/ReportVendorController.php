@@ -56,123 +56,283 @@ class ReportVendorController extends Controller
 
     public function create()
     {
-        $data = [
-            'tittle' => 'Report Vendor',
-            'projects' => Project::all(),
-            'vendors' => Vendor::all(),
-        ];
+        $user = Auth::user();
+        $userRole = $user->roles->first() ? $user->roles->first()->name : null;
+
+        if (!$userRole) {
+            return redirect()->route('dashboard')->withErrors('User does not have an assigned role.');
+        }
+
+        if ($userRole !== 'Vendor') {
+            // Non-vendor users, fetch all vendors and active projects
+            $data = [
+                'title' => 'Report Vendor',
+                'projects' => Project::where('start_status', 1)->get(),
+                'vendors' => Vendor::all(),
+                'userRole' => $userRole,  // Pass user role to the view
+            ];
+        } else {
+            // Vendor users, filter projects by the vendor's id
+            $vendor = Vendor::where('user_id', $user->id)->first();
+
+            if (!$vendor) {
+                return redirect()->route('dashboard')->withErrors('No vendor found for the user.');
+            }
+
+            $data = [
+                'title' => 'Report Vendor',
+                'projects' => Project::where('start_status', 1)
+                    ->where('vendor_id', $vendor->id)  // Filter projects by vendor
+                    ->get(),
+                'vendors' => $vendor,  // Single vendor associated with the user
+                'userRole' => $userRole,  // Pass user role to the view
+            ];
+        }
 
         return view('pages.report.add', $data);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'project_id' => 'required|exists:projects,id',
-            'vendor_id' => 'required|exists:vendors,id',
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5048', // Added max file size
-        ], [
-            'project_id.required' => 'Project wajib diisi.',
-            'project_id.exists' => 'Project tidak valid.',
-            'vendor_id.required' => 'Vendor wajib diisi.',
-            'vendor_id.exists' => 'Vendor tidak valid.',
-            'title.required' => 'Judul wajib diisi.',
-            'title.max' => 'Judul tidak boleh lebih dari 255 karakter.',
-            'description.max' => 'Deskripsi tidak boleh lebih dari 255 karakter.',
-            'image.required' => 'Gambar wajib diisi.',
-            'image.mimes' => 'Format gambar tidak valid.',
-            'image.max' => 'Ukuran gambar tidak boleh lebih dari 5MB.',
-        ]);
+        try {
+            $user = Auth::user();
+            $userRole = $user->roles->first() ? $user->roles->first()->name : null;
 
-        $filename = '';
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $filename = 'reportvendor_' . rand(0, 999999999) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('storage/images/reportvendor/'), $filename);
+            if (!$userRole) {
+                return redirect()->route('dashboard')->withErrors('User does not have an assigned role.');
+            }
+
+            // Dynamic validation rules based on user role
+            $validationRules = [
+                'project_id' => 'required|exists:projects,id',
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5048',
+            ];
+
+            // If the user is not a Vendor, validate 'vendor_id'
+            if ($userRole !== 'Vendor') {
+                $validationRules['vendor_id'] = 'required|exists:vendors,id';
+            }
+
+            $request->validate($validationRules, [
+                'project_id.required' => 'Project wajib diisi.',
+                'project_id.exists' => 'Project tidak valid.',
+                'vendor_id.required' => 'Vendor wajib diisi.',
+                'vendor_id.exists' => 'Vendor tidak valid.',
+                'title.required' => 'Judul wajib diisi.',
+                'title.max' => 'Judul tidak boleh lebih dari 255 karakter.',
+                'description.max' => 'Deskripsi tidak boleh lebih dari 255 karakter.',
+                'image.required' => 'Gambar wajib diisi.',
+                'image.mimes' => 'Format gambar tidak valid.',
+                'image.max' => 'Ukuran gambar tidak boleh lebih dari 5MB.',
+            ]);
+
+            // Handle image upload
+            $filename = '';
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $filename = 'reportvendor_' . rand(0, 999999999) . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('storage/images/reportvendor/'), $filename);
+            }
+
+            // Create the report based on user role
+            if ($userRole !== 'Vendor') {
+                // For non-Vendor users, 'vendor_id' should be passed in the request
+                $reportVendor = ReportVendor::create([
+                    'project_id' => $request->project_id,
+                    'vendor_id' => $request->vendor_id,
+                    'title' => $request->title,
+                    'description' => $request->description,
+                    'image' => $filename,
+                ]);
+            } else {
+                // For Vendor users, use the logged-in user's vendor ID
+                $vendor = Vendor::where('user_id', $user->id)->first();
+
+                if (!$vendor) {
+                    return redirect()->back()->withErrors('No vendor found for the logged-in user.');
+                }
+
+                $reportVendor = ReportVendor::create([
+                    'project_id' => $request->project_id,
+                    'vendor_id' => $vendor->id,  // Use the vendor ID associated with the user
+                    'title' => $request->title,
+                    'description' => $request->description,
+                    'image' => $filename,
+                ]);
+            }
+
+            // Log the activity
+            activity()
+                ->causedBy(Auth::user())
+                ->performedOn($reportVendor)
+                ->event('created')
+                ->log('Report Vendor dibuat dengan judul ' . $reportVendor->title);
+
+            return redirect()->route('report')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Report!']);
+        } catch (Exception $e) {
+            \Log::error('Error occurred while creating report vendor', [
+                'error_message' => $e->getMessage(),
+                'stack_trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->back()
+                ->with('error', 'Failed to add data: ' . $e->getMessage())
+                ->withInput();
         }
-
-        $reportVendor = ReportVendor::create([
-            'project_id' => $request->project_id,
-            'vendor_id' => $request->vendor_id,
-            'title' => $request->title,
-            'description' => $request->description,
-            'image' => $filename,
-        ]);
-
-        activity()
-            ->causedBy(Auth::user()) // Logs who performed the action
-            ->performedOn($reportVendor) // The entity being changed
-            ->event('created') // Event of the action
-            ->log('Report Vendor dibuat dengan judul ' . $reportVendor->title);
-
-        return redirect()->route('report')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Report!']);
     }
 
     public function show($id)
     {
-        $data = [
-            'tittle' => 'Report Vendor',
-            'report' => ReportVendor::find($id),
-            'projects' => Project::all(),
-            'vendors' => Vendor::all(),
-        ];
+        $user = Auth::user();
+        $userRole = $user->roles->first() ? $user->roles->first()->name : null;
+
+        // Pastikan role valid dan sesuai
+        if (!$userRole) {
+            return redirect()->route('dashboard')->withErrors('User does not have an assigned role.');
+        }
+
+        // Temukan laporan vendor yang akan diedit
+        $reportVendor = ReportVendor::find($id);
+        if (!$reportVendor) {
+            return redirect()->route('report')->withErrors('Report not found.');
+        }
+
+        // Tentukan data yang dikirim berdasarkan role pengguna
+        if ($userRole !== 'Vendor') {
+            // Untuk pengguna selain Vendor, dapatkan semua vendor dan proyek aktif
+            $data = [
+                'tittle' => 'Edit Report Vendor',
+                'report' => $reportVendor,
+                'projects' => Project::all(),
+                'vendors' => Vendor::all(),
+                'userRole' => $userRole, // Kirim role pengguna ke view
+            ];
+        } else {
+            // Untuk pengguna Vendor, hanya tampilkan proyek yang terkait dengan vendor
+            $vendor = Vendor::where('user_id', $user->id)->first();
+
+            if (!$vendor) {
+                return redirect()->route('dashboard')->withErrors('No vendor found for the user.');
+            }
+
+            $data = [
+                'tittle' => 'Edit Report Vendor',
+                'report' => $reportVendor,
+                'projects' => Project::where('vendor_id', $vendor->id)->get(),
+                'vendors' => $vendor,
+                'userRole' => $userRole,  // Kirim role pengguna ke view
+            ];
+        }
 
         return view('pages.report.edit', $data);
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'project_id' => 'required|exists:projects,id',
-            'vendor_id' => 'required|exists:vendors,id',
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5048', // Added max file size
-        ], [
-            'project_id.required' => 'Project wajib diisi.',
-            'project_id.exists' => 'Project tidak valid.',
-            'vendor_id.required' => 'Vendor wajib diisi.',
-            'vendor_id.exists' => 'Vendor tidak valid.',
-            'title.required' => 'Judul wajib diisi.',
-            'title.string' => 'Judul harus berupa teks.',
-            'title.max' => 'Judul tidak boleh lebih dari 255 karakter.',
-            'description.string' => 'Deskripsi harus berupa teks.',
-            'image.image' => 'File harus berupa gambar.',
-            'image.mimes' => 'Format gambar harus jpeg, png, jpg, gif, atau svg.',
-            'image.max' => 'Ukuran gambar tidak boleh lebih dari 5MB.',
-        ]);
+        try {
+            $user = Auth::user();
+            $userRole = $user->roles->first() ? $user->roles->first()->name : null;
 
-        $reportVendor = ReportVendor::findOrFail($id); // Added error handling
-
-        $filename = $reportVendor->image;
-
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $filename = 'reportvendor_' . rand(0, 999999999) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('storage/images/reportvendor/'), $filename);
-            if ($reportVendor->image !== 'default.png' && file_exists(public_path('storage/images/reportvendor/' . $reportVendor->image))) {
-                File::delete(public_path('storage/images/reportvendor/' . $reportVendor->image));
+            // Pastikan role valid dan sesuai
+            if (!$userRole) {
+                return redirect()->route('dashboard')->withErrors('User does not have an assigned role.');
             }
+
+            // Validasi data yang diterima
+            $validationRules = [
+                'project_id' => 'required|exists:projects,id',
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5048', // Gambar opsional pada update
+            ];
+
+            // Jika pengguna bukan Vendor, maka validasi vendor_id
+            if ($userRole !== 'Vendor') {
+                $validationRules['vendor_id'] = 'required|exists:vendors,id';
+            }
+
+            // Validasi berdasarkan rules yang sudah disesuaikan
+            $request->validate($validationRules, [
+                'project_id.required' => 'Project wajib diisi.',
+                'project_id.exists' => 'Project tidak valid.',
+                'vendor_id.required' => 'Vendor wajib diisi.',
+                'vendor_id.exists' => 'Vendor tidak valid.',
+                'title.required' => 'Judul wajib diisi.',
+                'title.max' => 'Judul tidak boleh lebih dari 255 karakter.',
+                'description.max' => 'Deskripsi tidak boleh lebih dari 255 karakter.',
+                'image.image' => 'File harus berupa gambar.',
+                'image.mimes' => 'Format gambar tidak valid.',
+                'image.max' => 'Ukuran gambar tidak boleh lebih dari 5MB.',
+            ]);
+
+            // Temukan reportVendor berdasarkan id
+            $reportVendor = ReportVendor::findOrFail($id); // Pastikan laporan ditemukan
+
+            // Tentukan file gambar yang baru jika ada
+            $filename = $reportVendor->image;
+
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $filename = 'reportvendor_' . rand(0, 999999999) . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('storage/images/reportvendor/'), $filename);
+
+                // Hapus gambar lama jika ada
+                if ($reportVendor->image !== 'default.png' && file_exists(public_path('storage/images/reportvendor/' . $reportVendor->image))) {
+                    File::delete(public_path('storage/images/reportvendor/' . $reportVendor->image));
+                }
+            }
+
+            // Jika pengguna adalah Vendor, dapatkan ID vendor mereka dan tidak perlu vendor_id dari request
+            if ($userRole === 'Vendor') {
+                $vendor = Vendor::where('user_id', $user->id)->first();
+
+                if (!$vendor) {
+                    return redirect()->route('dashboard')->withErrors('No vendor found for the logged-in user.');
+                }
+
+                // Update laporan menggunakan vendor_id yang terkait dengan pengguna
+                $reportVendor->update([
+                    'project_id' => $request->project_id,
+                    'vendor_id' => $vendor->id,  // Gunakan ID vendor yang terkait dengan pengguna
+                    'title' => $request->title,
+                    'description' => $request->description,
+                    'image' => $filename,
+                ]);
+            } else {
+                // Jika bukan Vendor, vendor_id akan berasal dari request
+                $reportVendor->update([
+                    'project_id' => $request->project_id,
+                    'vendor_id' => $request->vendor_id,  // Gunakan vendor_id yang diberikan oleh pengguna
+                    'title' => $request->title,
+                    'description' => $request->description,
+                    'image' => $filename,
+                ]);
+            }
+
+            // Log aktivitas pembaruan
+            activity()
+                ->causedBy(Auth::user())
+                ->performedOn($reportVendor)
+                ->event('updated')
+                ->log('Report Vendor diubah dengan judul ' . $reportVendor->title);
+
+            return redirect()->route('report')->with(['status' => 'Success', 'message' => 'Berhasil Mengubah Report!']);
+        } catch (Exception $e) {
+            // Log exception message jika terjadi error
+            \Log::error('Error occurred while updating report vendor', [
+                'error_message' => $e->getMessage(),
+                'stack_trace' => $e->getTraceAsString(),
+            ]);
+
+            // Return error message jika gagal
+            return redirect()->back()
+                ->with('error', 'Failed to update data: ' . $e->getMessage())
+                ->withInput();
         }
-
-        $reportVendor->update([
-            'project_id' => $request->project_id,
-            'vendor_id' => $request->vendor_id,
-            'title' => $request->title,
-            'description' => $request->description,
-            'image' => $filename,
-        ]);
-
-        activity()
-            ->causedBy(Auth::user()) // Logs who performed the action
-            ->performedOn($reportVendor) // The entity being changed
-            ->event('updated') // Event of the action
-            ->log('Report Vendor diubah dengan judul ' . $reportVendor->title);
-
-        return redirect()->route('report')->with(['status' => 'Success', 'message' => 'Berhasil Mengubah Report!']);
     }
+
 
     public function destroy($id)
     {

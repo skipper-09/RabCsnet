@@ -88,6 +88,10 @@ class RoleSeeder extends Seeder
 
         $vendor->givePermissionTo([
             'read-dashboard',
+            'read-reportvendors',
+            'create-reportvendors',
+            'update-reportvendors',
+            'delete-reportvendors',
             'read-users',
             'create-users',
             'update-users',
