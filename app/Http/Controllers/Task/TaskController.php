@@ -349,7 +349,7 @@ class TaskController extends Controller
             'description' => 'nullable|string',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'status' => 'required|in:pending,in_progres,complated,canceled',
+            'status' => 'required|in:pending,in_progres,complated',
             'priority' => 'required|in:low,medium,high',
             'parent_id' => 'nullable|exists:tasks,id',
         ], [
@@ -406,6 +406,24 @@ class TaskController extends Controller
                 'parent_id' => $request->parent_id,
             ]);
 
+            // Jika ini adalah task utama (parent task)
+            if (!$task->parent_id) {
+                // Jika task utama sudah complated, maka semua subtask ikut complated
+                if ($task->status === 'complated') {
+                    $task->subTasks()->update([
+                        'status' => 'complated',
+                        'complated_date' => now()
+                    ]);
+                }
+                // Jika task utama tidak complated, reset status subtask
+                else {
+                    $task->subTasks()->update([
+                        'status' => 'in_progres',
+                        'complated_date' => null
+                    ]);
+                }
+            }
+
             // Log task update
             \Log::info('Task Updated Successfully', [
                 'task_id' => $task->id,
@@ -432,6 +450,7 @@ class TaskController extends Controller
                 ->withInput();
         }
     }
+
     public function destroy($id)
     {
         try {
