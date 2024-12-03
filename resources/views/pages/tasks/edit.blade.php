@@ -151,10 +151,10 @@
                                                     {{ old('status', $tasks->status) == 'complated' ? 'selected' : '' }}>
                                                     Completed
                                                 </option>
-                                                <option value="canceled"
+                                                {{-- <option value="canceled"
                                                     {{ old('status', $tasks->status) == 'canceled' ? 'selected' : '' }}>
                                                     Canceled
-                                                </option>
+                                                </option> --}}
                                             </select>
                                             @error('status')
                                                 <div class="invalid-feedback">
