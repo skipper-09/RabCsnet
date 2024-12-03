@@ -23,9 +23,8 @@
                 <div class="page-title">
                     <h4>Calendar</h4>
                     <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">Morvin</a></li>
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Calendar</li>
+                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Timeline Proyek</li>
                     </ol>
                 </div>
             </div>
@@ -51,8 +50,7 @@
 
 
 </div>
-<!-- End Page-content -->
-<!-- end main content-->
+
 
 
 @push('js')
@@ -84,28 +82,28 @@
             center: 'title',
             right: 'resourceTimelineYear,resourceTimelineMonth,resourceTimelineWeek'
         },
-        initialView: 'resourceTimelineYear',
+        initialView: 'resourceTimelineMonth ',
         views: {
             resourceTimelineYear: {
                 type: 'resourceTimeline',
-                duration: { years: 1 },
+                duration: { years: 3 },
                 buttonText: 'Year',
                 slotDuration: { months: 1 },
                 slotLabelFormat: [{ year: 'numeric' }, { month: 'short' }]
             },
             resourceTimelineMonth: {
                 type: 'resourceTimeline',
-                duration: { month: 2 },
+                duration: { month: 4 },
                 buttonText: 'Month',
                 slotDuration: { days: 1 },
                 slotLabelFormat: [{month:'long'},{ weekday: 'short', day: 'numeric', omitCommas: true }]
             },
             resourceTimelineWeek: {
                 type: 'resourceTimeline',
-                duration: { days: 7 },
+                duration: { week: 4 },
                 buttonText: 'Week',
                 slotDuration: { days: 1 },
-                slotLabelFormat: [{ weekday: 'long', month: 'short', day: 'numeric', omitCommas: true }]
+                slotLabelFormat: [{ month: 'short'},{ weekday: 'long', day: 'numeric', omitCommas: true }]
             }
         },
         resourceAreaWidth: '40%',
@@ -120,27 +118,25 @@
             }
         ],
         resources: function(fetchInfo, successCallback, failureCallback) {
-            // Fetch resources from the server
             fetch('{{ route('tasks.data') }}')
                 .then(response => response.json())
                 .then(data => {
-                    successCallback(data.resources); // Pass the resources to FullCalendar
+                    successCallback(data.resources); 
                 })
                 .catch(error => {
                     console.error('Error fetching resources:', error);
-                    failureCallback(error); // Call failure callback in case of error
+                    failureCallback(error); 
                 });
         },
         events: function(fetchInfo, successCallback, failureCallback) {
-            // Fetch events from the server
             fetch('{{ route('tasks.data') }}')
                 .then(response => response.json())
                 .then(data => {
-                    successCallback(data.events); // Pass the events to FullCalendar
+                    successCallback(data.events); 
                 })
                 .catch(error => {
                     console.error('Error fetching events:', error);
-                    failureCallback(error); // Call failure callback in case of error
+                    failureCallback(error); 
                 });
         }
     });
