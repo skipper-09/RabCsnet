@@ -81,6 +81,8 @@ class Task extends Model
                 return '<span class="badge badge-soft-info">In Progress</span>';
             case 'complated':
                 return '<span class="badge badge-soft-success">Completed</span>';
+            case 'overdue':
+                return '<span class="badge badge-soft-danger">Overdue</span>';
             default:
                 return '<span class="badge badge-soft-danger">Canceled</span>';
         }
