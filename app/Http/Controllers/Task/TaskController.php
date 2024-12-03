@@ -98,10 +98,17 @@ class TaskController extends Controller
                     // Jika statusnya 'in_progress', tampilkan tombol
                     if ($isInProgress) {
                         $button .= '<button type="button" class="btn btn-sm btn-success task-completion-button" 
-                                        data-id="' . $data->id . '" 
-                                        ' . $isDisabled . '>
-                                        <i class="fas ' . ($isInProgress ? 'fa-check' : '') . '"></i> 
-                                    </button>';
+                                    data-id="' . $data->id . '" 
+                                    ' . $isDisabled . ' data-toggle="tooltip" data-placement="bottom" title="Complete Task">
+                                    <i class="fas fa-check"></i> 
+                                </button>';
+                    } else {
+                        // Jika statusnya bukan 'in_progress', tampilkan tombol untuk membatalkan penyelesaian
+                        $button .= '<button type="button" class="btn btn-sm btn-danger task-completion-button" 
+                                    data-id="' . $data->id . '" 
+                                    ' . $isDisabled . ' data-toggle="tooltip" data-placement="bottom" title="Uncomplete Task">
+                                    <i class="fas fa-times"></i> 
+                                </button>';
                     }
                 }
 
@@ -125,9 +132,6 @@ class TaskController extends Controller
     public function details($id)
     {
         $currentUser = Auth::user();
-
-        $currentUserRole = $currentUser->roles->first()->name;
-
         $vendor = Vendor::where('user_id', $currentUser->id)->first();
 
         if ($vendor) {

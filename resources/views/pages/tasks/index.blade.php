@@ -32,9 +32,12 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <div class="mb-3">
-                                <a href="{{ route('tasks.add') }}" class="btn btn-primary btn-sm">Tambah {{ $tittle }}</a>
-                            </div>
+                            @can('create-tasks')
+                                <div class="mb-3">
+                                    <a href="{{ route('tasks.add') }}" class="btn btn-primary btn-sm">Tambah
+                                        {{ $tittle }}</a>
+                                </div>
+                            @endcan
                             <table id="datatable" class="table table-responsive table-hover" style="width: 100%;">
                                 <thead>
                                     <tr>
@@ -81,8 +84,7 @@
                     processing: true,
                     serverSide: true,
                     ajax: '{{ route('tasks.getdata') }}',
-                    columns: [
-                        {
+                    columns: [{
                             data: 'DT_RowIndex',
                             orderable: false,
                             searchable: false,
@@ -116,13 +118,15 @@
                             data: 'priority',
                             name: 'priority'
                         },
-                        {
-                            data: 'action',
-                            name: 'action',
-                            orderable: false,
-                            searchable: false,
-                            class: 'text-center'
-                        }
+                        @canany(['complete-tasks', 'update-tasks', 'delete-tasks'])
+                            {
+                                data: 'action',
+                                name: 'action',
+                                orderable: false,
+                                searchable: false,
+                                class: 'text-center'
+                            }
+                        @endcanany
                     ],
                 });
 
@@ -145,7 +149,7 @@
                             if (response.status === 'success') {
                                 // Reload the datatable to reflect changes
                                 table.ajax.reload(null, false);
-                                
+
                                 Swal.fire({
                                     toast: true,
                                     position: 'top-end',
