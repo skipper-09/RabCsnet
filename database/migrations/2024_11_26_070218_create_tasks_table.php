@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignUuid('vendor_id')->references('id')->on('vendors')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignUuid('parent_id')->nullable()->references('id')->on('tasks')->onDelete('cascade');
             $table->string('title');
-            $table->longText('description');
+            $table->longText('description')->nullable();
             $table->date('start_date');
             $table->date('end_date');
             $table->date('complated_date')->nullable();
