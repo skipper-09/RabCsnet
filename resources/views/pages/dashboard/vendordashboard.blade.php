@@ -39,7 +39,7 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="">
-                                            <h4 class="header-title mb-4">Jumlah Proyek</h4>
+                                            <h4 class="header-title mb-4 fw-bold">Jumlah Proyek</h4>
                                             <div class="media align-items-center gap-2  pb-2 mt-2">
                                                 <div class="avatar-sm mb-3 mt-2">
                                                     <span class="avatar-title rounded-circle bg-primary shadow">
@@ -58,11 +58,11 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="">
-                                            <h4 class="header-title mb-4">Jumlah Task</h4>
+                                            <h4 class="header-title mb-4 fw-bold">Jumlah Task</h4>
                                             <div class="media align-items-center gap-2  pb-2 mt-2">
                                                 <div class="avatar-sm mb-3 mt-2">
-                                                    <span class="avatar-title rounded-circle bg-primary shadow">
-                                                            <i class="mdi mdi-apps text-white font-size-24"></i>
+                                                    <span class="avatar-title rounded-circle bg-info shadow">
+                                                            <i class="mdi mdi-progress-upload text-white font-size-24"></i>
                                                         </span>
                                                 </div>
                                                 <h4 class="text-muted fw-bold">{{ $taskall }}</h4>
@@ -77,11 +77,11 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="">
-                                            <h4 class="header-title mb-4">Task Selesai</h4>
+                                            <h4 class="header-title mb-4 fw-bold">Task Selesai</h4>
                                             <div class="media align-items-center gap-2  pb-2 mt-2">
                                                 <div class="avatar-sm mb-3 mt-2">
-                                                    <span class="avatar-title rounded-circle bg-primary shadow">
-                                                            <i class="mdi mdi-apps text-white font-size-24"></i>
+                                                    <span class="avatar-title rounded-circle bg-success shadow">
+                                                            <i class="mdi mdi-progress-check text-white font-size-24"></i>
                                                         </span>
                                                 </div>
                                                 <h4 class="text-muted fw-bold">{{ $taskfinish }}</h4>
@@ -96,11 +96,11 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="">
-                                            <h4 class="header-title mb-4">Task Pending</h4>
+                                            <h4 class="header-title mb-4 fw-bold">Task Pending</h4>
                                             <div class="media align-items-center gap-2  pb-2 mt-2">
                                                 <div class="avatar-sm mb-3 mt-2">
-                                                    <span class="avatar-title rounded-circle bg-primary shadow">
-                                                            <i class="mdi mdi-apps text-white font-size-24"></i>
+                                                    <span class="avatar-title rounded-circle bg-warning shadow">
+                                                            <i class="mdi mdi-progress-alert text-white font-size-24"></i>
                                                         </span>
                                                 </div>
                                                 <h4 class="text-muted fw-bold">{{ $taskpending }}</h4>

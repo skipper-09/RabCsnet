@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Models\User;
 use App\Models\Project;
 use App\Models\ProjectReview;
+use App\Models\Vendor;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -83,20 +84,24 @@ class DashboardController extends Controller
 
 
         if ($currentUserRole == 'Vendor') {
-
-            $vendor = Project::where('vendor_id', $currentUser->id)->get();
-        $task = Task::where('vendor_id', $currentUser->id);
-            $taskall = $task->get();
-            $taskgfinish = $task->where('status', 'complated')->get();
-            $taskpending = $task->where('status', 'pending')->get();
+            $vendor_id = Vendor::where('user_id', $currentUser->id)->value('id'); // Mengambil hanya nilai ID
+            $projectCount = Project::where('vendor_id', $vendor_id)->count();
+            $taskCounts = Task::where('vendor_id', $vendor_id)
+                ->selectRaw("
+                    COUNT(*) as total_tasks,
+                    SUM(CASE WHEN status = 'in_progres' THEN 1 ELSE 0 END) as pending_tasks,
+                    SUM(CASE WHEN status = 'complated' THEN 1 ELSE 0 END) as finished_tasks
+                ")
+                ->first();
+            
             $data = [
                 'tittle' => 'Dashboard',
-                'project' => $vendor->count(),
-                'taskall' => $taskall->count(),
-                'taskfinish' => $taskgfinish->count(),
-                'taskpending' => $taskpending->count(),
-
+                'project' => $projectCount,
+                'taskall' => $taskCounts->total_tasks ?? 0,
+                'taskfinish' => $taskCounts->finished_tasks ?? 0,
+                'taskpending' => $taskCounts->pending_tasks ?? 0,
             ];
+            
             return view('pages.dashboard.vendordashboard', $data);
         }
 
