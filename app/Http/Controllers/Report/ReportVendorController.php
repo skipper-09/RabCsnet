@@ -66,7 +66,7 @@ class ReportVendorController extends Controller
         if ($userRole !== 'Vendor') {
             // Non-vendor users, fetch all vendors and active projects
             $data = [
-                'title' => 'Report Vendor',
+                'tittle' => 'Report Vendor',
                 'projects' => Project::where('start_status', 1)->get(),
                 'vendors' => Vendor::all(),
                 'userRole' => $userRole,  // Pass user role to the view
@@ -80,7 +80,7 @@ class ReportVendorController extends Controller
             }
 
             $data = [
-                'title' => 'Report Vendor',
+                'tittle' => 'Report Vendor',
                 'projects' => Project::where('start_status', 1)
                     ->where('vendor_id', $vendor->id)  // Filter projects by vendor
                     ->get(),
