@@ -140,7 +140,7 @@
                             {{-- <div id="list-chart-2" class="apex-charts" dir="ltr"></div> --}}
                             <div class="text-center" dir="ltr">
                                 <input data-plugin="knob" data-width="120" data-height="120" data-linecap=round
-                                data-fgColor="#846eff" value="60" data-skin="tron" 
+                                data-fgColor="#50a5f1" value="{{ $projectprogress }}" data-skin="tron" 
                                 data-readOnly=true  />
                             </div>
                             <div class="row no-gutters mt-4">

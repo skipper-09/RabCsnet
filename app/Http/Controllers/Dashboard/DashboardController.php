@@ -69,6 +69,16 @@ class DashboardController extends Controller
         $projectcomplate = Project::where('status', 'finish')->get()->count();
         $projectinprogres = Project::where('status', 'in_progres')->get()->count();
         $projectpending = Project::where('status', 'pending')->get()->count();
+
+        $projectprogres = Project::with(['taskdata'])->where('status', 'in_progres')
+            ->orderByDesc('id')
+            ->get();
+        $progressCollection = $projectprogres->map(function ($proyek) {
+            return $proyek->progress();
+        });
+        $averageProgress = $progressCollection->avg();
+
+
         // Data yang akan diteruskan ke view
         $data = [
             'tittle' => 'Dashboard',
@@ -80,6 +90,7 @@ class DashboardController extends Controller
             'projeccomplate' => $projectcomplate,
             'projectinprogres' => $projectinprogres,
             'projectpending' => $projectpending,
+            'projectprogress' => $averageProgress,
         ];
 
 
@@ -93,7 +104,7 @@ class DashboardController extends Controller
                     SUM(CASE WHEN status = 'complated' THEN 1 ELSE 0 END) as finished_tasks
                 ")
                 ->first();
-            
+
             $data = [
                 'tittle' => 'Dashboard',
                 'project' => $projectCount,
@@ -101,7 +112,7 @@ class DashboardController extends Controller
                 'taskfinish' => $taskCounts->finished_tasks ?? 0,
                 'taskpending' => $taskCounts->pending_tasks ?? 0,
             ];
-            
+
             return view('pages.dashboard.vendordashboard', $data);
         }
 
@@ -112,11 +123,11 @@ class DashboardController extends Controller
 
     public function getData(Request $request)
     {
-        $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview', 'responsibleperson','taskdata'])->where('status', 'in_progres')
+        $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview', 'responsibleperson', 'taskdata'])->where('status', 'in_progres')
             ->orderByDesc('id')
             ->get();
 
-            
+
         return DataTables::of($dataType)
             ->addIndexColumn()
             ->editColumn('status', function ($data) {
@@ -155,9 +166,9 @@ class DashboardController extends Controller
                 return $data->responsibleperson->name ?? '-';
             })->editColumn('progress', function ($data) {
                 $tes = '';
-                
+
                 $tes = '<input data-plugin="knob" data-width="40" data-height="40" data-linecap=round
-                                                    data-fgColor="#34c38f" value='.$data->progress().' data-skin="tron" 
+                                                    data-fgColor="#34c38f" value=' . $data->progress() . ' data-skin="tron" 
                                                     data-readOnly=true  />
                                             ';
                 return $tes;
