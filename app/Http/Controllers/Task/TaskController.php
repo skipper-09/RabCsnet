@@ -100,7 +100,7 @@ class TaskController extends Controller
                                         ' . $isDisabled . '>
                                         <i class="fas ' . ($isInProgress ? 'fa-check' : '') . '"></i> 
                                     </button>';
-                    } 
+                    }
                 }
 
 
@@ -246,6 +246,16 @@ class TaskController extends Controller
                 'priority' => $request->priority,
                 'parent_id' => $request->parent_id,
             ]);
+
+            // If this is a sub-task and the parent is completed, update parent status
+            if ($request->parent_id) {
+                $parentTask = Task::find($request->parent_id);
+                if ($parentTask && $parentTask->status === 'complated') {
+                    $parentTask->status = 'in_progres';
+                    $parentTask->complated_date = null;
+                    $parentTask->save();
+                }
+            }
 
             // Log task creation
             \Log::info('Task Created Successfully', [
@@ -515,23 +525,24 @@ class TaskController extends Controller
             // This is a subtask, so don't update parent task progress directly
             $parentTask = Task::find($task->parent_id);
             if ($parentTask) {
-                // Update the status of the parent task based on the subtask completion
+                // Check the number of subtasks
                 $subTasks = $parentTask->subTasks;
 
-                // Check if all subtasks are completed
+                // Check if all existing sub-tasks are completed
                 $allSubTasksCompleted = $subTasks->every(function ($subTask) {
                     return $subTask->status === 'complated';
                 });
 
-                // Update parent task status if all subtasks are completed
-                if ($allSubTasksCompleted) {
-                    $parentTask->status = 'complated';
-                    $parentTask->complated_date = now();
-                    $parentTask->save();
-                } else {
-                    // If not all subtasks are completed, ensure parent is not marked as completed
+                // If there's a new sub-task and parent is already completed, change status to in_progres
+                if (!$allSubTasksCompleted) {
+                    // Update parent task status to in_progres
                     $parentTask->status = 'in_progres';
                     $parentTask->complated_date = null;
+                    $parentTask->save();
+                } elseif ($allSubTasksCompleted) {
+                    // Update parent task status to completed
+                    $parentTask->status = 'complated';
+                    $parentTask->complated_date = now();
                     $parentTask->save();
                 }
             }
@@ -539,7 +550,7 @@ class TaskController extends Controller
 
         // If this task has sub-tasks, update their status accordingly (only if it's a parent task)
         if ($task->status === 'complated' && !$task->parent_id) {
-            // Mark all subtasks as completed when parent task is completed
+            // Mark all existing subtasks as completed when parent task is completed
             $task->subTasks()->update([
                 'status' => 'complated',
                 'complated_date' => now()
