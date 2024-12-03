@@ -188,7 +188,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::delete('/delete/{id}', [TaskController::class, 'destroy'])->name('tasks.delete')->middleware('can:delete-tasks');
         Route::post('/{id}/toggle-completion', [TaskController::class, 'toggleCompletion'])
             ->name('tasks.toggle-completion')
-            ->middleware('can:update-tasks');
+            ->middleware('can:complete-tasks');
     });
 
     Route::prefix('assign')->group(function () {
