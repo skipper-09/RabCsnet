@@ -105,7 +105,6 @@ class TaskController extends Controller
                     }
                 }
 
-
                 // Edit button
                 if ($userauth->can('update-tasks')) {
                     $button .= ' <a href="' . route('tasks.edit', ['id' => $data->id]) . '" class="btn btn-sm btn-success action mr-1" data-id=' . $data->id . ' data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data"><i class="fas fa-pencil-alt"></i></a>';
@@ -125,15 +124,33 @@ class TaskController extends Controller
 
     public function details($id)
     {
-        $task = Task::with([
-            'project',
-            'vendor',
-            'subTasks' => function ($query) {
-                $query->orderBy('created_at', 'desc');
-            },
-            'mainTask',
-            // 'taskassign.user'
-        ])->findOrFail($id);
+        $currentUser = Auth::user();
+
+        $currentUserRole = $currentUser->roles->first()->name;
+
+        $vendor = Vendor::where('user_id', $currentUser->id)->first();
+
+        if ($vendor) {
+            $task = Task::with([
+                'project',
+                'vendor',
+                'subTasks' => function ($query) {
+                    $query->orderBy('created_at', 'desc');
+                },
+                'mainTask',
+                // 'taskassign.user'
+            ])->where('vendor_id', $vendor->id)->findOrFail($id);
+        } else {
+            $task = $task = Task::with([
+                'project',
+                'vendor',
+                'subTasks' => function ($query) {
+                    $query->orderBy('created_at', 'desc');
+                },
+                'mainTask',
+                // 'taskassign.user'
+            ])->findOrFail($id);
+        }
 
         // Calculate overall task progress
         $totalSubTasks = $task->subTasks->count();
@@ -482,11 +499,11 @@ class TaskController extends Controller
             // Current authenticated user
             $currentUser = Auth::user();
 
-            // Check if user has permission to update tasks
-            if (!$currentUser->can('update-tasks')) {
+            // Check if user has permission to complete tasks
+            if (!$currentUser->can('complete-tasks')) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'You are not authorized to update this task.'
+                    'message' => 'You are not authorized to complete this task.'
                 ], 403);
             }
 

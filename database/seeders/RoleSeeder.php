@@ -93,10 +93,8 @@ class RoleSeeder extends Seeder
             'create-reportvendors',
             'update-reportvendors',
             'delete-reportvendors',
-            'read-users',
-            'create-users',
-            'update-users',
-            'delete-users',
+            'read-tasks',
+            'complete-tasks',
         ]);
 
         $accounting = Role::create(['name' => 'Accounting']);
