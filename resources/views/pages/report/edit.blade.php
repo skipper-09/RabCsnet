@@ -45,8 +45,8 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <form action="{{ route('report.update', $report->id) }}" method="POST" enctype="multipart/form-data"
-                                class="needs-validation" novalidate>
+                            <form action="{{ route('report.update', $report->id) }}" method="POST"
+                                enctype="multipart/form-data" class="needs-validation" novalidate>
                                 @csrf
                                 @method('PUT')
                                 <div class="row">
@@ -69,17 +69,17 @@
                                             <input type="file" name="image" id="image"
                                                 class="form-control @error('image') is-invalid @enderror" accept="image/*"
                                                 onchange="previewImage(this)">
-                                            <small class="text-muted">Format yang diterima: JPEG, PNG, JPG, GIF. Ukuran maksimal:
+                                            <small class="text-muted">Format yang diterima: JPEG, PNG, JPG, GIF. Ukuran
+                                                maksimal:
                                                 5MB</small>
                                             @error('image')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                             <div class="preview-container">
-                                                <img id="imagePreview" 
-                                                     src="{{ $report->image ? asset('storage/images/reportvendor/' . $report->image) : '#' }}" 
-                                                     alt="Preview" 
-                                                     class="image-preview" 
-                                                     style="display: {{ $report->image ? 'block' : 'none' }}">
+                                                <img id="imagePreview"
+                                                    src="{{ $report->image ? asset('storage/images/reportvendor/' . $report->image) : '#' }}"
+                                                    alt="Preview" class="image-preview"
+                                                    style="display: {{ $report->image ? 'block' : 'none' }}">
                                             </div>
                                         </div>
                                     </div>
@@ -95,7 +95,7 @@
                                                 aria-label="Default select example">
                                                 <option>Pilih Project</option>
                                                 @foreach ($projects as $project)
-                                                    <option value="{{ $project->id }}" 
+                                                    <option value="{{ $project->id }}"
                                                         {{ old('project_id', $report->project_id) == $project->id ? 'selected' : '' }}>
                                                         {{ $project->name }}
                                                     </option>
@@ -109,27 +109,29 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label required">
-                                                Vendor
-                                            </label>
-                                            <select name="vendor_id"
-                                                class="form-control select2 @error('vendor_id') is-invalid @enderror"
-                                                aria-label="Default select example">
-                                                <option>Pilih Vendor</option>
-                                                @foreach ($vendors as $vendor)
-                                                    <option value="{{ $vendor->id }}"
-                                                        {{ old('vendor_id', $report->vendor_id) == $vendor->id ? 'selected' : '' }}>
-                                                        {{ $vendor->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            @error('vendor_id')
-                                                <div class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
+                                        @if ($userRole !== 'Vendor')
+                                            <div class="mb-3">
+                                                <label for="validationCustom01" class="form-label required">
+                                                    Vendor
+                                                </label>
+                                                <select name="vendor_id"
+                                                    class="form-control select2 @error('vendor_id') is-invalid @enderror"
+                                                    aria-label="Default select example">
+                                                    <option>Pilih Vendor</option>
+                                                    @foreach ($vendors as $vendor)
+                                                        <option value="{{ $vendor->id }}"
+                                                            {{ old('vendor_id', $report->vendor_id) == $vendor->id ? 'selected' : '' }}>
+                                                            {{ $vendor->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('vendor_id')
+                                                    <div class="invalid-feedback">
+                                                        {{ $message }}
+                                                    </div>
+                                                @enderror
+                                            </div>
+                                        @endif
                                     </div>
                                     <div class="col-md-12">
                                         <div class="mb-3">

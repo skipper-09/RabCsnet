@@ -71,7 +71,8 @@
                                             <input type="file" name="image" id="image"
                                                 class="form-control @error('image') is-invalid @enderror" accept="image/*"
                                                 onchange="previewImage(this)">
-                                            <small class="text-muted">Format yang diterima: JPEG, PNG, JPG, GIF. Ukuran maksimal:
+                                            <small class="text-muted">Format yang diterima: JPEG, PNG, JPG, GIF. Ukuran
+                                                maksimal:
                                                 5MB</small>
                                             @error('image')
                                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -104,24 +105,27 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label required">
-                                                Vendor
-                                            </label>
-                                            <select name="vendor_id"
-                                                class="form-control select2 @error('vendor_id') is-invalid @enderror"
-                                                aria-label="Default select example">
-                                                <option selected>Pilih Vendor</option>
-                                                @foreach ($vendors as $vendor)
-                                                    <option value="{{ $vendor->id }}">{{ $vendor->name }}</option>
-                                                @endforeach
-                                            </select>
-                                            @error('vendor_id')
-                                                <div class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
+                                        @if ($userRole !== 'Vendor')
+                                            <!-- Check if the user is NOT a Vendor -->
+                                            <div class="mb-3">
+                                                <label for="validationCustom01" class="form-label required">
+                                                    Vendor
+                                                </label>
+                                                <select name="vendor_id"
+                                                    class="form-control select2 @error('vendor_id') is-invalid @enderror"
+                                                    aria-label="Default select example">
+                                                    <option selected>Pilih Vendor</option>
+                                                    @foreach ($vendors as $vendor)
+                                                        <option value="{{ $vendor->id }}">{{ $vendor->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                @error('vendor_id')
+                                                    <div class="invalid-feedback">
+                                                        {{ $message }}
+                                                    </div>
+                                                @enderror
+                                            </div>
+                                        @endif
                                     </div>
                                     <div class="col-md-12">
                                         <div class="mb-3">
