@@ -20,8 +20,8 @@ class TimelineController extends Controller
 
     public function timeline(Request $request)
     {
-
-        $tasks = Task::with(['subTasks'])->get();
+        $project_id = $request->query('id');
+        $tasks = Task::with(['subTasks'])->where('project_id',$project_id)->get();
 
         // Map data tasks menjadi events
         $events = $tasks->map(function ($task) {

@@ -5,8 +5,12 @@
 @push('css')
 <!-- Plugin css -->
 <style>
-    .fc-license-message{
+    .fc-license-message {
         display: none;
+    }
+    .task{
+        font-weight: bold;
+        font-size: 16px
     }
 </style>
 
@@ -82,7 +86,7 @@
             center: 'title',
             right: 'resourceTimelineYear,resourceTimelineMonth,resourceTimelineWeek'
         },
-        initialView: 'resourceTimelineMonth ',
+        initialView: 'resourceTimelineMonth',
         views: {
             resourceTimelineYear: {
                 type: 'resourceTimeline',
@@ -107,10 +111,11 @@
             }
         },
         resourceAreaWidth: '40%',
-        resourceAreaColumns: [
+        resourceAreaColumns: [  
             {
                 headerContent: 'Task',
-                field: 'task'
+                field: 'task',
+                cellClassNames: 'task',
             },
             {
                 headerContent: 'Progress',

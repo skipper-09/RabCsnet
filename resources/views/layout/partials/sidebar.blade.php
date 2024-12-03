@@ -116,14 +116,14 @@
                         </ul>
                     </li>
 
-                    @can('read-project-timeline')
+                    {{-- @can('read-project-timeline')
                         <li class="{{ request()->routeIs('timeline') ? 'mm-active' : '' }}">
                             <a href="{{ route('timeline') }}" class="waves-effect">
                                 <i class="dripicons-blog"></i>
                                 <span>Project Timeline</span>
                             </a>
                         </li>
-                    @endcan
+                    @endcan --}}
                 @endcanany
 
                 {{-- Reporting --}}
