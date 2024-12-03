@@ -19,44 +19,61 @@ class TimelineController extends Controller
 
 
     public function timeline(Request $request)
-{
-    // Ambil data project tasks beserta relasi terkait
-    $tasks = Task::with(['taskassign', 'vendor', 'project'])->get();
+    {
 
-    // Map data tasks menjadi events
-    $events = $tasks->map(function ($task) {
-        return [
-            'id' => $task->id,
-            'resourceId' => $task->id, // ID dari task atau sub-task
-            'title' => $task->title,
-            'start' => $task->start_date,
-            'end' => $task->end_date,
-            // 'color' => $task->status == 'completed' ? '#28a745' : '#dc3545', // Warna sesuai status
-            // 'textColor' => '#ffffff',
-        ];
-    });
+        $tasks = Task::with(['subTasks'])->get();
 
-    // Strukturkan resources dengan sub-task
-    $resources = $tasks->groupBy('project.id')->map(function ($groupedTasks, $projectId) {
-        $projectName = $groupedTasks->first()->project->name;
+        // Map data tasks menjadi events
+        $events = $tasks->map(function ($task) {
+            return [
+                'id' => $task->id,
+                'resourceId' => $task->id,
+                'title' => $task->title,
+                'start' => $task->start_date,
+                'end' => $task->end_date,
+                'color' => $color = match ($task->status) {
+                    'complated' => '#34c38f',
+                    'pending' => '#f1b44c',
+                    'overdue' => '#f46a6a',
+                    default => '#50a5f1',
+                },
+                'textColor' => '#ffffff',
+            ];
+        });
 
-        return [
-            'id' => $projectId, // ID unik untuk project
-            'task' => $projectName, // Nama project (task utama)
-            'children' => $groupedTasks->map(function ($task) {
-                return [
-                    'id' => $task->id,
-                    'task' => $task->title, // Sub-task
-                ];
-            })->values()->toArray(),
-        ];
-    })->values()->toArray();
-
+        $resources = $tasks->map(function ($task) {
+            $subTasks = $task->subTasks;
     
-    return response()->json([
-        'events' => $events,
-        'resources' => $resources,
-    ]);
-}
+            // Total subtask yang selesai
+            $completedSubTasksCount = $subTasks->where('status', 'complated')->count();
+            $totalSubTasks = $subTasks->count();
+    
+            // Hitung progres main task berdasarkan bobot subtasks
+            $mainTaskProgress = $totalSubTasks > 0
+                ? round(($completedSubTasksCount / $totalSubTasks) * 100, 2)
+                : ($task->status === 'complated' ? 100 : 0);
+    
+            return [
+                'id' => $task->id,
+                'task' => $task->title,
+                'progress' => $mainTaskProgress . '%',
+                'children' => $subTasks->map(function ($subTask) use ($completedSubTasksCount, $totalSubTasks) {
+                    $progressPercentage = $subTask->status === 'complated'
+                        ? round(100 / $totalSubTasks, 2)
+                        : 0; // Jika tidak selesai, progress = 0
+                    return [
+                        'id' => $subTask->id,
+                        'task' => $subTask->title,
+                        'progress' => $progressPercentage . '%',
+                    ];
+                })->toArray(),
+            ];
+        })->toArray();
+    
+        return response()->json([
+            'events' => $events,
+            'resources' => $resources,
+        ]);
+    }
 
 }
