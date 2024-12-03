@@ -26,9 +26,31 @@ class ReportVendorController extends Controller
 
     public function getData(Request $request)
     {
-        $dataType = ReportVendor::with(['project', 'vendor'])
-            ->orderByDesc('created_at')
-            ->get();
+        $user = Auth::user();
+        $userRole = $user->roles->first() ? $user->roles->first()->name : null;
+
+        if (!$userRole) {
+            return redirect()->route('dashboard')->withErrors('User does not have an assigned role.');
+        }
+
+        if ($userRole !== 'Vendor') {
+            // Non-vendor users, fetch all vendors and active projects
+            $dataType = ReportVendor::with(['project', 'vendor'])
+                ->orderByDesc('created_at')
+                ->get();
+        } else {
+            // Vendor users, filter projects by the vendor's id
+            $vendor = Vendor::where('user_id', $user->id)->first();
+
+            if (!$vendor) {
+                return redirect()->route('dashboard')->withErrors('No vendor found for the user.');
+            }
+
+            $dataType = ReportVendor::with(['project', 'vendor'])
+                ->where('vendor_id', $vendor->id)  // Filter projects by vendor
+                ->orderByDesc('created_at')
+                ->get();
+        }
 
         return DataTables::of($dataType)
             ->addIndexColumn()
@@ -333,14 +355,33 @@ class ReportVendorController extends Controller
         }
     }
 
-
     public function destroy($id)
     {
         try {
-            $reportVendor = ReportVendor::findOrFail($id);
-            $reportVendorData = $reportVendor->toArray(); // Capture the data before deletion
+            $user = Auth::user();
+            $userRole = $user->roles->first() ? $user->roles->first()->name : null;
 
-            $reportVendor->delete();
+            if (!$userRole) {
+                return redirect()->route('dashboard')->withErrors('User does not have an assigned role.');
+            }
+
+            if ($userRole !== 'Vendor') {
+                $reportVendor = ReportVendor::findOrFail($id);
+                $reportVendorData = $reportVendor->toArray(); // Capture the data before deletion
+
+                $reportVendor->delete();
+            } else {
+                $vendor = Vendor::where('user_id', $user->id)->first();
+
+                if (!$vendor) {
+                    return redirect()->route('dashboard')->withErrors('No vendor found for the logged-in user.');
+                }
+
+                $reportVendor = ReportVendor::where('vendor_id', $vendor->id)->findOrFail($id);
+                $reportVendorData = $reportVendor->toArray(); // Capture the data before deletion
+
+                $reportVendor->delete();
+            }
 
             // Log activity for d$data deletion
             activity()

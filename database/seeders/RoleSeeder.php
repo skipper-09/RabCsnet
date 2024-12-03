@@ -52,6 +52,7 @@ class RoleSeeder extends Seeder
             'update-projectreviews',
             'delete-projectreviews',
             'read-tasks',
+            'complete-tasks',
             'create-tasks',
             'update-tasks',
             'delete-tasks',

@@ -32,6 +32,8 @@ class TaskController extends Controller
 
         $currentUserRole = $currentUser->roles->first()->name;
 
+        $vendor = Vendor::where('user_id', $currentUser->id)->first();
+
         // Base query for tasks
         $query = Task::with(['project', 'vendor', 'subTasks'])->whereNull('parent_id');
 
@@ -50,7 +52,7 @@ class TaskController extends Controller
                 $query->where('start_status', 1);
             })->orderBy('created_at', 'desc');
         } elseif ($currentUserRole === 'Vendor') {
-            $query->where('vendor_id', $currentUser->vendor_id)
+            $query->where('vendor_id',  $vendor->id)
                 ->whereHas('project', function ($query) {
                     $query->where('start_status', 1);
                 })->orderBy('created_at', 'desc');
@@ -88,7 +90,7 @@ class TaskController extends Controller
                 // Show button with icons for main tasks without subtasks
                 if ($data->parent_id === null && $data->subTasks->count() === 0) {
                     // Cek apakah pengguna memiliki izin untuk memperbarui tugas
-                    $isDisabled = $userauth->can('update-tasks') ? '' : 'disabled';
+                    $isDisabled = $userauth->can('complete-tasks') ? '' : 'disabled';
 
                     // Periksa status tugas
                     $isInProgress = $data->status === 'in_progres'; // Tombol hanya akan tampil jika statusnya 'in_progress'
