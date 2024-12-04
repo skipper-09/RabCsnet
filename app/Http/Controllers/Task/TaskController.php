@@ -192,20 +192,35 @@ class TaskController extends Controller
 
         $baseData = [
             'tittle' => 'Task',
-            'parentTasks' => Task::whereNull('parent_id')->get(),
+            'parentTasks' => collect(), // Inisialisasi collection kosong
         ];
 
-        // Vendors logic based on user role
+        $projectQuery = Project::where('start_status', 1)->with('vendor');
+
         if (in_array($currentUserRole, ['Accounting', 'Owner', 'Developer'])) {
-            $baseData['projects'] = Project::where('start_status', 1)->get();
+            $baseData['projects'] = $projectQuery->get();
         } else {
-            // For Vendor role or other roles
-            $baseData['projects'] = Project::where('start_status', 1)
+            $baseData['projects'] = $projectQuery
                 ->where('vendor_id', $currentUser->vendor_id)
                 ->get();
         }
 
         return view('pages.tasks.add', $baseData);
+    }
+
+    // Metode baru untuk mengambil parent tasks berdasarkan vendor_id project
+    public function getParentTasksByProjectVendor($projectId)
+    {
+        // Ambil project untuk mendapatkan vendor_id
+        $project = Project::findOrFail($projectId);
+
+        // Ambil parent tasks sesuai vendor_id project yang dipilih
+        $parentTasks = Task::whereNull('parent_id')
+            ->where('vendor_id', $project->vendor_id)
+            ->with('project', 'vendor')
+            ->get();
+
+        return response()->json($parentTasks);
     }
 
     public function store(Request $request)
