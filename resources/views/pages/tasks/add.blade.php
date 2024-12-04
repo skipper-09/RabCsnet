@@ -38,7 +38,7 @@
                                 class="needs-validation" novalidate>
                                 @csrf
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label required">Judul</label>
                                             <input type="text" name="title" value="{{ old('title') }}"
@@ -96,8 +96,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label">Vendor Information</label>
-                                            <div id="vendor-info" class="form-control-plaintext"></div>
+                                            <div id="vendor-info"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -208,7 +207,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Project yang Anda pilih belum dimulai. Harap mulai project terlebih dahulu.
+                    Pilih project terlebih dahulu sebelum menambahkan tugas.
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Tutup</button>
@@ -238,7 +237,14 @@
                     var projectVendor = selectedProject.data('vendor');
 
                     // Show vendor information
-                    $('#vendor-info').text('Vendor: ' + projectVendor);
+                    $('#vendor-info').html(`
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <i class="mdi mdi-account text-success me-2"></i>
+                                <strong>Vendor:</strong>  ${projectVendor}
+                            </li>
+                        </ul>
+                    `);
 
                     // AJAX untuk memuat parent tasks sesuai vendor project
                     $.ajax({
@@ -267,7 +273,7 @@
                             $('#parent_id').select2();
                         },
                         error: function() {
-                            alert('Gagal memuat subtask');
+                            console.error('Error fetching parent tasks');
                         }
                     });
 
