@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Task;
 use App\Models\Project;
 use App\Models\Vendor;
+use App\Models\ReportVendor;
 use Exception;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Carbon;
@@ -215,11 +216,17 @@ class TaskController extends Controller
 
         // Ambil parent tasks sesuai vendor_id project yang dipilih
         $parentTasks = Task::whereNull('parent_id')
-            ->where('vendor_id', $project->vendor_id)-> where('project_id', $projectId)
+            ->where('vendor_id', $project->vendor_id)
+            ->where('project_id', $projectId)
             ->with('project', 'vendor')
             ->get();
 
-        return response()->json($parentTasks);
+        // Filter out tasks yang sudah completed
+        $filteredParentTasks = $parentTasks->filter(function ($task) {
+            return $task->status !== 'complated';
+        });
+
+        return response()->json($filteredParentTasks->values());
     }
 
     public function store(Request $request)
@@ -356,20 +363,20 @@ class TaskController extends Controller
     {
         $currentUser = Auth::user();
         $currentUserRole = $currentUser->roles->first()->name;
-    
+
         // Ambil task saat ini
         $currentTask = Task::findOrFail($id);
-    
+
         // Data dasar untuk tampilan
         $baseData = [
             'tittle' => 'Task',
             'tasks' => $currentTask,
             'parentTasks' => collect(), // Inisialisasi collection kosong
         ];
-    
+
         // Query proyek berdasarkan start_status
         $projectQuery = Project::where('start_status', 1)->with('vendor');
-    
+
         if (in_array($currentUserRole, ['Accounting', 'Owner', 'Developer'])) {
             $baseData['projects'] = $projectQuery->get();
         } else {
@@ -377,20 +384,20 @@ class TaskController extends Controller
                 ->where('vendor_id', $currentUser->vendor_id)
                 ->get();
         }
-    
+
         // Jika task saat ini memiliki project_id, ambil parent tasks sesuai vendor_id
         if ($currentTask->project_id) {
             $project = Project::findOrFail($currentTask->project_id);
-    
+
             $baseData['parentTasks'] = Task::whereNull('parent_id')
                 ->where('vendor_id', $project->vendor_id)
                 ->with('project', 'vendor')
                 ->get();
         }
-    
+
         return view('pages.tasks.edit', $baseData);
     }
-    
+
 
     public function update(Request $request, $id)
     {
@@ -525,43 +532,52 @@ class TaskController extends Controller
 
     public function toggleCompletion($id)
     {
+        DB::beginTransaction();
+
         try {
-            // Find the task
-            $task = Task::findOrFail($id);
+            // Find the task with a lock to prevent concurrent modifications
+            $task = Task::lockForUpdate()->findOrFail($id);
 
             // Current authenticated user
             $currentUser = Auth::user();
 
             // Check if user has permission to complete tasks
             if (!$currentUser->can('complete-tasks')) {
+                DB::rollBack();
                 return response()->json([
                     'status' => 'error',
                     'message' => 'You are not authorized to complete this task.'
                 ], 403);
             }
 
-            // Toggle completion status
-            if ($task->status !== 'complated') {
-                $task->status = 'complated';
-                $task->complated_date = now(); // Set completion date
-            } else {
-                $task->status = 'in_progres'; // Revert to in progress
-                $task->complated_date = null; // Clear completion date
-            }
+            // Store the original status for logging
+            $originalStatus = $task->status;
+
+            // Correct the status values and implement a more robust toggle
+            $task->status = $task->status !== 'complated' ? 'complated' : 'in_progres';
+            $task->complated_date = $task->status === 'complated' ? now() : null;
 
             // Save the task
             $task->save();
 
+            // Manage report vendor based on task status
+            $this->manageReportVendor($task);
+
             // Log the status change
-            \Log::info('Task Completion Toggled', [
-                'task_id' => $task->id,
-                'task_title' => $task->title,
-                'new_status' => $task->status,
-                'updated_by' => $currentUser->id
-            ]);
+            activity()
+                ->performedOn($task)
+                ->causedBy($currentUser)
+                ->withProperties([
+                    'old_status' => $originalStatus,
+                    'new_status' => $task->status
+                ])
+                ->log('Task completion status toggled');
 
             // Handle sub-tasks and parent task progress
             $this->handleTaskProgressAndSubTasks($task);
+
+            // Commit the transaction
+            DB::commit();
 
             return response()->json([
                 'status' => 'success',
@@ -570,10 +586,14 @@ class TaskController extends Controller
                 'completed' => $task->status === 'complated'
             ]);
         } catch (Exception $e) {
+            // Rollback the transaction
+            DB::rollBack();
+
             // Log the error
             \Log::error('Task Completion Toggle Failed', [
                 'error_message' => $e->getMessage(),
                 'error_trace' => $e->getTraceAsString(),
+                'task_id' => $id,
                 'user_id' => Auth::id()
             ]);
 
@@ -581,6 +601,27 @@ class TaskController extends Controller
                 'status' => 'error',
                 'message' => 'Failed to update task completion status: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    private function manageReportVendor($task)
+    {
+        if ($task->status === 'complated') {
+            // Create report vendor only if it doesn't already exist
+            ReportVendor::firstOrCreate(
+                [
+                    'task_id' => $task->id
+                ],
+                [
+                    'project_id' => $task->project_id,
+                    'vendor_id' => $task->vendor_id,
+                    'title' => $task->title,
+                    // You can add more default values if needed
+                ]
+            );
+        } else {
+            // Delete existing report vendor when task is uncompleted
+            ReportVendor::where('task_id', $task->id)->delete();
         }
     }
 
