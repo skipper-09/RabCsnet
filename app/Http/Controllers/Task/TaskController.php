@@ -184,7 +184,6 @@ class TaskController extends Controller
         return view('pages.tasks.detail', $data);
     }
 
-
     public function create()
     {
         $currentUser = Auth::user();
@@ -357,26 +356,41 @@ class TaskController extends Controller
     {
         $currentUser = Auth::user();
         $currentUserRole = $currentUser->roles->first()->name;
-
-        // Base data for the view
+    
+        // Ambil task saat ini
+        $currentTask = Task::findOrFail($id);
+    
+        // Data dasar untuk tampilan
         $baseData = [
             'tittle' => 'Task',
-            'tasks' => Task::findOrFail($id),
-            'parentTasks' => Task::whereNull('parent_id')->get(),
+            'tasks' => $currentTask,
+            'parentTasks' => collect(), // Inisialisasi collection kosong
         ];
-
-        // Projects logic based on user role
+    
+        // Query proyek berdasarkan start_status
+        $projectQuery = Project::where('start_status', 1)->with('vendor');
+    
         if (in_array($currentUserRole, ['Accounting', 'Owner', 'Developer'])) {
-            $baseData['projects'] = Project::where('start_status', 1)->get();
+            $baseData['projects'] = $projectQuery->get();
         } else {
-            // For Vendor role or other roles
-            $baseData['projects'] = Project::where('start_status', 1)
+            $baseData['projects'] = $projectQuery
                 ->where('vendor_id', $currentUser->vendor_id)
                 ->get();
         }
-
+    
+        // Jika task saat ini memiliki project_id, ambil parent tasks sesuai vendor_id
+        if ($currentTask->project_id) {
+            $project = Project::findOrFail($currentTask->project_id);
+    
+            $baseData['parentTasks'] = Task::whereNull('parent_id')
+                ->where('vendor_id', $project->vendor_id)
+                ->with('project', 'vendor')
+                ->get();
+        }
+    
         return view('pages.tasks.edit', $baseData);
     }
+    
 
     public function update(Request $request, $id)
     {
