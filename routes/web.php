@@ -181,6 +181,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::prefix('tasks')->group(function () {
         Route::get('/', [TaskController::class, 'index'])->name('tasks')->middleware('can:read-tasks');
         Route::get('getData', [TaskController::class, 'getData'])->name('tasks.getdata');
+        Route::get('/get-parent-tasks/{projectId}', [TaskController::class, 'getParentTasksByProjectVendor'])
+            ->name('tasks.get-parent-tasks');
         Route::get('/detail/{id}', [TaskController::class, 'details'])->name('tasks.details');
         Route::get('/tambah', [TaskController::class, 'create'])->name('tasks.add')->middleware('can:create-tasks');
         Route::post('store', [TaskController::class, 'store'])->name('tasks.store');

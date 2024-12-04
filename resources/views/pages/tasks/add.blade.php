@@ -38,7 +38,7 @@
                                 class="needs-validation" novalidate>
                                 @csrf
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label required">Judul</label>
                                             <input type="text" name="title" value="{{ old('title') }}"
@@ -53,16 +53,39 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">
-                                                Sub Tugas
+                                            <label for="validationCustom01" class="form-label required">
+                                                Project
                                             </label>
-                                            <select name="parent_id" class="form-control select2 @error('parent_id') is-invalid @enderror" aria-label="Default select example" id="parent_id">
-                                                <option value="">Pilih Sub Tugas (Opsional)</option>
-                                                @foreach ($parentTasks as $parentTask)
-                                                    <option value="{{ $parentTask->id }}" {{ old('parent_id') == $parentTask->id ? 'selected' : '' }}>
-                                                        {{ $parentTask->title }}
+                                            <select name="project_id"
+                                                class="form-control select2 @error('project_id') is-invalid @enderror"
+                                                aria-label="Default select example" id="project_select">
+                                                <option value="">Pilih Project</option>
+                                                @foreach ($projects as $project)
+                                                    <option value="{{ $project->id }}"
+                                                        data-start="{{ $project->start_date }}"
+                                                        data-end="{{ $project->end_date }}"
+                                                        data-vendor="{{ $project->vendor->name ?? 'No Vendor' }}"
+                                                        data-vendor-id="{{ $project->vendor_id }}">
+                                                        {{ $project->name }} - {{ $project->vendor->name ?? 'No Vendor' }}
                                                     </option>
                                                 @endforeach
+                                            </select>
+                                            @error('project_id')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="parent_id" class="form-label">
+                                                Sub Tugas
+                                            </label>
+                                            <select name="parent_id"
+                                                class="form-control select2 @error('parent_id') is-invalid @enderror"
+                                                id="parent_id">
+                                                <option value="">Pilih Sub Tugas (Opsional)</option>
                                             </select>
                                             @error('parent_id')
                                                 <div class="invalid-feedback">
@@ -73,26 +96,8 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label required">
-                                                Project
-                                            </label>
-                                            <select name="project_id"
-                                                class="form-control select2 @error('project_id') is-invalid @enderror"
-                                                aria-label="Default select example" id="project_select">
-                                                <option selected>Pilih Project</option>
-                                                @foreach ($projects as $project)
-                                                    <option value="{{ $project->id }}"
-                                                        data-start="{{ $project->start_date }}"
-                                                        data-end="{{ $project->end_date }}">
-                                                        {{ $project->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            @error('project_id')
-                                                <div class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
+                                            <label class="form-label">Vendor Information</label>
+                                            <div id="vendor-info" class="form-control-plaintext"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -224,58 +229,98 @@
         <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
         <script src="{{ asset('assets/js/pages/form-advanced.init.js') }}"></script>
         <script>
-            // Script to handle project selection and validation
-            $('#project_select').on('change', function() {
-                var selectedProject = $(this).find('option:selected');
-                var projectStartDate = selectedProject.data('start');
-                var projectEndDate = selectedProject.data('end');
+            $(document).ready(function() {
+                // Script to handle project selection and validation
+                $('#project_select').on('change', function() {
+                    var selectedVendorId = $(this).find('option:selected').data('vendor-id');
+                    var selectedProject = $(this).find('option:selected');
+                    var projectStartDate = selectedProject.data('start');
+                    var projectEndDate = selectedProject.data('end');
+                    var projectVendor = selectedProject.data('vendor');
 
-                // Validate and set dates if project dates are available
-                if (!projectStartDate || !projectEndDate) {
-                    $('#projectAlertModal').modal('show');
-                    // Disable start and end dates input if project dates are missing
-                    $('#start_date').prop('disabled', true);
-                    $('#end_date').prop('disabled', true);
-                } else {
-                    // Enable the date fields and set values
-                    $('#start_date').prop('disabled', false);
-                    $('#end_date').prop('disabled', false);
-                    $('#start_date').val(projectStartDate);
-                    $('#end_date').val(projectEndDate);
+                    // Show vendor information
+                    $('#vendor-info').text('Vendor: ' + projectVendor);
+
+                    // AJAX untuk memuat parent tasks sesuai vendor project
+                    $.ajax({
+                        url: '{{ route('tasks.get-parent-tasks', ':projectId') }}'.replace(
+                            ':projectId', selectedProject.val()),
+                        method: 'GET',
+                        success: function(parentTasks) {
+                            // Reset dropdown parent task
+                            $('#parent_id').html(
+                                '<option value="">Pilih Sub Tugas (Opsional)</option>');
+
+                            // Tambahkan parent tasks yang sesuai
+                            parentTasks.forEach(function(task) {
+                                $('#parent_id').append(
+                                    `<option 
+                            value="${task.id}" 
+                            data-project-id="${task.project_id}"
+                            data-vendor-id="${task.vendor_id}">
+                            ${task.title} 
+                            (Project: ${task.project ? task.project.name : 'Tidak ada project'})
+                        </option>`
+                                );
+                            });
+
+                            // Inisialisasi ulang select2
+                            $('#parent_id').select2();
+                        },
+                        error: function() {
+                            alert('Gagal memuat subtask');
+                        }
+                    });
+
+                    // Validate and set dates if project dates are available
+                    if (!projectStartDate || !projectEndDate) {
+                        $('#projectAlertModal').modal('show');
+                        // Disable start and end dates input if project dates are missing
+                        $('#start_date').prop('disabled', true);
+                        $('#end_date').prop('disabled', true);
+                    } else {
+                        // Enable the date fields and set values
+                        $('#start_date').prop('disabled', false);
+                        $('#end_date').prop('disabled', false);
+                        $('#start_date').val(projectStartDate);
+                        $('#end_date').val(projectEndDate);
+                    }
+                });
+
+                // Validate start_date and end_date to be within project dates
+                $('form').on('submit', function(e) {
+                    var projectStartDate = $('#project_select').find('option:selected').data('start');
+                    var projectEndDate = $('#project_select').find('option:selected').data('end');
+                    var taskStartDate = $('#start_date').val();
+                    var taskEndDate = $('#end_date').val();
+
+                    // Check if start date is before project start date
+                    if (new Date(taskStartDate) < new Date(projectStartDate)) {
+                        e.preventDefault(); // Prevent form submission
+                        showValidationModal(
+                            'Tanggal mulai task tidak boleh lebih awal dari tanggal mulai project.');
+                        return false;
+                    }
+
+                    // Check if end date is after project end date
+                    if (new Date(taskEndDate) > new Date(projectEndDate)) {
+                        e.preventDefault(); // Prevent form submission
+                        showValidationModal(
+                            'Tanggal selesai task tidak boleh lebih lambat dari tanggal selesai project.');
+                        return false;
+                    }
+                });
+
+                // Function to show the validation modal
+                function showValidationModal(message) {
+                    $('#validationMessage').text(message); // Set custom validation message
+                    $('#validationModal').modal('show'); // Show the modal
                 }
-            });
 
-            // Validate start_date and end_date to be within project dates
-            $('form').on('submit', function(e) {
-                var projectStartDate = $('#project_select').find('option:selected').data('start');
-                var projectEndDate = $('#project_select').find('option:selected').data('end');
-                var taskStartDate = $('#start_date').val();
-                var taskEndDate = $('#end_date').val();
-
-                // Check if start date is before project start date
-                if (new Date(taskStartDate) < new Date(projectStartDate)) {
-                    e.preventDefault(); // Prevent form submission
-                    showValidationModal('Tanggal mulai task tidak boleh lebih awal dari tanggal mulai project.');
-                    return false;
-                }
-
-                // Check if end date is after project end date
-                if (new Date(taskEndDate) > new Date(projectEndDate)) {
-                    e.preventDefault(); // Prevent form submission
-                    showValidationModal('Tanggal selesai task tidak boleh lebih lambat dari tanggal selesai project.');
-                    return false;
-                }
-            });
-
-            // Function to show the validation modal
-            function showValidationModal(message) {
-                $('#validationMessage').text(message); // Set custom validation message
-                $('#validationModal').modal('show'); // Show the modal
-            }
-
-            // Reload page after modal is closed (optional)
-            $('#validationModal').on('hidden.bs.modal', function() {
-                location.reload(); // Uncomment if you want to reload the page after closing
+                // Reload page after modal is closed (optional)
+                $('#validationModal').on('hidden.bs.modal', function() {
+                    location.reload(); // Uncomment if you want to reload the page after closing
+                });
             });
         </script>
     @endpush
