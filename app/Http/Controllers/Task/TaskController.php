@@ -216,11 +216,17 @@ class TaskController extends Controller
 
         // Ambil parent tasks sesuai vendor_id project yang dipilih
         $parentTasks = Task::whereNull('parent_id')
-            ->where('vendor_id', $project->vendor_id)->where('project_id', $projectId)
+            ->where('vendor_id', $project->vendor_id)
+            ->where('project_id', $projectId)
             ->with('project', 'vendor')
             ->get();
 
-        return response()->json($parentTasks);
+        // Filter out tasks yang sudah completed
+        $filteredParentTasks = $parentTasks->filter(function ($task) {
+            return $task->status !== 'complated';
+        });
+
+        return response()->json($filteredParentTasks->values());
     }
 
     public function store(Request $request)
@@ -584,7 +590,7 @@ class TaskController extends Controller
             DB::rollBack();
 
             // Log the error
-            Log::error('Task Completion Toggle Failed', [
+            \Log::error('Task Completion Toggle Failed', [
                 'error_message' => $e->getMessage(),
                 'error_trace' => $e->getTraceAsString(),
                 'task_id' => $id,
