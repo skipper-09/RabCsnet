@@ -70,7 +70,8 @@ class PermissionSeeder extends Seeder
             'delete-roles',
             'read-logs',
             'clean-logs',
-            'setting-aplication'
+            'setting-aplication',
+            'setting-profile',
         ];
         $permissions = collect($arrayOfPermissionNames)->map(function ($permission) {
             return ['name' => $permission, 'guard_name' => 'web'];
