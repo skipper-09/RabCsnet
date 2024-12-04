@@ -225,10 +225,13 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-end">
                     <!-- item-->
-                    <a class="dropdown-item" href="#"><i
+                    <a class="dropdown-item" href="{{ route('setting.profile', ['id'=>Auth()->user()->id]) }}"><i
                             class="mdi mdi-account-circle-outline font-size-16 align-middle me-1"></i> Profile</a>
-                    <a class="dropdown-item d-block" href="{{ route('aplication') }}"><span class="badge badge-success float-end"></span><i
+                    @can('setting-aplication')
+                    <a class="dropdown-item d-block" href="{{ route('aplication') }}"><span
+                            class="badge badge-success float-end"></span><i
                             class="mdi mdi-cog-outline font-size-16 align-middle me-1"></i> Settings</a>
+                    @endcan
 
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item text-danger" href="{{ route('auth.signout') }}"><i

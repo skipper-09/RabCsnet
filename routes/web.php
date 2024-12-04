@@ -7,6 +7,7 @@ use App\Http\Controllers\Master\ItemTypeController;
 use App\Http\Controllers\Master\ProjectTypeController;
 use App\Http\Controllers\Master\UnitController;
 use App\Http\Controllers\Master\ItemController;
+use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Project\DetailProjectController;
 use App\Http\Controllers\Project\ProjectController;
 use App\Http\Controllers\Report\ProjectReportController;
@@ -247,6 +248,11 @@ Route::prefix('admin')->middleware('auth')->group(function () {
             Route::get('/', [LogController::class, 'index'])->name('log')->middleware('can:read-logs');
             Route::get('getData', [LogController::class, 'getData'])->name('log.getdata');
             Route::post('clean', [LogController::class, 'cleanlog'])->name('log.clean')->middleware('can:clean-logs');
+        });
+
+        Route::prefix('profile')->group(function () {
+            Route::get('/{id}', [ProfileController::class, 'index'])->name('setting.profile')->middleware('can:setting-profile');
+            Route::put('/update/{id}', [ProfileController::class, 'update'])->name('setting.profile.update');
         });
     });
 });

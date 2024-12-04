@@ -72,7 +72,8 @@ class RoleSeeder extends Seeder
             'delete-roles',
             'read-logs',
             'clean-logs',
-            'setting-aplication'
+            'setting-aplication',
+            'setting-profile',
         ]);
 
         $admin = Role::create(['name' => 'Administrator']);
@@ -83,6 +84,7 @@ class RoleSeeder extends Seeder
             'create-users',
             'update-users',
             'delete-users',
+            'setting-profile',
         ]);
 
         $vendor = Role::create(['name' => 'Vendor']);
@@ -95,6 +97,7 @@ class RoleSeeder extends Seeder
             'delete-reportvendors',
             'read-tasks',
             'complete-tasks',
+            'setting-profile',
         ]);
 
         $accounting = Role::create(['name' => 'Accounting']);
@@ -105,6 +108,7 @@ class RoleSeeder extends Seeder
             'create-projectreviews',
             'update-projectreviews',
             'delete-projectreviews',
+            'setting-profile',
         ]);
 
         $owner = Role::create(['name' => 'Owner']);
@@ -115,6 +119,7 @@ class RoleSeeder extends Seeder
             'create-projectreviews',
             'update-projectreviews',
             'delete-projectreviews',
+            'setting-profile',
         ]);
     }
 }
