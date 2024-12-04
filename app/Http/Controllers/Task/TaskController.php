@@ -215,7 +215,7 @@ class TaskController extends Controller
 
         // Ambil parent tasks sesuai vendor_id project yang dipilih
         $parentTasks = Task::whereNull('parent_id')
-            ->where('vendor_id', $project->vendor_id)
+            ->where('vendor_id', $project->vendor_id)-> where('project_id', $projectId)
             ->with('project', 'vendor')
             ->get();
 
