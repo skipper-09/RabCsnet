@@ -125,7 +125,7 @@ class ProjectReviewController extends Controller
                     ->get()
                     ->map(function ($project) {
                         $project->formatted_total_summary = number_format(
-                            $project->summary->first()->total_summary ?? 0,
+                            $project->summary->total_summary ?? 0,
                             2,
                             ',',
                             '.'
@@ -155,7 +155,7 @@ class ProjectReviewController extends Controller
                     ->get()
                     ->map(function ($project) {
                         $project->formatted_total_summary = number_format(
-                            $project->summary->first()->total_summary ?? 0,
+                            $project->summary->total_summary ?? 0,
                             2,
                             ',',
                             '.'
