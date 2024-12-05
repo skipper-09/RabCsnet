@@ -81,7 +81,11 @@ class TaskController extends Controller
             })
             ->addColumn('action', function ($data) {
                 $userauth = User::with('roles')->where('id', Auth::id())->first();
+                $currentUserRole = $userauth->roles->first()->name;
                 $button = '';
+
+                // Periksa status tugas
+                $isInProgress = $data->status === 'in_progres'; // Tombol hanya akan tampil jika statusnya 'in_progress'
 
                 // Show details button only for main tasks with subtasks
                 if ($data->parent_id === null && $data->subTasks->count() > 0) {
@@ -90,26 +94,35 @@ class TaskController extends Controller
 
                 // Show button with icons for main tasks without subtasks
                 if ($data->parent_id === null && $data->subTasks->count() === 0) {
-                    // Cek apakah pengguna memiliki izin untuk memperbarui tugas
-                    $isDisabled = $userauth->can('complete-tasks') ? '' : 'disabled';
+                    // Completion and report buttons only for non-Vendor roles
+                    if ($currentUserRole !== 'Vendor') {
+                        // Cek apakah pengguna memiliki izin untuk memperbarui tugas
+                        $isDisabled = $userauth->can('complete-tasks') ? '' : 'disabled';
 
-                    // Periksa status tugas
-                    $isInProgress = $data->status === 'in_progres'; // Tombol hanya akan tampil jika statusnya 'in_progress'
-
-                    // Jika statusnya 'in_progress', tampilkan tombol
-                    if ($isInProgress) {
-                        $button .= '<button type="button" class="btn btn-sm btn-success task-completion-button" 
+                        // Jika statusnya 'in_progress', tampilkan tombol
+                        if ($isInProgress) {
+                            $button .= '<button type="button" class="btn btn-sm btn-success task-completion-button" 
                                     data-id="' . $data->id . '" 
                                     ' . $isDisabled . ' data-toggle="tooltip" data-placement="bottom" title="Complete Task">
                                     <i class="fas fa-check"></i> 
                                 </button>';
-                    } else {
-                        // Jika statusnya bukan 'in_progress', tampilkan tombol untuk membatalkan penyelesaian
-                        $button .= '<button type="button" class="btn btn-sm btn-danger task-completion-button" 
+                        } else {
+                            // Jika statusnya bukan 'in_progress', tampilkan tombol untuk membatalkan penyelesaian
+                            $button .= '<button type="button" class="btn btn-sm btn-danger task-completion-button" 
                                     data-id="' . $data->id . '" 
                                     ' . $isDisabled . ' data-toggle="tooltip" data-placement="bottom" title="Uncomplete Task">
                                     <i class="fas fa-times"></i> 
                                 </button>';
+                        }
+                    }
+
+                    // Report button only for Vendor role
+                    if ($currentUserRole === 'Vendor' && $isInProgress) {
+                        $button .= '<button type="button" class="btn btn-sm btn-primary task-report-button"
+                                data-id="' . $data->id . '" 
+                                data-toggle="tooltip" data-placement="bottom" title="Report Task">
+                                <i class="fas fa-file-export"></i> 
+                            </button>';
                     }
                 }
 
@@ -125,9 +138,72 @@ class TaskController extends Controller
 
                 return '<div class="d-flex gap-2">' . $button . '</div>';
             })
-
             ->rawColumns(['action', 'project', 'vendor', 'start_date', 'end_date', 'status', 'priority', 'parent_tasks'])
             ->make(true);
+    }
+
+    public function reportTask(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            // Validate the request
+            $request->validate([
+                'task_id' => 'required|exists:tasks,id',
+                'description' => 'nullable|string|max:1000'
+            ]);
+
+            // Find the task
+            $task = Task::findOrFail($request->task_id);
+
+            // Get current authenticated user
+            $currentUser = Auth::user();
+            $currentUserRole = $currentUser->roles->first()->name;
+
+            // Verify vendor authorization
+            if ($currentUserRole !== 'Vendor') {
+                throw new Exception('Only vendors can report tasks.');
+            }
+
+            // Verify vendor ownership
+            $vendor = Vendor::where('user_id', $currentUser->id)->first();
+            if ($vendor->id !== $task->vendor_id) {
+                throw new Exception('You are not authorized to report this task.');
+            }
+
+            // Check task status
+            if ($task->status !== 'in_progres') {
+                throw new Exception('Task must be in progress to report.');
+            }
+
+            // Create or update report
+            $reportVendor = ReportVendor::updateOrCreate(
+                ['task_id' => $task->id],
+                [
+                    'project_id' => $task->project_id,
+                    'vendor_id' => $task->vendor_id,
+                    'title' => $task->title,
+                    'description' => $request->input('description', ''),
+                ]
+            );
+
+            $task->save();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Task reported successfully.',
+                'report' => $reportVendor
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            \Log::error('Task Report Error: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
     }
 
     public function details($id)
@@ -561,7 +637,7 @@ class TaskController extends Controller
             $task->save();
 
             // Manage report vendor based on task status
-            $this->manageReportVendor($task);
+            // $this->manageReportVendor($task);
 
             // Log the status change
             activity()

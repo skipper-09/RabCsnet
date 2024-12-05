@@ -136,7 +136,7 @@
                 $('#datatable').on('click', '.task-completion-button', function() {
                     const taskId = $(this).data('id');
                     const button = $(this);
-                    const currentStatus = button.hasClass('btn-success') ? 'completed' : 'in_progress';
+                    const currentStatus = button.hasClass('btn-success') ? 'complated' : 'in_progres';
 
                     $.ajax({
                         url: `{{ route('tasks.toggle-completion', ':id') }}`.replace(':id', taskId),
@@ -179,6 +179,53 @@
                                 showConfirmButton: false,
                                 timer: 3000
                             });
+                        }
+                    });
+                });
+
+                // Handle task reporting
+                $('#datatable').on('click', '.task-report-button', function() {
+                    const taskId = $(this).data('id');
+
+                    Swal.fire({
+                        title: 'Report Task',
+                        text: 'Enter a description for your task report (optional):',
+                        input: 'textarea',
+                        inputPlaceholder: 'Enter description here...',
+                        showCancelButton: true,
+                        confirmButtonText: 'Report',
+                        cancelButtonText: 'Cancel',
+                        preConfirm: (description) => {
+                            return $.ajax({
+                                url: '{{ route('tasks.report') }}',
+                                method: 'POST',
+                                data: {
+                                    task_id: taskId,
+                                    description: description,
+                                    _token: $('meta[name="csrf-token"]').attr('content')
+                                },
+                                dataType: 'json'
+                            }).fail(function(xhr) {
+                                Swal.showValidationMessage(
+                                    xhr.responseJSON.message ||
+                                    'An error occurred while reporting the task'
+                                );
+                            });
+                        },
+                        allowOutsideClick: () => !Swal.isLoading()
+                    }).then((result) => {
+                        if (result.isConfirmed && result.value.success) {
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'success',
+                                title: result.value.message,
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+
+                            // Optionally reload the table
+                            table.ajax.reload(null, false);
                         }
                     });
                 });

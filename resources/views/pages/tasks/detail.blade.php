@@ -25,6 +25,7 @@
             </div>
         </div>
     </div>
+
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-8">
@@ -36,6 +37,23 @@
                                 <span class="badge bg-secondary ms-2">Sub Task</span>
                             @else
                                 <span class="badge bg-primary ms-2">Main Task</span>
+                            @endif
+
+                            @php
+                                $currentUser = Auth::user();
+                                $currentUserRole = $currentUser->roles->first()->name;
+                                $isVendor = $currentUserRole === 'Vendor';
+                                $canReport =
+                                    $isVendor &&
+                                    $task->status === 'in_progres' &&
+                                    (!$isSubTask || ($isSubTask && $task->parent_task->status === 'in_progres'));
+                            @endphp
+
+                            @if ($canReport)
+                                <button class="btn btn-sm btn-primary task-report-button float-end"
+                                    data-id="{{ $task->id }}">
+                                    Report Task
+                                </button>
                             @endif
                         </h4>
 
@@ -113,14 +131,23 @@
                                                 <td>{{ $subtask->end_date ? \Carbon\Carbon::parse($subtask->end_date)->format('d M, Y') : '-' }}
                                                 </td>
                                                 <td>
-                                                    <form
-                                                        action="{{ route('tasks.toggle-completion', ['id' => $subtask->id]) }}"
-                                                        method="POST">
-                                                        @csrf
+                                                    @php
+                                                        $canReportSubtask =
+                                                            $isVendor &&
+                                                            $subtask->status === 'in_progres' &&
+                                                            $task->status === 'in_progres';
+                                                    @endphp
+
+                                                    @if ($canReportSubtask)
+                                                        <button class="btn btn-sm btn-primary task-report-button"
+                                                            data-id="{{ $subtask->id }}">
+                                                            Report
+                                                        </button>
+                                                    @elseif (!$isVendor)
                                                         <input type="checkbox" class="task-completion-checkbox"
                                                             data-id="{{ $subtask->id }}"
                                                             {{ $subtask->status === 'complated' ? 'checked' : '' }}>
-                                                    </form>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -151,91 +178,137 @@
                             <strong>Created At:</strong>
                             <p>{{ $task->created_at->format('d M, Y H:i') }}</p>
                         </div>
+
+                        @if ($isSubTask && $parentTask)
+                            <div class="mb-3">
+                                <strong>Parent Task:</strong>
+                                <p>
+                                    <a href="{{ route('tasks.details', $parentTask->id) }}">
+                                        {{ $parentTask->title }}
+                                    </a>
+                                </p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     @push('js')
         <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
         <script src="{{ asset('assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
-        {{-- custom sweetalert --}}
-        <script src="{{ asset('assets/js/custom.js') }}"></script>
 
         <script>
-            @if (Session::has('message'))
-                Swal.fire({
-                    title: `{{ Session::get('status') }}`,
-                    text: `{{ Session::get('message') }}`,
-                    icon: "success",
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            @endif
-
             $(document).ready(function() {
-                // Handle task completion toggle
-                $('#datatable').on('change', '.task-completion-checkbox', function() {
+                // Task reporting functionality
+                $('.task-report-button').on('click', function() {
                     const taskId = $(this).data('id');
-                    const isChecked = $(this).is(':checked');
-                    const checkbox = $(this);
-                    const row = checkbox.closest('tr'); // The row containing this checkbox
 
-                    $.ajax({
-                        url: `{{ route('tasks.toggle-completion', ':id') }}`.replace(':id', taskId),
-                        type: 'POST',
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            status: isChecked ? 'complated' : 'pending'
+                    Swal.fire({
+                        title: 'Report Task',
+                        text: 'Enter a description for your task report (optional):',
+                        input: 'textarea',
+                        inputPlaceholder: 'Enter description here...',
+                        showCancelButton: true,
+                        confirmButtonText: 'Report',
+                        cancelButtonText: 'Cancel',
+                        preConfirm: (description) => {
+                            return $.ajax({
+                                url: '{{ route('tasks.report') }}',
+                                method: 'POST',
+                                data: {
+                                    task_id: taskId,
+                                    description: description,
+                                    _token: $('meta[name="csrf-token"]').attr('content')
+                                },
+                                dataType: 'json'
+                            }).fail(function(xhr) {
+                                Swal.showValidationMessage(
+                                    xhr.responseJSON.message ||
+                                    'An error occurred while reporting the task'
+                                );
+                            });
                         },
-                        success: function(response) {
-                            if (response.status === 'success') {
+                        allowOutsideClick: () => !Swal.isLoading()
+                    }).then((result) => {
+                        if (result.isConfirmed && result.value.success) {
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'success',
+                                title: result.value.message,
+                                showConfirmButton: false,
+                                timer: 3000 // Set the timer to 3 seconds
+                            });
 
-                                // Show success notification
-                                Swal.fire({
-                                    toast: true,
-                                    position: 'top-end',
-                                    icon: 'success',
-                                    title: response.message,
-                                    showConfirmButton: false,
-                                    timer: 1000
-                                }).then(() => {
-                                    // Reload the page after the notification disappears
-                                    window.location.reload();
-                                });
-                            } else {
+                            // setTimeout(function() {
+                            //     window.location.reload();
+                            // }, 3000);
+                        }
+                    });
+                });
+
+                // Task completion toggle for non-vendors
+                @if (!$isVendor)
+                    $('.task-completion-checkbox').on('change', function() {
+                        const taskId = $(this).data('id');
+                        const isChecked = $(this).is(':checked');
+                        const checkbox = $(this);
+
+                        $.ajax({
+                            url: `{{ route('tasks.toggle-completion', ':id') }}`.replace(':id',
+                                taskId),
+                            type: 'POST',
+                            data: {
+                                _token: $('meta[name="csrf-token"]').attr('content'),
+                                status: isChecked ? 'complated' : 'pending'
+                            },
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    Swal.fire({
+                                        toast: true,
+                                        position: 'top-end',
+                                        icon: 'success',
+                                        title: response.message,
+                                        showConfirmButton: false,
+                                        timer: 1000
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    // Revert checkbox if failed
+                                    checkbox.prop('checked', !isChecked);
+
+                                    Swal.fire({
+                                        toast: true,
+                                        position: 'top-end',
+                                        icon: 'error',
+                                        title: response.message,
+                                        showConfirmButton: false,
+                                        timer: 3000
+                                    });
+                                }
+                            },
+                            error: function() {
                                 // Revert checkbox if failed
                                 checkbox.prop('checked', !isChecked);
 
-                                // Show error notification
                                 Swal.fire({
                                     toast: true,
                                     position: 'top-end',
                                     icon: 'error',
-                                    title: response.message,
+                                    title: 'Failed to update task status',
                                     showConfirmButton: false,
                                     timer: 3000
                                 });
                             }
-                        },
-                        error: function() {
-                            // Revert checkbox if failed
-                            checkbox.prop('checked', !isChecked);
-
-                            Swal.fire({
-                                toast: true,
-                                position: 'top-end',
-                                icon: 'error',
-                                title: 'Failed to update task status',
-                                showConfirmButton: false,
-                                timer: 3000
-                            });
-                        }
+                        });
                     });
-                });
+                @endif
             });
         </script>
     @endpush
