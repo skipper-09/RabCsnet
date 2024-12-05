@@ -192,6 +192,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::post('/{id}/toggle-completion', [TaskController::class, 'toggleCompletion'])
             ->name('tasks.toggle-completion')
             ->middleware('can:complete-tasks');
+        Route::post('/report', [TaskController::class, 'reportTask'])
+            ->name('tasks.report');
     });
 
     Route::prefix('assign')->group(function () {
