@@ -7,6 +7,10 @@
     <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
 @endpush
 
+@php
+    use App\Models\ReportVendor;
+@endphp
+
 @section('content')
     <div class="page-title-box">
         <div class="container-fluid">
@@ -38,23 +42,6 @@
                             @else
                                 <span class="badge bg-primary ms-2">Main Task</span>
                             @endif
-
-                            {{-- @php
-                                $currentUser = Auth::user();
-                                $currentUserRole = $currentUser->roles->first()->name;
-                                $isVendor = $currentUserRole === 'Vendor';
-                                $canReport =
-                                    $isVendor &&
-                                    $task->status === 'in_progres' &&
-                                    (!$isSubTask || ($isSubTask && $task->parent_task->status === 'in_progres'));
-                            @endphp
-
-                            @if ($canReport)
-                                <button class="btn btn-sm btn-primary task-report-button float-end"
-                                    data-id="{{ $task->id }}">
-                                    Report Task
-                                </button>
-                            @endif --}}
                         </h4>
 
                         <div class="task-description mb-4">
@@ -151,6 +138,79 @@
                                                             data-id="{{ $subtask->id }}"
                                                             {{ $subtask->status === 'complated' ? 'checked' : '' }}>
                                                     @endif
+
+                                                    {{-- Vendor Report View Button --}}
+                                                    @php
+                                                        $subtaskReport = ReportVendor::where(
+                                                            'task_id',
+                                                            $subtask->id,
+                                                        )->first();
+                                                    @endphp
+                                                    @if ($subtaskReport)
+                                                        <div class="mt-2">
+                                                            <button type="button" class="btn btn-sm btn-info"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#vendorReportModal-{{ $subtask->id }}">
+                                                                <i class="mdi mdi-file-document-edit"></i> View Report
+                                                            </button>
+                                                        </div>
+
+                                                        <!-- Subtask Vendor Report Modal -->
+                                                        <div class="modal fade" id="vendorReportModal-{{ $subtask->id }}"
+                                                            tabindex="-1"
+                                                            aria-labelledby="vendorReportModalLabel-{{ $subtask->id }}"
+                                                            aria-hidden="true">
+                                                            <div class="modal-dialog modal-lg">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title"
+                                                                            id="vendorReportModalLabel-{{ $subtask->id }}">
+                                                                            Vendor Report for Subtask:
+                                                                            {{ $subtask->title }}
+                                                                        </h5>
+                                                                        <button type="button" class="btn-close"
+                                                                            data-bs-dismiss="modal"
+                                                                            aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <div class="mb-3">
+                                                                            <strong>Report Title:</strong>
+                                                                            <p>{{ $subtaskReport->title ?? 'No title provided' }}
+                                                                            </p>
+                                                                        </div>
+
+                                                                        <div class="mb-3">
+                                                                            <strong>Report Description:</strong>
+                                                                            <p>{{ $subtaskReport->description ?? 'No description provided' }}
+                                                                            </p>
+                                                                        </div>
+
+                                                                        @if ($subtaskReport->image)
+                                                                            <div class="mb-3">
+                                                                                <strong>Attached Image:</strong>
+                                                                                <div class="mt-2">
+                                                                                    <img src="{{ asset('storage/images/reportvendor/' . $subtaskReport->image) }}"
+                                                                                        alt="Vendor Report Image"
+                                                                                        class="img-fluid rounded"
+                                                                                        style="max-height: 300px; object-fit: cover;">
+                                                                                </div>
+                                                                            </div>
+                                                                        @endif
+
+                                                                        <div class="mb-3">
+                                                                            <strong>Reported At:</strong>
+                                                                            <p>{{ $subtaskReport->created_at->format('d M, Y H:i') }}
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary"
+                                                                            data-bs-dismiss="modal">Close</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -182,16 +242,67 @@
                             <p>{{ $task->created_at->format('d M, Y H:i') }}</p>
                         </div>
 
-                        @if ($isSubTask && $parentTask)
-                            <div class="mb-3">
-                                <strong>Parent Task:</strong>
-                                <p>
-                                    <a href="{{ route('tasks.details', $parentTask->id) }}">
-                                        {{ $parentTask->title }}
-                                    </a>
-                                </p>
-                            </div>
-                        @endif
+                        {{-- @php
+                            $mainTaskReport = ReportVendor::where('task_id', $task->id)->first();
+                        @endphp
+
+                        <div class="mb-3">
+                            @if ($mainTaskReport)
+                                <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                                    data-bs-target="#mainTaskVendorReportModal">
+                                    <i class="mdi mdi-file-document-edit"></i> View Vendor Report
+                                </button>
+
+                                <!-- Main Task Vendor Report Modal -->
+                                <div class="modal fade" id="mainTaskVendorReportModal" tabindex="-1"
+                                    aria-labelledby="mainTaskVendorReportModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="mainTaskVendorReportModalLabel">
+                                                    Vendor Report for Task: {{ $task->title }}
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <strong>Report Title:</strong>
+                                                    <p>{{ $mainTaskReport->title ?? 'No title provided' }}</p>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <strong>Report Description:</strong>
+                                                    <p>{{ $mainTaskReport->description ?? 'No description provided' }}</p>
+                                                </div>
+
+                                                @if ($mainTaskReport->image)
+                                                    <div class="mb-3">
+                                                        <strong>Attached Image:</strong>
+                                                        <div class="mt-2">
+                                                            <img src="{{ asset('storage/images/reportvendor/' . $mainTaskReport->image) }}"
+                                                                alt="Vendor Report Image" class="img-fluid rounded"
+                                                                style="max-height: 300px; object-fit: cover;">
+                                                        </div>
+                                                    </div>
+                                                @endif
+
+                                                <div class="mb-3">
+                                                    <strong>Reported At:</strong>
+                                                    <p>{{ $mainTaskReport->created_at->format('d M, Y H:i') }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <p class="text-warning">No vendor report found for this task</p>
+                            @endif
+                        </div> --}}
                     </div>
                 </div>
             </div>

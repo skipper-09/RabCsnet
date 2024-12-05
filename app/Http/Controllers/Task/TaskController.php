@@ -234,56 +234,99 @@ class TaskController extends Controller
     public function details($id)
     {
         $currentUser = Auth::user();
-        $vendor = Vendor::where('user_id', $currentUser->id)->first();
+        $currentUserRole = $currentUser->roles->first()->name;
 
-        if ($vendor) {
+        try {
+            // Fetch the task with all related data
             $task = Task::with([
                 'project',
                 'vendor',
                 'subTasks' => function ($query) {
                     $query->orderBy('created_at', 'desc');
                 },
-                'mainTask',
-                // 'taskassign.user'
-            ])->where('vendor_id', $vendor->id)->findOrFail($id);
-        } else {
-            $task = $task = Task::with([
-                'project',
-                'vendor',
-                'subTasks' => function ($query) {
-                    $query->orderBy('created_at', 'desc');
-                },
-                'mainTask',
-                // 'taskassign.user'
+                'mainTask'
             ])->findOrFail($id);
+
+            // Determine if the task is a subtask or main task
+            $isSubTask = $task->parent_id !== null;
+            $parentTask = $isSubTask ? $task->mainTask : null;
+
+            // Find vendor reports based on task type
+            $reportVendor = $this->findReportVendor($task);
+
+            // Calculate task progress
+            $progressPercentage = $this->calculateTaskProgress($task);
+
+            // Prepare comprehensive data for view
+            $data = [
+                'tittle' => "Task {$task->title} Details",
+                'task' => $task,
+                'reportVendor' => $reportVendor,
+                'progressPercentage' => $progressPercentage,
+                'isSubTask' => $isSubTask,
+                'parentTask' => $parentTask,
+                'isVendor' => $currentUserRole === 'Vendor'
+            ];
+
+            return view('pages.tasks.detail', $data);
+        } catch (\Exception $e) {
+            \Log::error('Task details error: ' . $e->getMessage());
+            return redirect()->route('tasks')->with('error', 'An error occurred while fetching task details.');
+        }
+    }
+
+    /**
+     * Find vendor report for a task
+     * 
+     * @param Task $task
+     * @return ReportVendor|null
+     */
+    protected function findReportVendor($task)
+    {
+        // If it's a subtask, first try to find report for the subtask
+        if ($task->parent_id !== null) {
+            $subtaskReport = ReportVendor::where('task_id', $task->id)->first();
+            if ($subtaskReport) {
+                return $subtaskReport;
+            }
         }
 
-        // Calculate overall task progress
-        $totalSubTasks = $task->subTasks->count();
-        $completedSubTasks = $task->subTasks->where('status', 'complated')->count();
-        $progressPercentage = $totalSubTasks > 0
-            ? round(($completedSubTasks / $totalSubTasks) * 100, 2)
-            : ($task->status === 'complated' ? 100 : 0);
+        // If no subtask report or it's a main task, find report by vendor
+        $reportVendor = ReportVendor::where(function ($query) use ($task) {
+            $query->where('task_id', $task->id)
+                ->orWhere('vendor_id', $task->vendor_id);
+        })->first();
 
-        // Prepare assigned users
-        // $assignedUsers = $task->taskassign->map(function ($assignment) {
-        //     return $assignment->user;
-        // });
+        // Detailed logging
+        \Log::info('Report Vendor Debug', [
+            'task_id' => $task->id,
+            'vendor_id' => $task->vendor_id,
+            'report_found' => $reportVendor ? true : false,
+            'report_details' => $reportVendor ? $reportVendor->toArray() : null
+        ]);
 
-        // Determine if the task is a subtask
-        $isSubTask = $task->parent_id !== null;
-        $parentTask = $isSubTask ? $task->mainTask : null;
+        return $reportVendor;
+    }
 
-        $data = [
-            'tittle' => "Task {$task->title} Details",
-            'task' => $task,
-            'progressPercentage' => $progressPercentage,
-            // 'assignedUsers' => $assignedUsers,
-            'isSubTask' => $isSubTask,
-            'parentTask' => $parentTask
-        ];
+    /**
+     * Calculate task progress
+     * 
+     * @param Task $task
+     * @return float
+     */
+    protected function calculateTaskProgress($task)
+    {
+        // For tasks with subtasks
+        if ($task->subTasks->count() > 0) {
+            $totalSubTasks = $task->subTasks->count();
+            $completedSubTasks = $task->subTasks->where('status', 'completed')->count();
+            return $totalSubTasks > 0
+                ? round(($completedSubTasks / $totalSubTasks) * 100, 2)
+                : 0;
+        }
 
-        return view('pages.tasks.detail', $data);
+        // For individual tasks
+        return $task->status === 'completed' ? 100 : 0;
     }
 
     public function create()
