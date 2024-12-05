@@ -440,17 +440,18 @@
                         allowOutsideClick: () => !Swal.isLoading()
                     }).then((result) => {
                         if (result.isConfirmed && result.value.success) {
+                            // Show success toast
                             Swal.fire({
                                 toast: true,
                                 position: 'top-end',
                                 icon: 'success',
                                 title: result.value.message,
                                 showConfirmButton: false,
-                                timer: 3000
+                                timer: 1500 // Show for 1.5 seconds before reloading
+                            }).then(() => {
+                                // Reload the page after the toast
+                                window.location.reload();
                             });
-
-                            // Reload the table
-                            table.ajax.reload(null, false);
                         }
                     });
                 });

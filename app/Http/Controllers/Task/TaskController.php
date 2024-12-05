@@ -151,7 +151,7 @@ class TaskController extends Controller
             $request->validate([
                 'task_id' => 'required|exists:tasks,id',
                 'description' => 'nullable|string|max:1000',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' // Single image, max 2MB
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5048' // Single image, max 5MB
             ]);
 
             // Find the task
