@@ -128,12 +128,12 @@
                                                             <li class="mb-2">
                                                                 <i class="mdi mdi-calendar text-primary me-2"></i>
                                                                 <strong>Project Start:</strong>
-                                                                {{ $project->start_date ?? 'Belum diset' }}
+                                                                {{ formatDate($project->start_date) ?? 'Belum diset' }}
                                                             </li>
                                                             <li class="mb-2">
                                                                 <i class="mdi mdi-calendar text-primary me-2"></i>
                                                                 <strong>Project End:</strong>
-                                                                {{ $project->end_date ?? 'Belum diset' }}
+                                                                {{ formatDate($project->end_date) ?? 'Belum diset' }}
                                                             </li>
                                                         </ul>
                                                         @else
