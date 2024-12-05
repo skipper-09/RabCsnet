@@ -72,7 +72,7 @@ class ProjectReviewController extends Controller
                 }
             })
             ->editColumn('review_date', function ($data) {
-                return Carbon::parse($data->created_at)->format('Y-m-d');
+                return Carbon::parse($data->created_at)->format('d-m-Y');
             })
             ->addColumn('action', function ($data) {
                 $userauth = User::with('roles')->where('id', Auth::id())->first();

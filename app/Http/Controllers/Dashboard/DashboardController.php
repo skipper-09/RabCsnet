@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Project;
 use App\Models\ProjectReview;
 use App\Models\Vendor;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -162,6 +163,8 @@ class DashboardController extends Controller
             })
             ->editColumn('company', function ($data) {
                 return $data->company->name;
+            })->editColumn('end_date', function ($data) {
+                return Carbon::parse($data->end_date)->format('d-m-Y');
             })->editColumn('responsible_person', function ($data) {
                 return $data->responsibleperson->name ?? '-';
             })->editColumn('progress', function ($data) {
@@ -173,7 +176,7 @@ class DashboardController extends Controller
                                             ';
                 return $tes;
             })
-            ->rawColumns(['action', 'company', 'status', 'responsible_person', 'progress'])
+            ->rawColumns(['action', 'company', 'status', 'responsible_person', 'progress','end_date'])
             ->make(true);
     }
 }

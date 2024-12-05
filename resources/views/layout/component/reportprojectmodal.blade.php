@@ -22,7 +22,7 @@
                                     Pilih Project
                                 </label>
                                 <select name="project_id"
-                                    class="form-control  @error('project_id') is-invalid @enderror" required>
+                                    class="form-control select2 @error('project_id') is-invalid @enderror" >
                                     <option value="">Pilih Project</option>
                                     @foreach ($projects as $dt)
                                     <option value="{{ $dt->id }}">{{ $dt->name }}</option>
@@ -44,3 +44,11 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+@push('js')
+<script>
+    $('.select2').select2({
+        dropdownParent: $('#ReportProjectModal')
+    });
+</script>
+@endpush
