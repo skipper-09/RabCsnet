@@ -319,7 +319,7 @@ class TaskController extends Controller
         // For tasks with subtasks
         if ($task->subTasks->count() > 0) {
             $totalSubTasks = $task->subTasks->count();
-            $completedSubTasks = $task->subTasks->where('status', 'completed')->count();
+            $completedSubTasks = $task->subTasks->where('status', 'complated')->count();
             return $totalSubTasks > 0
                 ? round(($completedSubTasks / $totalSubTasks) * 100, 2)
                 : 0;
@@ -704,9 +704,6 @@ class TaskController extends Controller
             // Save the task
             $task->save();
 
-            // Manage report vendor based on task status
-            // $this->manageReportVendor($task);
-
             // Log the status change
             activity()
                 ->performedOn($task)
@@ -745,27 +742,6 @@ class TaskController extends Controller
                 'status' => 'error',
                 'message' => 'Failed to update task completion status: ' . $e->getMessage()
             ], 500);
-        }
-    }
-
-    private function manageReportVendor($task)
-    {
-        if ($task->status === 'complated') {
-            // Create report vendor only if it doesn't already exist
-            ReportVendor::firstOrCreate(
-                [
-                    'task_id' => $task->id
-                ],
-                [
-                    'project_id' => $task->project_id,
-                    'vendor_id' => $task->vendor_id,
-                    'title' => $task->title,
-                    // You can add more default values if needed
-                ]
-            );
-        } else {
-            // Delete existing report vendor when task is uncompleted
-            ReportVendor::where('task_id', $task->id)->delete();
         }
     }
 
