@@ -125,7 +125,7 @@ class DashboardController extends Controller
     public function getData(Request $request)
     {
         $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview', 'responsibleperson', 'taskdata'])->where('status', 'in_progres')
-            ->orderByDesc('id')
+            ->orderByDesc('id')->limit(4)
             ->get();
 
 
