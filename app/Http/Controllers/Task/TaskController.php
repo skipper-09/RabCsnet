@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Task;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use App\Models\User;
 use App\Models\Task;
 use App\Models\Project;
@@ -149,7 +150,8 @@ class TaskController extends Controller
             // Validate the request
             $request->validate([
                 'task_id' => 'required|exists:tasks,id',
-                'description' => 'nullable|string|max:1000'
+                'description' => 'nullable|string|max:1000',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' // Single image, max 2MB
             ]);
 
             // Find the task
@@ -175,16 +177,39 @@ class TaskController extends Controller
                 throw new Exception('Task must be in progress to report.');
             }
 
-            // Create or update report
-            $reportVendor = ReportVendor::updateOrCreate(
-                ['task_id' => $task->id],
-                [
-                    'project_id' => $task->project_id,
-                    'vendor_id' => $task->vendor_id,
-                    'title' => $task->title,
-                    'description' => $request->input('description', ''),
-                ]
-            );
+            // First, create or retrieve the existing report
+            $reportVendor = ReportVendor::firstOrNew([
+                'task_id' => $task->id
+            ]);
+
+            // Determine the filename (use existing or default)
+            $filename = $reportVendor->image ?? 'default.png';
+
+            // Handle image upload
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $filename = 'reportvendor_' . rand(0, 999999999) . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('storage/images/reportvendor/'), $filename);
+
+                // Delete old image if exists and is not default
+                if (
+                    $reportVendor->image &&
+                    $reportVendor->image !== 'default.png' &&
+                    file_exists(public_path('storage/images/reportvendor/' . $reportVendor->image))
+                ) {
+                    File::delete(public_path('storage/images/reportvendor/' . $reportVendor->image));
+                }
+            }
+
+            // Update or create the report with new data
+            $reportVendor->fill([
+                'project_id' => $task->project_id,
+                'vendor_id' => $task->vendor_id,
+                'title' => $task->title,
+                'description' => $request->input('description', ''),
+                'image' => $filename
+            ]);
+            $reportVendor->save();
 
             $task->save();
 
