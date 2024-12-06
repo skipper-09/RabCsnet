@@ -45,18 +45,18 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
     //route project
     Route::prefix('project')->group(function () {
-        Route::get('/', [ProjectController::class, 'index'])->name('project');
+        Route::get('/', [ProjectController::class, 'index'])->name('project')->middleware('can:read-projects');
         Route::get('getData', [ProjectController::class, 'getData'])->name('project.getdata');
-        Route::get('/tambah', [ProjectController::class, 'create'])->name('project.add');
+        Route::get('/tambah', [ProjectController::class, 'create'])->name('project.add')->middleware('can:create-projects');
         Route::post('store', [ProjectController::class, 'store'])->name('project.store');
-        Route::get('/edit/{id}', [ProjectController::class, 'show'])->name('project.edit');
-        // Route::get('/detail/{id}', [ProjectController::class, 'detail'])->name('project.detail');
-        Route::get('/edit/{id}', [ProjectController::class, 'show'])->name('project.edit');
+        Route::get('/edit/{id}', [ProjectController::class, 'show'])->name('project.edit')->middleware('can:update-projects');
+        Route::get('/detail/{id}', [ProjectController::class, 'detail'])->name('project.detail')->middleware('can:read-detail-projects');
+        // Route::get('/edit/{id}', [ProjectController::class, 'show'])->name('project.edit');
         Route::put('/update/{id}', [ProjectController::class, 'update'])->name('project.update');
-        Route::delete('/delete/{id}', [ProjectController::class, 'destroy'])->name('project.delete');
-        Route::get('/proses/{id}', [ProjectController::class, 'ProsesProject'])->name('project.proses');
+        Route::delete('/delete/{id}', [ProjectController::class, 'destroy'])->name('project.delete')->middleware('can:delete-projects');
+        Route::get('/proses/{id}', [ProjectController::class, 'ProsesProject'])->name('project.proses')->middleware('can:approval-projects');
         Route::post('/prosesdata/{id}', [ProjectController::class, 'ProsesProjectStore'])->name('project.prosesdata');
-        Route::get('/start/{id}', [ProjectController::class, 'StartProject'])->name('project.start');
+        Route::get('/start/{id}', [ProjectController::class, 'StartProject'])->name('project.start')->middleware('can:start-projects');
         Route::put('/prosesstart/{id}', [ProjectController::class, 'ProjectStart'])->name('project.prosesstart');
     });
 

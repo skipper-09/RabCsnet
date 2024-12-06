@@ -19,7 +19,7 @@
         <!--- Sidemenu -->
         <div id="sidebar-menu">
             <ul class="metismenu list-unstyled" id="side-menu" aria-label="Main Navigation">
-                
+
                 {{-- Dashboard --}}
                 @can('read-dashboard')
                     <li class="menu-title">Master Data</li>
@@ -32,12 +32,14 @@
                 @endcan
 
                 {{-- Project Management --}}
-                <li class="{{ request()->routeIs('project') ? 'mm-active' : '' }}">
-                    <a href="{{ route('project') }}" class="waves-effect">
-                        <i class="dripicons-calendar"></i>
-                        <span>Projects</span>
-                    </a>
-                </li>
+                @can('read-projects')
+                    <li class="{{ request()->routeIs('project') ? 'mm-active' : '' }}">
+                        <a href="{{ route('project') }}" class="waves-effect">
+                            <i class="dripicons-calendar"></i>
+                            <span>Projects</span>
+                        </a>
+                    </li>
+                @endcan
 
                 {{-- Vendor Data --}}
                 @canany(['read-vendors', 'read-paymentvendors'])

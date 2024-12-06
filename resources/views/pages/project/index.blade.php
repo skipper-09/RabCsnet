@@ -33,10 +33,12 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <div class="mb-3">
-                                <a href="{{ route('project.add') }}" class="btn btn-primary btn-sm">Tambah
-                                    {{ $tittle }}</a>
-                            </div>
+                            @can('create-projects')
+                                <div class="mb-3">
+                                    <a href="{{ route('project.add') }}" class="btn btn-primary btn-sm">Tambah
+                                        {{ $tittle }}</a>
+                                </div>
+                            @endcan
                             <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
                                 <thead>
                                     <tr>
@@ -84,8 +86,7 @@
                     processing: true,
                     serverSide: true,
                     ajax: '{{ route('project.getdata') }}',
-                    columns: [
-                        {
+                    columns: [{
                             data: 'DT_RowIndex',
                             orderable: false,
                             searchable: false,
@@ -116,12 +117,14 @@
                             data: 'reviewer',
                             name: 'reviewer'
                         },
+                        @canany(['update-projects', 'delete-projects', 'approval-projects', 'start-projects', 'read-detail-projects'])
                         {
                             data: 'action',
                             name: 'action',
                             orderable: false,
                             searchable: false
                         }
+                        @endcanany
                     ],
                 });
                 $(".dataTables_length select").addClass("form-select form-select-sm");

@@ -36,29 +36,40 @@ class ProjectController extends Controller
         return DataTables::of($dataType)
             ->addIndexColumn()
             ->addColumn('action', function ($data) {
+                $userauth = User::with('roles')->where('id', Auth::id())->first();
                 $button = '';
-                // $review = ProjectReview::where('project_id', $data->id)->orderByDesc('id')->first();
+
                 if ($data->detailproject->isNotEmpty() && !$data->Projectfile) {
-                    $button .= '<a href="' . route('project.proses', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
-                    <i class="fas fa-upload"></i> Proses Pengajuan
-                </a>';
+                    if ($userauth->can('approval-projects')) {
+                        $button .= '<a href="' . route('project.proses', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
+                            <i class="fas fa-upload"></i> Proses Pengajuan
+                        </a>';
+                    }
                 }
                 if ($data->status_pengajuan == 'approved' && !$data->vendor_id) {
-                    $button .= '<a href="' . route('project.start', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
-                    <i class="fas fa-upload"></i> Start Project</a>';
+                    if ($userauth->can('start-projects')) {
+                        $button .= '<a href="' . route('project.start', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
+                        <i class="fas fa-upload"></i> Start Project</a>';
+                    }
                 }
                 //sembunyikan edit dan detail ketika project sudah di start
                 if ($data->start_status == 0) {
-                    $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
-                    <i class="fas fa-pencil-alt"></i>
-                </a>';
-                    $button .= '<a href="' . route('project.detail', $data->id) . '" class="btn btn-sm btn-warning action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
-                    <i class="fas fa-eye"></i>
-                </a>';
+                    if ($userauth->can('update-projects')) {
+                        $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
+                        <i class="fas fa-pencil-alt"></i>
+                        </a>';
+                    }
+                    if ($userauth->can('read-detail-projects')) {
+                        $button .= '<a href="' . route('project.detail', $data->id) . '" class="btn btn-sm btn-warning action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
+                        <i class="fas fa-eye"></i>
+                        </a>';
+                    }
                 }
-                $button .= '<button class="btn btn-sm btn-danger action" data-id="' . $data->id . '" data-type="delete" data-route="' . route('project.delete', $data->id) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data">
-                <i class="fas fa-trash-alt"></i>
-            </button>';
+                if ($userauth->can('delete-projects')) {
+                    $button .= '<button class="btn btn-sm btn-danger action" data-id="' . $data->id . '" data-type="delete" data-route="' . route('project.delete', $data->id) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data">
+                    <i class="fas fa-trash-alt"></i>
+                    </button>';
+                }
                 return '<div class="d-flex gap-2">' . $button . '</div>';
             })->editColumn('status', function ($data) {
                 $status = '';
@@ -103,8 +114,6 @@ class ProjectController extends Controller
             ->rawColumns(['action', 'company', 'status', 'review', 'reviewer', 'status_pengajuan'])
             ->make(true);
     }
-
-
     public function detail($id)
     {
 

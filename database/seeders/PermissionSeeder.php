@@ -16,6 +16,13 @@ class PermissionSeeder extends Seeder
     {
         $arrayOfPermissionNames = [
             'read-dashboard',
+            'read-projects',
+            'create-projects',
+            'update-projects',
+            'delete-projects',
+            'read-detail-projects',
+            'approval-projects',
+            'start-projects',
             'read-vendors',
             'create-vendors',
             'update-vendors',
