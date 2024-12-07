@@ -117,13 +117,13 @@
                             data: 'reviewer',
                             name: 'reviewer'
                         },
-                        @canany(['update-projects', 'delete-projects', 'approval-projects', 'start-projects', 'read-detail-projects'])
-                        {
-                            data: 'action',
-                            name: 'action',
-                            orderable: false,
-                            searchable: false
-                        }
+                        @canany(['update-projects', 'delete-projects', 'approval-projects', 'start-projects', 'read-detail-projects', 'enable-atp-upload', 'disable-atp-upload', 'upload-atp', 'download-atp'])
+                            {
+                                data: 'action',
+                                name: 'action',
+                                orderable: false,
+                                searchable: false
+                            }
                         @endcanany
                     ],
                 });

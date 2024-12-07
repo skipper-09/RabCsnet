@@ -26,6 +26,7 @@ class RoleSeeder extends Seeder
             'approval-projects',
             'start-projects',
             'enable-atp-upload',
+            'disable-atp-upload',
             'upload-atp',
             'download-atp',
             'read-vendors',

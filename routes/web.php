@@ -62,9 +62,13 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::get('/start/{id}', [ProjectController::class, 'StartProject'])->name('project.start')->middleware('can:start-projects');
         Route::put('/prosesstart/{id}', [ProjectController::class, 'ProjectStart'])->name('project.prosesstart');
 
-        Route::get('/enable-atp-upload/{project}', [ATPProjectController::class, 'enableVendorUpload'])
+        Route::get('/enable-atp-upload/{project}', [ATPProjectController::class, 'enableAtpUpload'])
             ->name('project.enable-atp-upload')
             ->middleware('can:enable-atp-upload');
+
+        Route::get('/disable-atp-upload/{project}', [ATPProjectController::class, 'disableAtpUpload'])
+            ->name('project.disable-atp-upload')
+            ->middleware('can:disable-atp-upload');
 
         // Upload ATP File for Vendor
         Route::get('/upload-atp/{project}', [ATPProjectController::class, 'uploadAtpView'])

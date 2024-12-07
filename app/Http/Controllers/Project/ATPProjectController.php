@@ -9,7 +9,7 @@ use App\Models\Project;
 
 class ATPProjectController extends Controller
 {
-    public function enableVendorUpload(Project $project)
+    public function enableAtpUpload(Project $project)
     {
         // Ensure start_status is 1
         $project->update(['start_status' => 1]);
@@ -32,6 +32,22 @@ class ATPProjectController extends Controller
         }
 
         return redirect()->route('project')->with(['status' => 'Success', 'message' => 'Berhasil Mengaktifkan Upload ATP!']);
+    }
+
+    public function disableAtpUpload(Project $project)
+    {
+        // Ensure start_status is 1
+        $project->update(['start_status' => 1]);
+
+        // Check if ATP project exists
+        $atpProject = $project->Projectatp;
+
+        if ($atpProject) {
+            // Deactivate ATP project
+            $atpProject->update(['active' => false]);
+        }
+
+        return redirect()->route('project')->with(['status' => 'Success', 'message' => 'Berhasil Menonaktifkan Upload ATP!']);
     }
 
     public function uploadAtpView(Project $project)

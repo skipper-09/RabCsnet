@@ -39,14 +39,6 @@ class ProjectController extends Controller
                 $userauth = User::with('roles')->where('id', Auth::id())->first();
                 $button = '';
 
-                \Log::info('Project ATP Debug', [
-                    'project_id' => $data->id,
-                    'start_status' => $data->start_status,
-                    'has_projectatp' => $data->Projectatp !== null,
-                    'projectatp_count' => $data->Projectatp ? $data->Projectatp->count() : 0,
-                    'can_enable_atp' => $userauth->can('enable-atp-upload')
-                ]);
-
                 if ($data->detailproject->isNotEmpty() && !$data->Projectfile) {
                     if ($userauth->can('approval-projects')) {
                         $button .= '<a href="' . route('project.proses', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
@@ -62,31 +54,65 @@ class ProjectController extends Controller
                 }
 
                 if ($data->start_status == 1) {
-                    // Check if Projectatp relationship exists
-                    if ($data->Projectatp) {
-                        // ATP project exists
-                        if ($data->Projectatp->active) {
-                            // If user can download ATP file
-                            if ($userauth->can('download-atp') && $data->Projectatp->file) {
-                                $button .= '<a href="' . route('project.download-atp', $data->id) . '" class="btn btn-sm btn-primary action mr-1" data-id="' . $data->id . '" data-type="download-atp" data-toggle="tooltip" data-placement="bottom" title="Download ATP File">
-                                    <i class="fas fa-download"></i> Download ATP
-                                </a>';
-                            }
-                            
-                            // If user can upload ATP file
-                            if ($userauth->can('upload-atp') && !$data->Projectatp->file) {
-                                $button .= '<a href="' . route('project.upload-atp', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="upload-atp" data-toggle="tooltip" data-placement="bottom" title="Upload ATP File">
-                                    <i class="fas fa-file-upload"></i> Upload ATP
-                                </a>';
-                            }
-                        }
-                    } else if ($userauth->can('enable-atp-upload')) {
-                        $button .= '<a href="' . route('project.enable-atp-upload', $data->id) . '" class="btn btn-sm btn-primary action mr-1" data-id="' . $data->id . '" data-type="enable-atp-upload" data-toggle="tooltip" data-placement="bottom" title="Enable Vendor ATP Upload">
-                            <i class="fas fa-toggle-on"></i> Enable ATP Upload
+                    // Check if Projectatp doesn't exist or is not active
+                    $projectAtp = $data->Projectatp;
+                    $buttons = [];
+                
+                    // Enable ATP Upload button
+                    if ((!$projectAtp || !$projectAtp->active) && $userauth->can('enable-atp-upload')) {
+                        $buttons[] = '<a href="' . route('project.enable-atp-upload', $data->id) . '" 
+                            class="btn btn-sm btn-primary action mr-1" 
+                            data-id="' . $data->id . '" 
+                            data-type="enable-atp-upload" 
+                            data-toggle="tooltip" 
+                            data-placement="bottom" 
+                            title="Enable Vendor ATP Upload">
+                            <i class="fas fa-toggle-on"></i>
                         </a>';
                     }
+                
+                    // If Projectatp exists and is active
+                    if ($projectAtp && $projectAtp->active) {
+                        // Disable ATP Upload button
+                        if ($userauth->can('disable-atp-upload')) {
+                            $buttons[] = '<a href="' . route('project.disable-atp-upload', $data->id) . '" 
+                                class="btn btn-sm btn-primary action mr-1" 
+                                data-id="' . $data->id . '" 
+                                data-type="disable-atp-upload" 
+                                data-toggle="tooltip" 
+                                data-placement="bottom" 
+                                title="Disable ATP Upload">
+                                <i class="fas fa-toggle-off"></i>
+                            </a>';
+                        }
+                
+                        // File-related buttons
+                        if ($userauth->can('download-atp') && $projectAtp->file) {
+                            $buttons[] = '<a href="' . route('project.download-atp', $data->id) . '" 
+                                class="btn btn-sm btn-primary action mr-1" 
+                                data-id="' . $data->id . '" 
+                                data-type="download-atp" 
+                                data-toggle="tooltip" 
+                                data-placement="bottom" 
+                                title="Download ATP File">
+                                <i class="fas fa-download"></i> Download ATP
+                            </a>';
+                        } elseif ($userauth->can('upload-atp') && !$projectAtp->file) {
+                            $buttons[] = '<a href="' . route('project.upload-atp', $data->id) . '" 
+                                class="btn btn-sm btn-success action mr-1" 
+                                data-id="' . $data->id . '" 
+                                data-type="upload-atp" 
+                                data-toggle="tooltip" 
+                                data-placement="bottom" 
+                                title="Upload ATP File">
+                                <i class="fas fa-file-upload"></i> Upload ATP
+                            </a>';
+                        }
+                    }
+                
+                    $button = implode('', $buttons);
                 }
-                //sembunyikan edit dan detail ketika project sudah di start
+
                 if ($data->start_status == 0) {
                     if ($userauth->can('update-projects')) {
                         $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
