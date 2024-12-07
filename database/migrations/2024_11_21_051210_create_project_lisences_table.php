@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignUuid('project_id')->references('id')->on('projects')->onDelete('cascade')->onUpdate('cascade');
             $table->string('name');
             $table->longText('note');
-            $table->decimal('price',10,2)->default(0);
+            $table->decimal('price',15,2)->default(0);
+            $table->longText('perijinan_file')->nullable();
             $table->timestamps();
         });
     }

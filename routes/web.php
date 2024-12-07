@@ -9,6 +9,7 @@ use App\Http\Controllers\Master\UnitController;
 use App\Http\Controllers\Master\ItemController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Project\DetailProjectController;
+use App\Http\Controllers\Project\PerijinanProjectController;
 use App\Http\Controllers\Project\ProjectController;
 use App\Http\Controllers\Report\ProjectReportController;
 use App\Http\Controllers\Report\ReportVendorController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\Settings\RoleController;
 use App\Http\Controllers\Settings\LogController;
 use App\Http\Controllers\Task\TaskAssignController;
 use App\Http\Controllers\Task\TaskController;
+use App\Models\ProjectLisence;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 
@@ -69,7 +71,16 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         // Route::get('/detail/{id}', [DetailProjectController::class, 'detail'])->name('projectdetail.detail');
         Route::put('/update/{iddetail}', [DetailProjectController::class, 'update'])->name('projectdetail.update');
         Route::delete('/delete/{iddetail}', [DetailProjectController::class, 'destroy'])->name('projectdetail.delete');
+
+        //project lisence
+        Route::get('getDataLisence', [PerijinanProjectController::class, 'getData'])->name('projectlisence.getdata');
+        Route::get('/tambah-perijinan', [PerijinanProjectController::class, 'create'])->name('projectlisence.add');
+        Route::post('store-perijinan', [PerijinanProjectController::class, 'store'])->name('projectlisence.store');
+        Route::get('/edit-perijinan/{idperijinan}', [PerijinanProjectController::class, 'show'])->name('projectlisence.edit');
+        Route::put('/update-perijinan/{idperijinan}', [PerijinanProjectController::class, 'update'])->name('projectlisence.update');
+        Route::delete('/delete-perijinan/{idperijinan}', [PerijinanProjectController::class, 'destroy'])->name('projectlisence.delete');
     });
+
 
     //route vendor
     Route::prefix('vendor')->group(function () {

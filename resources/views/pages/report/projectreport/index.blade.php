@@ -88,17 +88,13 @@
                                                             <li class="mb-2">
                                                                 <i class="mdi mdi-file-excel text-success me-2"></i>
                                                                 <strong>Excel File:</strong>
-                                                                <a class="btn btn-primary btn-sm" href="{{ asset("
-                                                                    storage/files/excel/{$project->Projectfile->excel}")
-                                                                    }}">Download</a>
+                                                                <a class="btn btn-primary btn-sm" href="{{ asset("storage/files/excel/{$project->Projectfile->excel}")}}">Download</a>
                                                             </li>
 
                                                             <li class="mb-2">
                                                                 <i class="mdi mdi-map text-danger me-2"></i>
                                                                 <strong>KMZ File:</strong>
-                                                                <a class="btn btn-primary btn-sm" href="{{ asset("
-                                                                    storage/files/kmz/{$project->Projectfile->kmz}")
-                                                                    }}">Download</a>
+                                                                <a class="btn btn-primary btn-sm" href="{{ asset("storage/files/kmz/{$project->Projectfile->kmz}")}}">Download</a>
                                                             </li>
                                                         </ul>
                                                         @else

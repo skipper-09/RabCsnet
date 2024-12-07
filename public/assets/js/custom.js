@@ -1,7 +1,7 @@
 //sweet alert delete button
 "use strict";
 
-$("#datatable").on("click", ".action", function () {
+$(".table").on("click", ".action", function () {
     //  let route = $(this).data("route");
     let data = $(this).data();
     let id = data.id;
@@ -28,7 +28,7 @@ $("#datatable").on("click", ".action", function () {
                         ),
                     },
                     success: function (res) {
-                        $("#datatable").DataTable().ajax.reload();
+                        $(".table").DataTable().ajax.reload();
 
                         if (res.status === "success") {
                             Swal.fire("Deleted!", res.message, "success");

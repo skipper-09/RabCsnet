@@ -12,7 +12,7 @@ class ProjectLisence extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['project_id','name','note','price'];
+    protected $fillable = ['project_id','name','note','price','perijinan_file'];
     protected static function boot()
     {
         parent::boot();

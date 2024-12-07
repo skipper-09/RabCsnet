@@ -17,7 +17,7 @@
                     <h4>Tambah {{ $tittle }}</h4>
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('item') }}">{{ $tittle }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('project.detail',['id'=>$project->id]) }}">{{ $tittle }}</a></li>
                         <li class="breadcrumb-item active">Tambah {{ $tittle }}</li>
                     </ol>
                 </div>
