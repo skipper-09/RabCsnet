@@ -75,6 +75,10 @@ class Project extends Model
     {
         return $this->hasOne(ProjectFile::class);
     }
+    public function Projectatp()
+    {
+        return $this->hasOne(AtpProject::class);
+    }
     public function ProjectReview()
     {
         return $this->hasMany(ProjectReview::class, 'project_id');
