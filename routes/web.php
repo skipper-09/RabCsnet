@@ -16,6 +16,7 @@ use App\Http\Controllers\Report\ReportVendorController;
 use App\Http\Controllers\Settings\SettingAplicationController;
 use App\Http\Controllers\Settings\UserController;
 use App\Http\Controllers\PaymentVendor\PaymentVendorController;
+use App\Http\Controllers\Project\ATPProjectController;
 use App\Http\Controllers\Review\ProjectReviewController;
 use App\Http\Controllers\Task\TimelineController;
 use App\Http\Controllers\Vendor\VendorController;
@@ -60,6 +61,22 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::post('/prosesdata/{id}', [ProjectController::class, 'ProsesProjectStore'])->name('project.prosesdata');
         Route::get('/start/{id}', [ProjectController::class, 'StartProject'])->name('project.start')->middleware('can:start-projects');
         Route::put('/prosesstart/{id}', [ProjectController::class, 'ProjectStart'])->name('project.prosesstart');
+
+        Route::get('/enable-atp-upload/{project}', [ATPProjectController::class, 'enableVendorUpload'])
+            ->name('project.enable-atp-upload')
+            ->middleware('can:enable-atp-upload');
+
+        // Upload ATP File for Vendor
+        Route::get('/upload-atp/{project}', [ATPProjectController::class, 'uploadAtpView'])
+            ->name('project.upload-atp')
+            ->middleware('can:upload-atp');
+
+        Route::post('/upload-atp/{project}', [ATPProjectController::class, 'storeAtpFile'])
+            ->name('project.store-atp');
+
+        Route::get('/download-atp/{project}', [AtpProjectController::class, 'downloadAtpFile'])
+            ->name('project.download-atp')
+            ->middleware('can:download-atp');
     });
 
     Route::prefix('detail/{id}')->group(function () {

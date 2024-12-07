@@ -12,7 +12,7 @@ class AtpProject extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['project_id','vendor_id','file'];
+    protected $fillable = ['project_id', 'vendor_id', 'file', 'active'];
     protected static function boot()
     {
         parent::boot();
@@ -24,10 +24,12 @@ class AtpProject extends Model
         });
     }
 
-    public function project(){
-        $this->belongsTo(Project::class);
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'project_id');
     }
-    public function vendor(){
-        $this->belongsTo(Vendor::class);
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class, 'vendor_id');
     }
 }
