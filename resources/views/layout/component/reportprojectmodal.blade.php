@@ -12,8 +12,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
-            <form action="{{ route('report.project') }}" method="POST">
-                @csrf
+            <form action="{{ route('report.project') }}" method="GET">
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-12">

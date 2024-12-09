@@ -170,8 +170,10 @@ class ProjectController extends Controller
             })->editColumn('reviewer', function ($data) {
                 $review = ProjectReview::where('project_id', $data->id)->orderByDesc('id')->first();
                 return $review->reviewer->name ?? '-';
+            })->editColumn('name', function ($data) {
+                return '<a href="' . route('report.project', ['project_id' => $data->id]) . '" class="text-primary "> '.$data->name.'</a>';
             })
-            ->rawColumns(['action', 'company', 'status', 'review', 'reviewer', 'status_pengajuan'])
+            ->rawColumns(['action', 'name','company', 'status', 'review', 'reviewer', 'status_pengajuan'])
             ->make(true);
     }
     public function detail($id)

@@ -59,11 +59,11 @@
 <div class="container-fluid">
     <div class="page-content-wrapper">
         <div class="row">
+
             <div class="col-lg-12">
                 <div class="">
                     <div class="card-body">
                         <div class="row">
-
                             <div class="col-12">
                                 <div class="card border-primary">
                                     <div
@@ -88,13 +88,15 @@
                                                             <li class="mb-2">
                                                                 <i class="mdi mdi-file-excel text-success me-2"></i>
                                                                 <strong>Excel File:</strong>
-                                                                <a class="btn btn-primary btn-sm" href="{{ asset("storage/files/excel/{$project->Projectfile->excel}")}}">Download</a>
+                                                                <a class="btn btn-primary btn-sm" href="{{ asset("
+                                                                    storage/files/excel/{$project->Projectfile->excel}")}}">Download</a>
                                                             </li>
 
                                                             <li class="mb-2">
                                                                 <i class="mdi mdi-map text-danger me-2"></i>
                                                                 <strong>KMZ File:</strong>
-                                                                <a class="btn btn-primary btn-sm" href="{{ asset("storage/files/kmz/{$project->Projectfile->kmz}")}}">Download</a>
+                                                                <a class="btn btn-primary btn-sm" href="{{ asset("
+                                                                    storage/files/kmz/{$project->Projectfile->kmz}")}}">Download</a>
                                                             </li>
                                                         </ul>
                                                         @else

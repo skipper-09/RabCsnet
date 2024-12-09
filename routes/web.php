@@ -193,7 +193,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::delete('/delete/{id}', [ReportVendorController::class, 'destroy'])->name('report.delete');
 
         Route::prefix('project')->group(function () {
-            Route::post('/', [ProjectReportController::class, 'index'])->name('report.project')->middleware('can:read-report-project');
+            Route::get('/', [ProjectReportController::class, 'index'])->name('report.project')->middleware('can:read-report-project');
             Route::get('getDataReview', [ProjectReportController::class, 'getDataReview'])->name('report.project.getdatareview');
             Route::get('getDataDetail', [ProjectReportController::class, 'DetailProjectReport'])->name('report.project.getdetailproject');
             Route::get('getDataDetailItem/{id}', [ProjectReportController::class, 'DetailItem'])->name('report.project.getdetailitem');

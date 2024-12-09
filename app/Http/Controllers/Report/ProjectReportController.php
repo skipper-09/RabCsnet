@@ -15,7 +15,8 @@ use Yajra\DataTables\DataTables;
 class ProjectReportController extends Controller
 {
     public function index(Request $request){
-        $project_id = $request->input('project_id');
+        
+        $project_id = $request->query('project_id');
         $project = Project::find($project_id);
         $data = [
             'tittle' => "Report Project $project->name",
@@ -28,7 +29,7 @@ class ProjectReportController extends Controller
 
     public function getDataReview(Request $request)
     {
-        $project_id = $request->input('project_id');
+        $project_id = $request->query('project_id');
         $dataReview = ProjectReview::where('project_id',$project_id)->get();
         return DataTables::of($dataReview)
         ->addIndexColumn()
