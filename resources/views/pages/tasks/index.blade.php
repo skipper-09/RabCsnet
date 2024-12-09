@@ -87,7 +87,9 @@
                                                             <div class="card mb-2 task-card"
                                                                 data-task-id="{{ $task->id }}">
                                                                 <div class="card-body">
-                                                                    <h6 class="card-title">{{ $task->title }}</h6>
+                                                                    <h6 class="card-title"><a href="{{ route('tasks.details', ['id' => $task->id]) }}">
+                                                                        {{ $task->title }}
+                                                                    </a></h6>
                                                                     <p class="card-text small">
                                                                         Proyek: {{ $task->project->name ?? 'N/A' }}
                                                                     </p>

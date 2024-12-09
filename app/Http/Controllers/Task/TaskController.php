@@ -30,7 +30,7 @@ class TaskController extends Controller
 
         // Grouping tasks for Kanban view
         $kanbanTasks = Task::whereNull('parent_id')
-            ->with('project') // Eager load projects to avoid N+1 queries
+            ->with('project')
             ->get()
             ->groupBy('status');  // Group tasks by status
 
