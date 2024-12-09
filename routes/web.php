@@ -102,7 +102,6 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::delete('/delete-perijinan/{idperijinan}', [PerijinanProjectController::class, 'destroy'])->name('projectlisence.delete');
     });
 
-
     //route vendor
     Route::prefix('vendor')->group(function () {
         Route::get('/', [VendorController::class, 'index'])->name('vendor')->middleware('can:read-vendors');
@@ -226,6 +225,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
             ->middleware('can:complete-tasks');
         Route::post('/report', [TaskController::class, 'reportTask'])
             ->name('tasks.report');
+        Route::patch('/{task}/status', [TaskController::class, 'updateStatus'])
+            ->name('tasks.update-status');
     });
 
     Route::prefix('assign')->group(function () {

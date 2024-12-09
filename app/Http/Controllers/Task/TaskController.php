@@ -20,12 +20,31 @@ class TaskController extends Controller
 {
     public function index()
     {
+        // Define status mapping as per the database values
+        $statuses = [
+            'pending' => 'To Do',
+            'in_progres' => 'In Progress',
+            'complated' => 'Completed',  // Fixed typo here
+            'overdue' => 'Overdue'
+        ];
+
+        // Grouping tasks for Kanban view
+        $kanbanTasks = Task::whereNull('parent_id')
+            ->with('project') // Eager load projects to avoid N+1 queries
+            ->get()
+            ->groupBy('status');  // Group tasks by status
+
+        // Prepare data for the view
         $data = [
-            'tittle' => 'Tasks'
+            'tittle' => 'Tasks',
+            'statuses' => $statuses,  // Pass the full status map for human-readable labels
+            'kanbanTasks' => $kanbanTasks  // Grouped tasks by status
         ];
 
         return view('pages.tasks.index', $data);
     }
+
+
 
     public function getData(Request $request)
     {
@@ -743,6 +762,21 @@ class TaskController extends Controller
                 'message' => 'Failed to update task completion status: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function updateStatus(Request $request, Task $task)
+    {
+        $validatedData = $request->validate([
+            'status' => 'required|in:pending,in_progres,complated,overdue'
+        ]);
+
+        $task->status = $validatedData['status'];
+        $task->save();
+
+        return response()->json([
+            'message' => 'Status task berhasil diperbarui',
+            'task' => $task
+        ]);
     }
 
     /**

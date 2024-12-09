@@ -6,6 +6,7 @@
     <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
 @endpush
 
 @section('content')
@@ -32,27 +33,91 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            @can('create-tasks')
-                                <div class="mb-3">
-                                    <a href="{{ route('tasks.add') }}" class="btn btn-primary btn-sm">Tambah
-                                        {{ $tittle }}</a>
+                            <div class="card-title d-flex justify-content-between align-items-center mb-2">
+                                <ul class="nav nav-pills gap-2 mb-3" id="task-view-tabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="list-tab" data-bs-toggle="pill"
+                                                data-bs-target="#list-view" type="button" role="tab">
+                                            List Tasks
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="kanban-tab" data-bs-toggle="pill"
+                                                data-bs-target="#kanban-view" type="button" role="tab">
+                                            Kanban
+                                        </button>
+                                    </li>
+                                </ul>
+                                @can('create-tasks')
+                                    <div class="mb-3">
+                                        <a href="{{ route('tasks.add') }}" class="btn btn-primary btn-sm">Tambah {{ $tittle }}</a>
+                                    </div>
+                                @endcan
+                            </div>                            
+                            <div class="tab-content" id="task-view-content">
+                                <!-- List View Tab -->
+                                <div class="tab-pane fade show active" id="list-view" role="tabpanel">
+                                    <table id="datatable" class="table table-responsive table-hover" style="width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center" style="width: 5%">No</th>
+                                                <th style="width: 15%">Judul</th>
+                                                <th style="width: 15%">Project</th>
+                                                <th style="width: 15%">Vendor</th>
+                                                <th style="width: 10%">Tanggal Mulai</th>
+                                                <th style="width: 10%">Tanggal Selesai</th>
+                                                <th style="width: 10%">Status</th>
+                                                <th style="width: 10%">Prioritas</th>
+                                                <th style="width: 10%" class="text-center">Action</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
                                 </div>
-                            @endcan
-                            <table id="datatable" class="table table-responsive table-hover" style="width: 100%;">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center" style="width: 5%">No</th>
-                                        <th style="width: 15%">Judul</th>
-                                        <th style="width: 15%">Project</th>
-                                        <th style="width: 15%">Vendor</th>
-                                        <th style="width: 10%">Tanggal Mulai</th>
-                                        <th style="width: 10%">Tanggal Selesai</th>
-                                        <th style="width: 10%">Status</th>
-                                        <th style="width: 10%">Prioritas</th>
-                                        <th style="width: 10%" class="text-center">Action</th>
-                                    </tr>
-                                </thead>
-                            </table>
+                                <div class="tab-pane fade" id="kanban-view" role="tabpanel">
+                                    <div class="row">
+                                        @foreach ($statuses as $statusKey => $statusLabel)
+                                            <div class="col-md-3">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        {{ $statusLabel }} <!-- Human-readable status label -->
+                                                    </div>
+                                                    <div class="card-footer kanban-column"
+                                                        data-status="{{ $statusKey }}">
+                                                        @forelse ($kanbanTasks->get($statusKey, collect()) as $task)
+                                                            <div class="card mb-2 task-card"
+                                                                data-task-id="{{ $task->id }}">
+                                                                <div class="card-body">
+                                                                    <h6 class="card-title">{{ $task->title }}</h6>
+                                                                    <p class="card-text small">
+                                                                        Proyek: {{ $task->project->name ?? 'N/A' }}
+                                                                    </p>
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center">
+                                                                        <span
+                                                                            class="badge 
+                                                                            @switch($task->priority)
+                                                                                @case('low') bg-info @break
+                                                                                @case('medium') bg-warning @break
+                                                                                @case('high') bg-danger @break
+                                                                            @endswitch
+                                                                        ">
+                                                                            {{ ucfirst($task->priority) }}
+                                                                        </span>
+                                                                        <small>{{ $task->start_date }} -
+                                                                            {{ $task->end_date }}</small>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @empty
+                                                            <div></div>
+                                                        @endforelse
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -66,6 +131,7 @@
         <script src="{{ asset('assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
         <script src="{{ asset('assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
         <script src="{{ asset('assets/js/custom.js') }}"></script>
 
         <script>
@@ -320,6 +386,82 @@
                     });
                 });
 
+                // Inisialisasi drag and drop untuk kanban
+                $('.kanban-column').sortable({
+                    connectWith: '.kanban-column',
+                    placeholder: 'task-placeholder',
+                    handle: '.card-body',
+                    cursor: 'move',
+                    tolerance: 'pointer',
+
+                    // Before the move starts
+                    start: function(event, ui) {
+                        ui.item.addClass('dragging');
+                        ui.placeholder.height(ui.item.outerHeight());
+                    },
+
+                    // When dragging stops
+                    stop: function(event, ui) {
+                        ui.item.removeClass('dragging');
+                    },
+
+                    // When item is updated in a column
+                    update: function(event, ui) {
+                        // Check if the item has actually changed columns
+                        if (this === ui.item.parent()[0]) {
+                            var taskId = ui.item.data('task-id');
+                            var newStatus = ui.item.parent().data('status');
+
+                            // Disable sorting during AJAX to prevent multiple requests
+                            $('.kanban-column').sortable('disable');
+
+                            $.ajax({
+                                url: `{{ route('tasks.update-status', ':id') }}`.replace(':id',
+                                    taskId),
+                                method: 'PATCH',
+                                data: {
+                                    status: newStatus,
+                                    _token: '{{ csrf_token() }}'
+                                },
+                                success: function(response) {
+                                    // Show success SweetAlert
+                                    Swal.fire({
+                                        toast: true,
+                                        position: 'top-end',
+                                        icon: 'success',
+                                        title: response.message ||
+                                            'Status tugas berhasil diperbarui',
+                                        showConfirmButton: false,
+                                        timer: 3000
+                                    });
+
+                                    // Optional: Reload the DataTable
+                                    $('#datatable').DataTable().ajax.reload(null, false);
+                                },
+                                error: function(xhr) {
+                                    // Revert the sorting if the update fails
+                                    $(event.target).sortable('cancel');
+
+                                    // Show error SweetAlert with more detailed message
+                                    Swal.fire({
+                                        toast: true,
+                                        position: 'top-end',
+                                        icon: 'error',
+                                        title: xhr.responseJSON?.message ||
+                                            'Gagal memperbarui status task',
+                                        showConfirmButton: false,
+                                        timer: 3000
+                                    });
+                                },
+                                complete: function() {
+                                    // Re-enable sorting
+                                    $('.kanban-column').sortable('enable');
+                                }
+                            });
+                        }
+                    }
+                });
+
                 // Add some CSS to improve preview styling
                 const style = document.createElement('style');
                 style.innerHTML = `
@@ -335,6 +477,29 @@
                     }
                     `;
                 document.head.appendChild(style);
+
+                $('<style>')
+                    .prop('type', 'text/css')
+                    .html(`
+            .dragging {
+                opacity: 0.5;
+                transform: scale(1.02);
+                transition: all 0.2s ease;
+            }
+            .task-placeholder {
+                background-color: #f0f0f0;
+                border: 2px dashed #007bff;
+                margin-bottom: 10px;
+                visibility: visible !important;
+            }
+            .kanban-column .card-body {
+                min-height: 100px;
+            }
+            .ui-sortable-handle {
+                cursor: move;
+            }
+        `)
+                    .appendTo('head');
             });
         </script>
     @endpush
