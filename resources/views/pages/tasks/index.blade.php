@@ -33,33 +33,30 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <div class="card-title">
-                                <ul class="nav nav-pills mb-3 gap-2" id="task-view-tabs" role="tablist">
+                            <div class="card-title d-flex justify-content-between align-items-center mb-2">
+                                <ul class="nav nav-pills gap-2 mb-3" id="task-view-tabs" role="tablist">
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link active" id="list-tab" data-bs-toggle="pill"
-                                            data-bs-target="#list-view" type="button" role="tab">
+                                                data-bs-target="#list-view" type="button" role="tab">
                                             List Tasks
                                         </button>
                                     </li>
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link" id="kanban-tab" data-bs-toggle="pill"
-                                            data-bs-target="#kanban-view" type="button" role="tab">
+                                                data-bs-target="#kanban-view" type="button" role="tab">
                                             Kanban
                                         </button>
                                     </li>
                                 </ul>
-                            </div>
+                                @can('create-tasks')
+                                    <div class="mb-3">
+                                        <a href="{{ route('tasks.add') }}" class="btn btn-primary btn-sm">Tambah {{ $tittle }}</a>
+                                    </div>
+                                @endcan
+                            </div>                            
                             <div class="tab-content" id="task-view-content">
                                 <!-- List View Tab -->
                                 <div class="tab-pane fade show active" id="list-view" role="tabpanel">
-                                    <div class="d-flex justify-content-end">
-                                        @can('create-tasks')
-                                            <div class="mb-3">
-                                                <a href="{{ route('tasks.add') }}" class="btn btn-primary btn-sm">Tambah
-                                                    {{ $tittle }}</a>
-                                            </div>
-                                        @endcan
-                                    </div>
                                     <table id="datatable" class="table table-responsive table-hover" style="width: 100%;">
                                         <thead>
                                             <tr>
