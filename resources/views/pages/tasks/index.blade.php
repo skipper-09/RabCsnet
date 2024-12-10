@@ -76,7 +76,7 @@
                                 <div class="tab-pane fade" id="kanban-view" role="tabpanel">
                                     <div class="row">
                                         @foreach ($statuses as $statusKey => $statusLabel)
-                                            <div class="col-md-3">
+                                            <div class="col-md-4">
                                                 <div class="card">
                                                     <div class="card-body">
                                                         {{ $statusLabel }} <!-- Human-readable status label -->
