@@ -115,12 +115,6 @@
                         {
                             data: 'material_price',
                             name: 'material_price',
-                            render: function(data) {
-                                return new Intl.NumberFormat('id-ID', {
-                                    style: 'currency',
-                                    currency: 'IDR'
-                                }).format(data);
-                            }
                         },
                         {
                             data: 'service_price',

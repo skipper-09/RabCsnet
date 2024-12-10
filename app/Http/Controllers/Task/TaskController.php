@@ -771,6 +771,13 @@ class TaskController extends Controller
         ]);
 
         $task->status = $validatedData['status'];
+
+        if ($task->status === 'complated') {
+            $task->complated_date = now();
+        } else {
+            $task->complated_date = null;
+        }
+        
         $task->save();
 
         return response()->json([

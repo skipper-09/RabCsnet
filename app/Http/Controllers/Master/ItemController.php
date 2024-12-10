@@ -44,6 +44,9 @@ class ItemController extends Controller
             ->addColumn('unit', function ($item) {
                 return $item->unit ? $item->unit->name : '-';  // Ensure correct access to unit
             })
+            ->editColumn('material_price', function ($data) {
+                return $data->material_price ? 'Rp ' . number_format($data->material_price, 2, ',', '.') : '-';
+            })
             ->addColumn('action', function ($data) {
                 $userauth = User::with('roles')->where('id', Auth::id())->first();
                 $button = '';
@@ -85,7 +88,7 @@ class ItemController extends Controller
             'name' => 'required|string|max:255',
             'type_id' => 'required|exists:type_items,id',
             'unit_id' => 'required|exists:units,id',
-            'material_price' => 'required|numeric',
+            'material_price' => 'nullable|numeric',
             'service_price' => 'required|numeric',
             'description' => 'nullable|string',
         ], [
@@ -94,7 +97,6 @@ class ItemController extends Controller
             'type_id.exists' => 'Tipe tidak valid.',
             'unit_id.required' => 'Satuan wajib diisi.',
             'unit_id.exists' => 'Satuan tidak valid.',
-            'material_price.required' => 'Harga material wajib diisi.',
             'material_price.numeric' => 'Harga material harus berupa angka.',
             'service_price.required' => 'Harga jasa wajib diisi.',
             'service_price.numeric' => 'Harga jasa harus berupa angka.',
@@ -140,7 +142,7 @@ class ItemController extends Controller
             'name' => 'required|string|max:255',
             'type_id' => 'required|exists:type_items,id',
             'unit_id' => 'required|exists:units,id',
-            'material_price' => 'required|numeric',
+            'material_price' => 'nullable|numeric',
             'service_price' => 'required|numeric',
             'description' => 'nullable|string',
         ], [
@@ -149,7 +151,6 @@ class ItemController extends Controller
             'type_id.exists' => 'Tipe tidak valid.',
             'unit_id.required' => 'Satuan wajib diisi.',
             'unit_id.exists' => 'Satuan tidak valid.',
-            'material_price.required' => 'Harga material wajib diisi.',
             'material_price.numeric' => 'Harga material harus berupa angka.',
             'service_price.required' => 'Harga jasa wajib diisi.',
             'service_price.numeric' => 'Harga jasa harus berupa angka.',
