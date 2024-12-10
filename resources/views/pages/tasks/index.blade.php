@@ -6,7 +6,7 @@
     <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text-css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
 @endpush
 
@@ -72,10 +72,11 @@
                                             </div>
                                             <div class="form-group col-12 col-md-4">
                                                 <label>Filter Project <span class="text-danger">*</span></label>
-                                                <select class="form-control select2" id="FilterProject" name="project_filter">
+                                                <select class="form-control select2" id="FilterProject"
+                                                    name="project_filter">
                                                     <option value="">All Projects</option>
-                                                    @foreach ($projects as $project)
-                                                        <option value="{{ $project->id }}">{{ $project->name }}</option>
+                                                    @foreach ($project as $item)
+                                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -175,7 +176,13 @@
                 });
             @endif
 
+
             $(document).ready(function() {
+                // Initialize Select2 for vendor and project filters
+                $('#FilterVendor, #FilterProject').select2({
+                    placeholder: "Select an option",
+                    allowClear: true
+                });
                 var table = $("#datatable").DataTable({
                     processing: true,
                     serverSide: true,
@@ -183,8 +190,8 @@
                         url: '{{ route('tasks.getdata') }}',
                         type: 'GET',
                         data: function(d) {
-                            d.vendor_filter = $('#FilterVendor').val();
-                            d.project_filter = $('#FilterProject').val();
+                            d.vendor_filter = $('#FilterVendor').find(":selected").val();
+                            d.project_filter = $('#FilterProject').find(":selected").val();
                         }
                     },
                     columns: [{

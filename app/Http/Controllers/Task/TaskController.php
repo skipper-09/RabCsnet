@@ -39,7 +39,7 @@ class TaskController extends Controller
             'statuses' => $statuses,  // Pass the full status map for human-readable labels
             'kanbanTasks' => $kanbanTasks,  // Grouped tasks by status
             'vendor' => Vendor::all(),
-            'projects' => Project::where('start_status', 1)->get(),
+            'project' => Project::where('start_status', 1)->get(),
         ];
 
         return view('pages.tasks.index', $data);
