@@ -179,9 +179,14 @@
 
             $(document).ready(function() {
                 // Initialize Select2 for vendor and project filters
-                $('#FilterVendor, #FilterProject').select2({
-                    placeholder: "Select an option",
+                $('#FilterVendor').select2({
+                    placeholder: "Pilih Vendor",
                 });
+
+                $('#FilterProject').select2({
+                    placeholder: "Pilih Project",
+                });
+
                 var table = $("#datatable").DataTable({
                     processing: true,
                     serverSide: true,
