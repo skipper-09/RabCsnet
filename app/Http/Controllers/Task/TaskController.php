@@ -37,13 +37,13 @@ class TaskController extends Controller
         $data = [
             'tittle' => 'Tasks',
             'statuses' => $statuses,  // Pass the full status map for human-readable labels
-            'kanbanTasks' => $kanbanTasks  // Grouped tasks by status
+            'kanbanTasks' => $kanbanTasks,  // Grouped tasks by status
+            'vendor' => Vendor::all(),
+            'projects' => Project::where('start_status', 1)->get(),
         ];
 
         return view('pages.tasks.index', $data);
     }
-
-
 
     public function getData(Request $request)
     {
@@ -57,26 +57,43 @@ class TaskController extends Controller
         // Base query for tasks
         $query = Task::with(['project', 'vendor', 'subTasks'])->whereNull('parent_id');
 
-        // Hitung progres untuk setiap main task
+        // Calculate progress for each main task
         $totalProgress = $query->get()->map(function ($task) {
             return $task->progress();
         })->avg();
 
         // Filter tasks based on user role
-        if ($currentUserRole === 'Accounting') {
-            $query->whereHas('project', function ($query) {
-                $query->where('start_status', 1);
-            })->orderBy('created_at', 'desc');
-        } elseif ($currentUserRole === 'Owner') {
-            $query->whereHas('project', function ($query) {
-                $query->where('start_status', 1);
-            })->orderBy('created_at', 'desc');
-        } elseif ($currentUserRole === 'Vendor') {
-            $query->where('vendor_id',  $vendor->id)
-                ->whereHas('project', function ($query) {
-                    $query->where('start_status', 1);
-                })->orderBy('created_at', 'desc');
+        if ($currentUserRole !== 'Owner') {
+            // Non-Owner roles
+            $query->whereHas('project', function ($projectQuery) {
+                $projectQuery->where('start_status', 1);
+            });
+
+            // Vendor filter
+            if ($request->has('vendor_filter') && !empty($request->input('vendor_filter'))) {
+                $query->where('vendor_id', $request->input('vendor_filter'));
+            }
+
+            // Project filter
+            if ($request->has('project_filter') && !empty($request->input('project_filter'))) {
+                $query->where('project_id', $request->input('project_filter'));
+            }
+        } else {
+            // Owner role: filter by their vendor
+            $query->where('vendor_id', $vendor->id)
+                ->whereHas('project', function ($projectQuery) {
+                    $projectQuery->where('start_status', 1);
+                });
         }
+
+        // If user is a Vendor, filter only their projects
+        if ($currentUserRole === 'Vendor') {
+            $query->where('vendor_id', $vendor->id);
+        }
+
+        // Always order by most recent
+        $query->orderBy('created_at', 'desc');
+
 
         return DataTables::of($query)
             ->addIndexColumn()
