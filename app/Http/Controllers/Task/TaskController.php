@@ -55,7 +55,16 @@ class TaskController extends Controller
         $vendor = Vendor::where('user_id', $currentUser->id)->first();
 
         // Base query for tasks
-        $query = Task::with(['project', 'vendor', 'subTasks'])->whereNull('parent_id');
+
+        
+$querytask = $request->query('project_id');
+if ($request->query('project_id') === null) {
+    $query = Task::with(['project', 'vendor', 'subTasks'])->whereNull('parent_id');
+}else{
+    $query = Task::with(['project', 'vendor', 'subTasks'])->whereNull('parent_id')->where('project_id',$querytask);
+}
+
+        
 
         // Calculate progress for each main task
         $totalProgress = $query->get()->map(function ($task) {

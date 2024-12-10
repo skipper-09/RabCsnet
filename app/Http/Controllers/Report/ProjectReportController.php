@@ -9,6 +9,7 @@ use App\Models\Project;
 use App\Models\ProjectFile;
 use App\Models\ProjectReview;
 use App\Models\Task;
+use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Yajra\DataTables\DataTables;
@@ -48,12 +49,35 @@ class ProjectReportController extends Controller
             $customLabels[] = $statusLabels[$status] ?? $status;
         }
     
+//remaining days
+$startDate = Carbon::parse($project->start_date);
+$endDate = Carbon::parse($project->end_date);
+$remainingDays = $endDate->diffInDays($startDate);
+
+
+$statuses = [
+    'pending' => 'To Do',
+    'in_progres' => 'In Progress',
+    'complated' => 'Completed',  // Fixed typo here
+];
+
+// Grouping tasks for Kanban view
+$kanbanTasks = Task::whereNull('parent_id')
+    ->with('project')
+    ->get()
+    ->groupBy('status');  // Group tasks by status
+
+
         $data = [
             'tittle' => "Report Project $project->name",
             'project' => Project::with(['company', 'vendor', 'summary', 'responsibleperson', 'projectlisence', 'Projectfile'])->where('id', $project_id)->first(),
             'id' => $project_id,
             'chartData' => $chartData,
-            'customLabels' => $customLabels 
+            'customLabels' => $customLabels,
+            'progres'=> $project->progress(),
+            'remainingdays'=>$remainingDays,
+            'statuses' => $statuses,  
+            'kanbanTasks' => $kanbanTasks,
         ];
         return view('pages.report.projectreport.index', $data);
     }
