@@ -181,7 +181,6 @@
                 // Initialize Select2 for vendor and project filters
                 $('#FilterVendor, #FilterProject').select2({
                     placeholder: "Select an option",
-                    allowClear: true
                 });
                 var table = $("#datatable").DataTable({
                     processing: true,
