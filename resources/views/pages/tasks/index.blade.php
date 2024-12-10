@@ -104,7 +104,7 @@
                                     <div class="row">
                                         @foreach ($statuses as $statusKey => $statusLabel)
                                             <div class="col-md-4">
-                                                <div class="card">
+                                                <div class="card border-1">
                                                     <div class="card-body">
                                                         {{ $statusLabel }} <!-- Human-readable status label -->
                                                     </div>
