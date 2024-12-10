@@ -43,6 +43,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
+                                        <th>Kode</th>
                                         <th>Name</th>
                                         <th>Perusahaan</th>
                                         <th>Status</th>
@@ -92,6 +93,10 @@
                             searchable: false,
                             class: 'text-center',
 
+                        },
+                        {
+                            data: 'code',
+                            name: 'code'
                         },
                         {
                             data: 'name',

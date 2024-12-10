@@ -22,6 +22,7 @@
                             <th>Harga Material</th>
                             <th>Harga Jasa</th>
                             <th>Quantity</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
                 </table>

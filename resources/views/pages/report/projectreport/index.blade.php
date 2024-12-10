@@ -83,7 +83,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#settings1" role="tab">
+                                <a class="nav-link" data-bs-toggle="tab" href="#gantchart" role="tab">
                                     <span class="d-block d-sm-none"><i class="fas fa-cog"></i></span>
                                     <span class="d-none d-sm-block">Gant Chart</span>
                                 </a>
@@ -99,7 +99,17 @@
                         <!-- Tab panes -->
                         <div class="tab-content p-3 text-muted">
                             <div class="tab-pane active" id="home1" role="tabpanel">
-                                <h1>tes</h1>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h4 class="header-title fw-bold">Progress Tasks</h4>
+                                                <canvas id="taskStatusChart" width="300" height="300"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6"></div>
+                                </div>
                             </div>
                             <div class="tab-pane" id="distribusi" role="tabpanel">
 
@@ -131,7 +141,7 @@
                                     mi whatever gluten-free carles.
                                 </p>
                             </div>
-                            <div class="tab-pane" id="settings1" role="tabpanel">
+                            <div class="tab-pane" id="gantchart" role="tabpanel">
                                 <div class="row">
                                     <div class="col-xl-12">
                                         <div class="card mb-0">
@@ -325,9 +335,13 @@
     <script src="{{ asset('assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
     <script src="{{ asset('assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
-    <script src="{{ asset('assets/js/pages/form-validation.init.js') }}"></script>
     <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
-    <script src="{{ asset('assets/js/pages/form-advanced.init.js') }}"></script>
+
+    <!-- chart js -->
+
+    <script src="{{ asset('assets/libs/chart.js/chart.umd.js') }}"></script>
+    <script src="assets/js/pages/chartjs.init.js"></script>
+
     {{-- custom swetaert --}}
     <script src="{{ asset('assets/js/custom.js') }}"></script>
 
@@ -405,7 +419,7 @@
                     ajax: {
                         url: '{{ route('report.project.getdetailproject') }}',
                         data: function(e) {
-                            e.project_id = project_id
+                            e.project_id = project_id   
                         }
                     },
                     columns: [{
@@ -454,86 +468,164 @@
 
     {{-- timeline --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
+        $(document).ready(function () {
+            var calendarInitialized = false; // Untuk mencegah inisialisasi ulang
+    
+            // Event ketika tab diaktifkan
+            $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                var target = $(e.target).attr("href"); // Mendapatkan ID tab yang diaktifkan
+    
+                if (target === "#gantchart" && !calendarInitialized) {
+                    calendarInitialized = true; 
+                    initializeCalendar(); 
+                }
+            });
+    
+            
+            function initializeCalendar() {
+                var calendarEl = document.getElementById('calendar');
+    
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialDate: new Date(),
+                    editable: false,
+                    selectable: false,
+                    nowIndicator: false,
+                    aspectRatio: 2.0,
+                    headerToolbar: {
+                        left: 'today prev,next',
+                        center: 'title',
+                        right: 'resourceTimelineYear,resourceTimelineMonth,resourceTimelineWeek',
+                    },
+                    initialView: 'resourceTimelineMonth',
+                    views: {
+                        resourceTimelineYear: {
+                            type: 'resourceTimeline',
+                            duration: { years: 3 },
+                            buttonText: 'Year',
+                            slotDuration: { months: 1 },
+                            slotLabelFormat: [
+                                { year: 'numeric' },
+                                { month: 'short' },
+                            ],
+                        },
+                        resourceTimelineMonth: {
+                            type: 'resourceTimeline',
+                            duration: { month: 4 },
+                            buttonText: 'Month',
+                            slotDuration: { days: 1 },
+                            slotLabelFormat: [
+                                { month: 'long' },
+                                { weekday: 'short', day: 'numeric', omitCommas: true },
+                            ],
+                        },
+                        resourceTimelineWeek: {
+                            type: 'resourceTimeline',
+                            duration: { week: 4 },
+                            buttonText: 'Week',
+                            slotDuration: { days: 1 },
+                            slotLabelFormat: [
+                                { month: 'short' },
+                                { weekday: 'long', day: 'numeric', omitCommas: true },
+                            ],
+                        },
+                    },
+                    resourceAreaWidth: '40%',
+                    resourceAreaColumns: [
+                        {
+                            headerContent: 'Task',
+                            field: 'task',
+                            cellClassNames: 'task',
+                        },
+                        {
+                            headerContent: 'Progress',
+                            field: 'progress',
+                        },
+                    ],
+                    resources: function (fetchInfo, successCallback, failureCallback) {
+                        var project_id = @json($id);
+                        fetch(`{{ route('tasks.data') }}?id=${project_id}`)
+                            .then((response) => response.json())
+                            .then((data) => {
+                                successCallback(data.resources);
+                            })
+                            .catch((error) => {
+                                console.error('Error fetching resources:', error);
+                                failureCallback(error);
+                            });
+                    },
+                    events: function (fetchInfo, successCallback, failureCallback) {
+                        var project_id = @json($id);
+                        fetch(`{{ route('tasks.data') }}?id=${project_id}`)
+                            .then((response) => response.json())
+                            .then((data) => {
+                                successCallback(data.events);
+                            })
+                            .catch((error) => {
+                                console.error('Error fetching events:', error);
+                                failureCallback(error);
+                            });
+                    },
+                });
+    
+                calendar.render(); // Render kalender
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chartData = @json($chartData);
+            const customLabels = @json($customLabels);
    
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialDate: new Date(),
-        editable: false,
-        selectable: false,
-        nowIndicator: false,
-        aspectRatio: 2.0,
-        headerToolbar: {
-            left: 'today prev,next',
-            center: 'title',
-            right: 'resourceTimelineYear,resourceTimelineMonth,resourceTimelineWeek'
-        },
-        initialView: 'resourceTimelineMonth',
-        views: {
-            resourceTimelineYear: {
-                type: 'resourceTimeline',
-                duration: { years: 3 },
-                buttonText: 'Year',
-                slotDuration: { months: 1 },
-                slotLabelFormat: [{ year: 'numeric' }, { month: 'short' }]
-            },
-            resourceTimelineMonth: {
-                type: 'resourceTimeline',
-                duration: { month: 4 },
-                buttonText: 'Month',
-                slotDuration: { days: 1 },
-                slotLabelFormat: [{month:'long'},{ weekday: 'short', day: 'numeric', omitCommas: true }]
-            },
-            resourceTimelineWeek: {
-                type: 'resourceTimeline',
-                duration: { week: 4 },
-                buttonText: 'Week',
-                slotDuration: { days: 1 },
-                slotLabelFormat: [{ month: 'short'},{ weekday: 'long', day: 'numeric', omitCommas: true }]
-            }
-        },
-        resourceAreaWidth: '40%',
-        resourceAreaColumns: [  
-            {
-                headerContent: 'Task',
-                field: 'task',
-                cellClassNames: 'task',
-            },
-            {
-                headerContent: 'Progress',
-                field: 'progress'
-            }
-        ],
-        resources: function(fetchInfo, successCallback, failureCallback) {
-            var project_id = @json($id);
-            fetch(`{{ route('tasks.data') }}?id=${project_id}`)
-                .then(response => response.json())
-                .then(data => {
-                    successCallback(data.resources); 
-                })
-                .catch(error => {
-                    console.error('Error fetching resources:', error);
-                    failureCallback(error); 
-                });
-        },
-        events: function(fetchInfo, successCallback, failureCallback) {
-            var project_id = @json($id);
-            fetch(`{{ route('tasks.data') }}?id=${project_id}`)
-                .then(response => response.json())
-                .then(data => {
-                    successCallback(data.events); 
-                })
-                .catch(error => {
-                    console.error('Error fetching events:', error);
-                    failureCallback(error); 
-                });
-        }
-    });
+        const data = {
+            labels: customLabels, 
+            datasets: [{
+                data: Object.values(chartData), 
+                backgroundColor: [
+                    '#f1b44c', 
+                    '#50a5f1', 
+                    '#34c38f', 
+                    '#f46a6a'  
+                ],
+                hoverBackgroundColor: [
+                    '#f1b44c', //pending
+                    '#50a5f1', //in progress
+                    '#34c38f', //complated
+                    '#f46a6a' //overdue
+                ]
+            }]
+        };
 
-    calendar.render();
-});
+        // Konfigurasi chart
+        const options = {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom', 
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            const label = tooltipItem.label || '';
+                            const percentage = tooltipItem.raw || 0;
+                            return `${label}: ${percentage}%`;
+                        }
+                    }
+                }
+            }
+        };
 
+
+        const ctx = document.getElementById('taskStatusChart').getContext('2d');
+        const taskStatusChart = new Chart(ctx, {
+            type: 'doughnut', 
+            data: data,
+            options: options
+        });
+                });
     </script>
+
+
     @endpush
     @endsection

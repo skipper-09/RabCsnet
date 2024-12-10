@@ -109,8 +109,14 @@ $("#datatabledistribusi").on("click", ".action", function () {
                             data: 'quantity',
                             name: 'quantity'
                         },
+                        {
+                            data: 'total',
+                            name: 'total'
+                        },
                     ],
+                    
                 });
+               
 
                 // Optional: Apply styling to the length select box (if necessary)
                 $(".dataTables_length select").addClass("form-select form-select-sm");
