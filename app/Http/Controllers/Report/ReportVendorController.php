@@ -18,7 +18,9 @@ class ReportVendorController extends Controller
     public function index()
     {
         $data = [
-            'tittle' => 'Report Vendor'
+            'tittle' => 'Report Vendor',
+            'vendor' => Vendor::all(),
+            'project' => Project::where('start_status', 1)->get(),
         ];
 
         return view('pages.report.index', $data);
@@ -26,39 +28,46 @@ class ReportVendorController extends Controller
 
     public function getData(Request $request)
     {
-        $user = Auth::user();
-        $userRole = $user->roles->first() ? $user->roles->first()->name : null;
+        $currentUser = Auth::user();
+        $currentUserRole = $currentUser->roles->first()->name;
+        $vendor = Vendor::where('user_id', $currentUser->id)->first();
 
-        if (!$userRole) {
-            return redirect()->route('dashboard')->withErrors('User does not have an assigned role.');
-        }
+        // Base query for report vendor
+        $query = ReportVendor::with(['project', 'vendor']);
 
-        if ($userRole !== 'Vendor') {
-            // Non-vendor users, fetch all vendors and active projects
-            $dataType = ReportVendor::with(['project', 'vendor'])
-                ->orderByDesc('created_at')
-                ->get();
-        } else {
-            // Vendor users, filter projects by the vendor's id
-            $vendor = Vendor::where('user_id', $user->id)->first();
+        // Active project filter for all non-vendor roles
+        if ($currentUserRole !== 'Vendor') {
+            $query->whereHas('project', function ($projectQuery) {
+                $projectQuery->where('start_status', 1);
+            });
 
-            if (!$vendor) {
-                return redirect()->route('dashboard')->withErrors('No vendor found for the user.');
+            // Vendor filter
+            if ($request->has('vendor_filter') && !empty($request->input('vendor_filter'))) {
+                $query->where('vendor_id', $request->input('vendor_filter'));
             }
 
-            $dataType = ReportVendor::with(['project', 'vendor'])
-                ->where('vendor_id', $vendor->id)  // Filter projects by vendor
-                ->orderByDesc('created_at')
-                ->get();
+            // Project filter
+            if ($request->has('project_filter') && !empty($request->input('project_filter'))) {
+                $query->where('project_id', $request->input('project_filter'));
+            }
+        } else {
+            // For Vendor role, filter only their own reports
+            $query->where('vendor_id', $vendor->id)
+                ->whereHas('project', function ($projectQuery) {
+                    $projectQuery->where('start_status', 1);
+                });
         }
 
-        return DataTables::of($dataType)
+        // Order by most recent
+        $query->orderByDesc('created_at');
+
+        return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('project', function ($item) {
-                return $item->project ? $item->project->name : '-';  // Ensure correct access to project
+                return $item->project ? $item->project->name : '-';
             })
             ->addColumn('vendor', function ($item) {
-                return $item->vendor ? $item->vendor->name : '-';  // Ensure correct access to vendor
+                return $item->vendor ? $item->vendor->name : '-';
             })
             ->addColumn('action', function ($data) {
                 $userauth = User::with('roles')->where('id', Auth::id())->first();
@@ -68,7 +77,7 @@ class ReportVendorController extends Controller
                 }
                 if ($userauth->can('delete-reportvendors')) {
                     $button .= '<button class="btn btn-sm btn-danger action" data-id="' . $data->id . '" data-type="delete" data-route="' . route('report.delete', $data->id) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data">
-                    <i class="fas fa-trash-alt"></i></button>';
+                <i class="fas fa-trash-alt"></i></button>';
                 }
                 return '<div class="d-flex gap-2">' . $button . '</div>';
             })
