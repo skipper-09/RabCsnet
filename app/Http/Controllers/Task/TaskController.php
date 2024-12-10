@@ -25,7 +25,6 @@ class TaskController extends Controller
             'pending' => 'To Do',
             'in_progres' => 'In Progress',
             'complated' => 'Completed',  // Fixed typo here
-            'overdue' => 'Overdue'
         ];
 
         // Grouping tasks for Kanban view
@@ -777,7 +776,7 @@ class TaskController extends Controller
         } else {
             $task->complated_date = null;
         }
-        
+
         $task->save();
 
         return response()->json([
