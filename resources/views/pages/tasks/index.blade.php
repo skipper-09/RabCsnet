@@ -37,41 +37,66 @@
                                 <ul class="nav nav-pills gap-2 mb-3" id="task-view-tabs" role="tablist">
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link active" id="list-tab" data-bs-toggle="pill"
-                                                data-bs-target="#list-view" type="button" role="tab">
+                                            data-bs-target="#list-view" type="button" role="tab">
                                             List Tasks
                                         </button>
                                     </li>
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link" id="kanban-tab" data-bs-toggle="pill"
-                                                data-bs-target="#kanban-view" type="button" role="tab">
+                                            data-bs-target="#kanban-view" type="button" role="tab">
                                             Kanban
                                         </button>
                                     </li>
                                 </ul>
                                 @can('create-tasks')
                                     <div class="mb-3">
-                                        <a href="{{ route('tasks.add') }}" class="btn btn-primary btn-sm">Tambah {{ $tittle }}</a>
+                                        <a href="{{ route('tasks.add') }}" class="btn btn-primary btn-sm">Tambah
+                                            {{ $tittle }}</a>
                                     </div>
                                 @endcan
-                            </div>                            
+                            </div>
                             <div class="tab-content" id="task-view-content">
                                 <!-- List View Tab -->
                                 <div class="tab-pane fade show active" id="list-view" role="tabpanel">
-                                    <table id="datatable" class="table table-responsive table-hover" style="width: 100%;">
-                                        <thead>
-                                            <tr>
-                                                <th class="text-center" style="width: 5%">No</th>
-                                                <th style="width: 15%">Judul</th>
-                                                <th style="width: 15%">Project</th>
-                                                <th style="width: 15%">Vendor</th>
-                                                <th style="width: 10%">Tanggal Mulai</th>
-                                                <th style="width: 10%">Tanggal Selesai</th>
-                                                <th style="width: 10%">Status</th>
-                                                <th style="width: 10%">Prioritas</th>
-                                                <th style="width: 10%" class="text-center">Action</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
+                                    @if (!Auth::user()->hasRole('Vendor'))
+                                        <div class="row mb-3">
+                                            <div class="form-group col-12 col-md-4">
+                                                <label>Filter Vendor <span class="text-danger">*</span></label>
+                                                <select class="form-control select2 filter" id="FilterVendor" name="vendor_filter">
+                                                    <option value="">All Vendors</option>
+                                                    @foreach ($vendor as $item)
+                                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-12 col-md-4">
+                                                <label>Filter Project <span class="text-danger">*</span></label>
+                                                <select class="form-control select2 filter" id="FilterProject" name="project_filter">
+                                                    <option value="">All Projects</option>
+                                                    @foreach ($projects as $project)
+                                                        <option value="{{ $project->id }}">{{ $project->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    <div class="table-responsive">
+                                        <table id="datatable" class="table table-hover" style="width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" style="width: 5%">No</th>
+                                                    <th style="width: 15%">Judul</th>
+                                                    <th style="width: 15%">Project</th>
+                                                    <th style="width: 15%">Vendor</th>
+                                                    <th style="width: 10%">Tanggal Mulai</th>
+                                                    <th style="width: 10%">Tanggal Selesai</th>
+                                                    <th style="width: 10%">Status</th>
+                                                    <th style="width: 10%">Prioritas</th>
+                                                    <th style="width: 10%" class="text-center">Action</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
                                 </div>
                                 <div class="tab-pane fade" id="kanban-view" role="tabpanel">
                                     <div class="row">
@@ -87,9 +112,10 @@
                                                             <div class="card mb-2 task-card"
                                                                 data-task-id="{{ $task->id }}">
                                                                 <div class="card-body">
-                                                                    <h6 class="card-title"><a href="{{ route('tasks.details', ['id' => $task->id]) }}">
-                                                                        {{ $task->title }}
-                                                                    </a></h6>
+                                                                    <h6 class="card-title"><a
+                                                                            href="{{ route('tasks.details', ['id' => $task->id]) }}">
+                                                                            {{ $task->title }}
+                                                                        </a></h6>
                                                                     <p class="card-text small">
                                                                         Proyek: {{ $task->project->name ?? 'N/A' }}
                                                                     </p>
@@ -151,7 +177,14 @@
                 var table = $("#datatable").DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: '{{ route('tasks.getdata') }}',
+                    ajax: {
+                        url: '{{ route('tasks.getdata') }}',
+                        type: 'GET',
+                        data: function(d) {
+                            d.vendor_filter = $('#FilterVendor').val();
+                            d.project_filter = $('#FilterProject').val();
+                        }
+                    },
                     columns: [{
                             data: 'DT_RowIndex',
                             orderable: false,
@@ -196,6 +229,18 @@
                             }
                         @endcanany
                     ],
+                });
+
+                // Handle vendor filter change
+                $('#FilterVendor').on('change', function() {
+                    $('#FilterProject').val('').trigger('change.select2'); // Reset Project filter
+                    table.ajax.reload(null, false);
+                });
+
+                // Handle project filter change
+                $('#FilterProject').on('change', function() {
+                    $('#FilterVendor').val('').trigger('change.select2'); // Reset Vendor filter
+                    table.ajax.reload(null, false);
                 });
 
                 $(".dataTables_length select").addClass("form-select form-select-sm");
