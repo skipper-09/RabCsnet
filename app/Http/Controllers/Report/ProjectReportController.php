@@ -24,7 +24,7 @@ class ProjectReportController extends Controller
 
         // chart task
         $statusData = Task::selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')->where('project_id',$project_id)
+            ->groupBy('status')->where('project_id', $project_id)
             ->pluck('count', 'status')
             ->toArray();
 
@@ -36,36 +36,36 @@ class ProjectReportController extends Controller
             'complated' => 'Completed',
             'overdue' => 'Overdue Tasks'
         ];
-    
+
         $chartData = [];
         $allStatuses = ['pending', 'in_progres', 'complated', 'overdue'];
         foreach ($allStatuses as $status) {
             $count = $statusData[$status] ?? 0;
             $chartData[$status] = $totalTasks > 0 ? round(($count / $totalTasks) * 100, 2) : 0; // Dalam persentase
         }
-       
+
         $customLabels = [];
         foreach ($chartData as $status => $percentage) {
             $customLabels[] = $statusLabels[$status] ?? $status;
         }
-    
-//remaining days
-$startDate = Carbon::parse($project->start_date);
-$endDate = Carbon::parse($project->end_date);
-$remainingDays = $endDate->diffInDays($startDate);
+
+        //remaining days
+        $startDate = Carbon::parse($project->start_date);
+        $endDate = Carbon::parse($project->end_date);
+        $remainingDays = $endDate->diffInDays($startDate);
 
 
-$statuses = [
-    'pending' => 'To Do',
-    'in_progres' => 'In Progress',
-    'complated' => 'Completed',  // Fixed typo here
-];
+        $statuses = [
+            'pending' => 'To Do',
+            'in_progres' => 'In Progress',
+            'complated' => 'Completed',  // Fixed typo here
+        ];
 
-// Grouping tasks for Kanban view
-$kanbanTasks = Task::whereNull('parent_id')
-    ->with('project')
-    ->get()
-    ->groupBy('status');  // Group tasks by status
+        // Grouping tasks for Kanban view
+        $kanbanTasks = Task::whereNull('parent_id')
+            ->with('project')
+            ->get()
+            ->groupBy('status');  // Group tasks by status
 
 
         $data = [
@@ -74,9 +74,9 @@ $kanbanTasks = Task::whereNull('parent_id')
             'id' => $project_id,
             'chartData' => $chartData,
             'customLabels' => $customLabels,
-            'progres'=> $project->progress(),
-            'remainingdays'=>$remainingDays,
-            'statuses' => $statuses,  
+            'progres' => $project->progress(),
+            'remainingdays' => $remainingDays,
+            'statuses' => $statuses,
             'kanbanTasks' => $kanbanTasks,
         ];
         return view('pages.report.projectreport.index', $data);
@@ -168,9 +168,7 @@ $kanbanTasks = Task::whereNull('parent_id')
                 $total = ($item->item->material_price + $item->item->service_price) * $item->quantity;
                 return formatRupiah($total); // Format total sebagai mata uang
             })
-            ->rawColumns(['item_name', 'material_price', 'service_price', 'item_code','total'])
+            ->rawColumns(['item_name', 'material_price', 'service_price', 'item_code', 'total'])
             ->make(true);
     }
-
-
 }
