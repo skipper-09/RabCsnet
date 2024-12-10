@@ -6,6 +6,7 @@
     <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
 @endpush
 
@@ -62,7 +63,7 @@
                                         <div class="row mb-3">
                                             <div class="form-group col-12 col-md-4">
                                                 <label>Filter Vendor <span class="text-danger">*</span></label>
-                                                <select class="form-control select2 filter" id="FilterVendor" name="vendor_filter">
+                                                <select class="form-control select2" id="FilterVendor" name="vendor_filter">
                                                     <option value="">All Vendors</option>
                                                     @foreach ($vendor as $item)
                                                         <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -71,7 +72,7 @@
                                             </div>
                                             <div class="form-group col-12 col-md-4">
                                                 <label>Filter Project <span class="text-danger">*</span></label>
-                                                <select class="form-control select2 filter" id="FilterProject" name="project_filter">
+                                                <select class="form-control select2" id="FilterProject" name="project_filter">
                                                     <option value="">All Projects</option>
                                                     @foreach ($projects as $project)
                                                         <option value="{{ $project->id }}">{{ $project->name }}</option>
@@ -159,6 +160,7 @@
         <script src="{{ asset('assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
         <script src="{{ asset('assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
         <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
         <script src="{{ asset('assets/js/custom.js') }}"></script>
 
