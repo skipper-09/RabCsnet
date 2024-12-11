@@ -159,7 +159,7 @@
                                                                         <strong>Excel File:</strong>
                                                                         <a class="btn btn-primary btn-sm"
                                                                             href="{{ asset("
-                                                                                                                                                storage/files/excel/{$project->Projectfile->excel}") }}">Download</a>
+                                                                                                                                                                                                                                                                                                        storage/files/excel/{$project->Projectfile->excel}") }}">Download</a>
                                                                     </li>
 
                                                                     <li class="mb-2">
@@ -167,7 +167,7 @@
                                                                         <strong>KMZ File:</strong>
                                                                         <a class="btn btn-primary btn-sm"
                                                                             href="{{ asset("
-                                                                                                                                                storage/files/kmz/{$project->Projectfile->kmz}") }}">Download</a>
+                                                                                                                                                                                                                                                                                                        storage/files/kmz/{$project->Projectfile->kmz}") }}">Download</a>
                                                                     </li>
                                                                 </ul>
                                                             @else
@@ -240,23 +240,22 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane" id="distribusi" role="tabpanel">
-
                                     <h5>Distribusi Project</h5>
-                                    <table id="datatabledistribusi" class="table table-hover table-responsive"
-                                        style="width: 100%;">
-                                        <thead>
-                                            <tr>
-                                                <th class="text-center" style="width: 5%">No</th>
-                                                <th>Project</th>
-                                                <th>Tipe</th>
-                                                <th>Code</th>
-                                                <th>Name</th>
-                                                <th>Deskripsi</th>
-                                                <th>Item</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-
+                                    <div class="table-responsive">
+                                        <table id="datatabledistribusi" class="table table-hover" style="width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" style="width: 5%">No</th>
+                                                    <th>Project</th>
+                                                    <th>Tipe</th>
+                                                    <th>Code</th>
+                                                    <th>Name</th>
+                                                    <th>Deskripsi</th>
+                                                    <th>Item</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
                                 </div>
                                 <div class="tab-pane" id="messages1" role="tabpanel">
                                     <div class="card-title d-flex justify-content-between align-items-center mb-2">
@@ -364,7 +363,22 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane" id="payvendor" role="tabpanel">
-                                    <h2>tes</h2>
+                                    <div class="table-responsive">
+                                        <table id="datapayment" class="table table-hover" style="width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" style="width: 5%">No</th>
+                                                    <th style="width: 15%">Bukti Pembayaran</th>
+                                                    <th style="width: 15%">Tanggal Pembayaran</th>
+                                                    {{-- <th style="width: 15%">Project</th> --}}
+                                                    <th style="width: 15%">Vendor</th>
+                                                    <th style="width: 15%">Amount</th>
+                                                    <th>Note</th>
+                                                    <th class="text-center" style="width: 10%">Action</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
 
@@ -674,9 +688,6 @@
                         ],
                     });
 
-
-
-
                     var table = $("#datatask").DataTable({
                         processing: true,
                         serverSide: true,
@@ -733,11 +744,70 @@
                         ],
                     });
 
-                    // Handle vendor filter change
-
-
-
-
+                    var tablePayment = $("#datapayment").DataTable({
+                        processing: true,
+                        serverSide: true,
+                        ajax: '{{ route('payment.getdata') }}',
+                        columns: [{
+                                data: 'DT_RowIndex',
+                                name: 'DT_RowIndex',
+                                orderable: false,
+                                searchable: false,
+                                className: 'text-center align-middle'
+                            },
+                            {
+                                data: 'bukti_pembayaran',
+                                name: 'bukti_pembayaran',
+                                orderable: false,
+                                className: 'align-middle',
+                                render: function(data, type, row) {
+                                    if (data) {
+                                        const imageUrl = `{{ asset('storage/images/payment') }}/${data}`;
+                                        return `<img src="${imageUrl}" alt="Report Image" class="image-thumbnail">`;
+                                    }
+                                    return '<span class="text-muted">No image</span>';
+                                }
+                            },
+                            {
+                                data: 'payment_date',
+                                name: 'payment_date',
+                                className: 'align-middle'
+                            },
+                            // {
+                            //     data: 'project',
+                            //     name: 'project.name',
+                            //     className: 'align-middle'
+                            // },
+                            {
+                                data: 'vendor',
+                                name: 'vendor.name',
+                                className: 'align-middle'
+                            },
+                            {
+                                data: 'amount',
+                                name: 'amount',
+                                className: 'align-middle'
+                            },
+                            {
+                                data: 'note',
+                                name: 'note',
+                                className: 'align-middle',
+                                render: function(data, type, row) {
+                                    return data ? data.substring(0, 100) + (data.length > 100 ? '...' :
+                                        '') : '-';
+                                }
+                            },
+                            @canany(['update-paymentvendors', 'delete-paymentvendors'])
+                                {
+                                    data: 'action',
+                                    name: 'action',
+                                    orderable: false,
+                                    searchable: false,
+                                    className: 'text-center align-middle action-buttons'
+                                }
+                            @endcanany
+                        ],
+                    });
 
                     // Handle task completion toggle
                     $('#datatask').on('click', '.task-completion-button', function() {
