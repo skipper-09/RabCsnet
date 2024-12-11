@@ -281,7 +281,7 @@ class ReportVendorController extends Controller
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
                 'issue' => 'nullable|string',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5048', // Gambar opsional pada update
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5048', // Gambar opsional pada update
             ];
 
             // Jika pengguna bukan Vendor, maka validasi vendor_id
