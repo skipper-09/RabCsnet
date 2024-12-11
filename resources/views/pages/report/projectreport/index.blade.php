@@ -159,7 +159,7 @@
                                                                         <strong>Excel File:</strong>
                                                                         <a class="btn btn-primary btn-sm"
                                                                             href="{{ asset("
-                                                                                                                                                                                                                                                                                                        storage/files/excel/{$project->Projectfile->excel}") }}">Download</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                storage/files/excel/{$project->Projectfile->excel}") }}">Download</a>
                                                                     </li>
 
                                                                     <li class="mb-2">
@@ -167,7 +167,7 @@
                                                                         <strong>KMZ File:</strong>
                                                                         <a class="btn btn-primary btn-sm"
                                                                             href="{{ asset("
-                                                                                                                                                                                                                                                                                                        storage/files/kmz/{$project->Projectfile->kmz}") }}">Download</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                storage/files/kmz/{$project->Projectfile->kmz}") }}">Download</a>
                                                                     </li>
                                                                 </ul>
                                                             @else
@@ -866,43 +866,6 @@
                         });
                     });
 
-                    // Image preview function
-                    function previewImage(input) {
-                        const preview = document.getElementById('imagePreview');
-                        const previewContainer = preview.closest('.preview-container');
-
-                        if (input.files && input.files[0]) {
-                            const reader = new FileReader();
-
-                            reader.onload = function(e) {
-                                preview.src = e.target.result;
-                                preview.style.display = 'block';
-                                previewContainer.style.display = 'block';
-                            }
-
-                            reader.readAsDataURL(input.files[0]);
-
-                            // Validate file size
-                            const fileSize = input.files[0].size / 1024 / 1024; // in MB
-                            if (fileSize > 5) {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Ukuran File Terlalu Besar',
-                                    text: 'Ukuran gambar maksimal 5MB'
-                                });
-                                input.value = ''; // Clear the file input
-                                preview.src = '#';
-                                preview.style.display = 'none';
-                                previewContainer.style.display = 'none';
-                            }
-                        } else {
-                            preview.src = '#';
-                            preview.style.display = 'none';
-                            previewContainer.style.display = 'none';
-                        }
-                    }
-
-                    // Task report button click handler
                     $('#datatask').on('click', '.task-report-button', function() {
                         const taskId = $(this).data('id');
 
@@ -910,59 +873,92 @@
                         Swal.fire({
                             title: 'Laporan Tugas',
                             html: `
-                            <form id="taskReportForm" class="text-start">
+                            <form id="taskReportForm" class="text-start needs-validation" novalidate>
                                 <div class="form-group">
                                     <label for="description" class="form-label required">Deskripsi Laporan (Wajib)</label>
-                                    <textarea id="description" name="description" class="form-control" placeholder="Masukkan deskripsi laporan" rows="4" required></textarea>
+                                    <textarea 
+                                        id="description" 
+                                        name="description" 
+                                        class="form-control" 
+                                        placeholder="Masukkan deskripsi laporan" 
+                                        rows="4" 
+                                        required
+                                    ></textarea>
+                                    <div class="invalid-feedback">Deskripsi laporan wajib diisi</div>
                                 </div>
                                 <div class="form-group mt-3">
                                     <label for="issue" class="form-label">Kendala/Masalah (Opsional)</label>
-                                    <textarea id="issue" name="issue" class="form-control" placeholder="Masukkan kendala atau masalah" rows="4" required></textarea>
+                                    <textarea 
+                                        id="issue" 
+                                        name="issue" 
+                                        class="form-control" 
+                                        placeholder="Masukkan kendala atau masalah" 
+                                        rows="4"
+                                    ></textarea>
                                 </div>
                                 <div class="form-group mt-3">
-                                    <label for="image" class="form-label required">Unggah Gambar</label>
-                                    <input type="file" name="image" id="image" 
+                                    <label for="image" class="form-label">Unggah Gambar</label>
+                                    <input 
+                                        type="file" 
+                                        name="image" 
+                                        id="image" 
                                         class="form-control" 
-                                        accept="image/*"
-                                        onchange="previewImage(this)">
+                                        accept="image/jpeg,image/png,image/jpg,image/gif"
+                                    >
                                     <small class="text-muted">Format yang diterima: JPEG, PNG, JPG, GIF. Ukuran maksimal: 5MB</small>
                                     <div class="preview-container mt-2" style="display:none;">
-                                        <img id="imagePreview" src="#" alt="Preview" class="img-fluid" style="max-height: 200px; display:none;">
+                                        <img 
+                                            id="imagePreview" 
+                                            src="#" 
+                                            alt="Preview" 
+                                            class="img-fluid" 
+                                            style="max-height: 200px; display:none;"
+                                        >
                                     </div>
                                 </div>
                             </form>
-                        `,
+                            `,
                             showCancelButton: true,
                             confirmButtonText: 'Kirim Laporan',
                             cancelButtonText: 'Batal',
                             preConfirm: () => {
-                                const description = document.getElementById('description').value;
-                                const imageFile = document.getElementById('image').files[0];
+                                const form = document.getElementById('taskReportForm');
 
-                                // Validate description
-                                if (!description.trim()) {
-                                    Swal.showValidationMessage('Deskripsi laporan wajib diisi');
+                                // HTML5 form validation
+                                if (!form.checkValidity()) {
+                                    form.classList.add('was-validated');
                                     return false;
                                 }
+
+                                const description = document.getElementById('description').value.trim();
+                                const imageFile = document.getElementById('image').files[0];
 
                                 // Create FormData for file upload
                                 const formData = new FormData();
                                 formData.append('task_id', taskId);
                                 formData.append('description', description);
+
+                                // Optional issue field
+                                const issue = document.getElementById('issue').value.trim();
+                                if (issue) {
+                                    formData.append('issue', issue);
+                                }
+
                                 formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
 
-                                // Append image if selected
+                                // Image validation
                                 if (imageFile) {
-                                    // Additional file type validation
                                     const validTypes = ['image/jpeg', 'image/png', 'image/jpg',
                                         'image/gif'
                                     ];
+
+                                    // Validate file type
                                     if (!validTypes.includes(imageFile.type)) {
                                         Swal.showValidationMessage('Format gambar tidak valid');
                                         return false;
                                     }
 
-                                    // File size validation (5MB)
+                                    // Validate file size (5MB)
                                     if (imageFile.size > 5 * 1024 * 1024) {
                                         Swal.showValidationMessage('Ukuran gambar maksimal 5MB');
                                         return false;
@@ -971,22 +967,60 @@
                                     formData.append('image', imageFile);
                                 }
 
+                                // AJAX submission with improved error handling
                                 return $.ajax({
                                     url: '{{ route('tasks.report') }}',
                                     method: 'POST',
                                     data: formData,
                                     processData: false,
                                     contentType: false,
-                                    dataType: 'json'
+                                    dataType: 'json',
+                                    xhr: function() {
+                                        const xhr = new window.XMLHttpRequest();
+                                        xhr.upload.addEventListener('progress', function(
+                                            evt) {
+                                            if (evt.lengthComputable) {
+                                                const percentComplete = evt.loaded /
+                                                    evt.total * 100;
+                                                Swal.update({
+                                                    title: 'Mengunggah...',
+                                                    html: `Progress: ${Math.round(percentComplete)}%`
+                                                });
+                                            }
+                                        }, false);
+                                        return xhr;
+                                    }
                                 }).fail(function(xhr) {
                                     Swal.showValidationMessage(
-                                        xhr.responseJSON.message ||
+                                        xhr.responseJSON?.message ||
                                         'Terjadi kesalahan saat melaporkan tugas'
                                     );
                                 });
                             },
                             didRender: () => {
-                                // Ensure textarea is focused
+                                // Image preview functionality
+                                const imageInput = document.getElementById('image');
+                                const imagePreview = document.getElementById('imagePreview');
+                                const previewContainer = document.querySelector('.preview-container');
+
+                                imageInput.addEventListener('change', function(e) {
+                                    const file = e.target.files[0];
+                                    if (file) {
+                                        const reader = new FileReader();
+                                        reader.onload = function(event) {
+                                            imagePreview.src = event.target.result;
+                                            imagePreview.style.display = 'block';
+                                            previewContainer.style.display = 'block';
+                                        };
+                                        reader.readAsDataURL(file);
+                                    } else {
+                                        imagePreview.src = '#';
+                                        imagePreview.style.display = 'none';
+                                        previewContainer.style.display = 'none';
+                                    }
+                                });
+
+                                // Ensure description textarea is focused
                                 document.getElementById('description').focus();
                             },
                             allowOutsideClick: () => !Swal.isLoading()
@@ -1001,11 +1035,31 @@
                                     timer: 3000
                                 });
 
-                                // Reload the table
-                                table.ajax.reload(null, false);
+                                // Safely reload the table if it exists
+                                if (typeof table !== 'undefined' && table.ajax) {
+                                    table.ajax.reload(null, false);
+                                }
                             }
                         });
                     });
+
+                    // Image preview function (kept for compatibility)
+                    function previewImage(input) {
+                        const preview = document.getElementById('imagePreview');
+                        const previewContainer = document.querySelector('.preview-container');
+
+                        if (input.files && input.files[0]) {
+                            const reader = new FileReader();
+
+                            reader.onload = function(e) {
+                                preview.src = e.target.result;
+                                preview.style.display = 'block';
+                                previewContainer.style.display = 'block';
+                            };
+
+                            reader.readAsDataURL(input.files[0]);
+                        }
+                    }
 
                     // Inisialisasi drag and drop untuk kanban
                     $('.kanban-column').sortable({
