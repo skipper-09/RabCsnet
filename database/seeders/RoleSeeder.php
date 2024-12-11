@@ -115,7 +115,7 @@ class RoleSeeder extends Seeder
             'create-reportvendors',
             'update-reportvendors',
             'delete-reportvendors',
-            'read-tasks',
+            'read-report-project',
             'complete-tasks',
             'setting-profile',
         ]);
