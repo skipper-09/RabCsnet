@@ -50,9 +50,16 @@ class ProjectReportController extends Controller
         }
 
         //remaining days
-        $startDate = Carbon::parse($project->start_date);
+        $now = Carbon::now()->toDateString(); 
         $endDate = Carbon::parse($project->end_date);
-        $remainingDays = $endDate->diffInDays($startDate);
+        
+        if ($endDate) {
+            $remainingDays = $endDate->diffInDays($now);
+        } else {
+            $remainingDays = 0; 
+        }
+
+        
 
 
         $statuses = [
