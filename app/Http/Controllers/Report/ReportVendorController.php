@@ -137,7 +137,8 @@ class ReportVendorController extends Controller
             $validationRules = [
                 'project_id' => 'required|exists:projects,id',
                 'title' => 'required|string|max:255',
-                'description' => 'nullable|string',
+                'description' => 'required|string',
+                'issue' => 'nullable|string',
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5048',
             ];
 
@@ -153,7 +154,8 @@ class ReportVendorController extends Controller
                 'vendor_id.exists' => 'Vendor tidak valid.',
                 'title.required' => 'Judul wajib diisi.',
                 'title.max' => 'Judul tidak boleh lebih dari 255 karakter.',
-                'description.max' => 'Deskripsi tidak boleh lebih dari 255 karakter.',
+                'description.required' => 'Deskripsi wajib diisi.',
+                'issue.string' => 'Isu harus berupa teks.',
                 'image.required' => 'Gambar wajib diisi.',
                 'image.mimes' => 'Format gambar tidak valid.',
                 'image.max' => 'Ukuran gambar tidak boleh lebih dari 5MB.',
@@ -175,6 +177,7 @@ class ReportVendorController extends Controller
                     'vendor_id' => $request->vendor_id,
                     'title' => $request->title,
                     'description' => $request->description,
+                    'issue' => $request->issue,
                     'image' => $filename,
                 ]);
             } else {
@@ -190,6 +193,7 @@ class ReportVendorController extends Controller
                     'vendor_id' => $vendor->id,  // Use the vendor ID associated with the user
                     'title' => $request->title,
                     'description' => $request->description,
+                    'issue' => $request->issue,
                     'image' => $filename,
                 ]);
             }
@@ -275,7 +279,8 @@ class ReportVendorController extends Controller
             $validationRules = [
                 'project_id' => 'required|exists:projects,id',
                 'title' => 'required|string|max:255',
-                'description' => 'nullable|string',
+                'description' => 'required|string',
+                'issue' => 'nullable|string',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5048', // Gambar opsional pada update
             ];
 
@@ -292,7 +297,9 @@ class ReportVendorController extends Controller
                 'vendor_id.exists' => 'Vendor tidak valid.',
                 'title.required' => 'Judul wajib diisi.',
                 'title.max' => 'Judul tidak boleh lebih dari 255 karakter.',
-                'description.max' => 'Deskripsi tidak boleh lebih dari 255 karakter.',
+                'description.required' => 'Deskripsi wajib diisi.',
+                'issue.string' => 'Isu harus berupa teks.',
+                'image.required' => 'Gambar wajib diisi.',
                 'image.image' => 'File harus berupa gambar.',
                 'image.mimes' => 'Format gambar tidak valid.',
                 'image.max' => 'Ukuran gambar tidak boleh lebih dari 5MB.',
@@ -329,6 +336,7 @@ class ReportVendorController extends Controller
                     'vendor_id' => $vendor->id,  // Gunakan ID vendor yang terkait dengan pengguna
                     'title' => $request->title,
                     'description' => $request->description,
+                    'issue' => $request->issue,
                     'image' => $filename,
                 ]);
             } else {
@@ -338,6 +346,7 @@ class ReportVendorController extends Controller
                     'vendor_id' => $request->vendor_id,  // Gunakan vendor_id yang diberikan oleh pengguna
                     'title' => $request->title,
                     'description' => $request->description,
+                    'issue' => $request->issue,
                     'image' => $filename,
                 ]);
             }

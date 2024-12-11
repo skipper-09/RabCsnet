@@ -129,12 +129,26 @@
                                     </div>
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">
+                                            <label for="validationCustom01" class="form-label required">
                                                 Deskripsi
                                             </label>
                                             <textarea id="textarea" name="description" class="form-control @error('description') is-invalid @enderror"
-                                                maxlength="225" rows="3" placeholder="Enter Description"></textarea>
+                                                rows="3" placeholder="Enter Description"></textarea>
                                             @error('description')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label for="validationCustom01" class="form-label">
+                                                Kendala/Masalah (Optional)
+                                            </label>
+                                            <textarea id="textarea" name="issue" class="form-control @error('issue') is-invalid @enderror"
+                                                rows="3" placeholder="Enter Issue"></textarea>
+                                            @error('issue')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
                                                 </div>

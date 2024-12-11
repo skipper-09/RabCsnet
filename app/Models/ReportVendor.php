@@ -12,7 +12,7 @@ class ReportVendor extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['project_id', 'vendor_id', 'task_id', 'title', 'description', 'image'];
+    protected $fillable = ['project_id', 'vendor_id', 'task_id', 'title', 'description', 'image', 'issue'];
     protected static function boot()
     {
         parent::boot();
