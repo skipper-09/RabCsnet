@@ -747,7 +747,13 @@
                     var tablePayment = $("#datapayment").DataTable({
                         processing: true,
                         serverSide: true,
-                        ajax: '{{ route('payment.getdata') }}',
+                        ajax: {
+                            url: '{{ route('payment.getdata') }}',
+                            type: 'GET',
+                            data: function(d) {
+                                d.project_id = project_id
+                            }
+                        },
                         columns: [{
                                 data: 'DT_RowIndex',
                                 name: 'DT_RowIndex',

@@ -70,8 +70,7 @@ class TaskController extends Controller
         })->avg();
 
         // Filter tasks based on user role
-        if ($currentUserRole !== 'Owner') {
-            // Non-Owner roles
+        if ($currentUserRole !== 'Vendor') {
             $query->whereHas('project', function ($projectQuery) {
                 $projectQuery->where('start_status', 1);
             });
@@ -91,11 +90,6 @@ class TaskController extends Controller
                 ->whereHas('project', function ($projectQuery) {
                     $projectQuery->where('start_status', 1);
                 });
-        }
-
-        // If user is a Vendor, filter only their projects
-        if ($currentUserRole === 'Vendor') {
-            $query->where('vendor_id', $vendor->id);
         }
 
         // Always order by most recent

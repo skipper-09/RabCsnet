@@ -18,57 +18,57 @@ class PaymentVendorController extends Controller
 {
     public function index()
     {
-        return view('pages.payment.index', [
+        $data = [
             'tittle' => 'Payment Vendor', // Corrected 'tittle' to 'title'
             'vendor' => Vendor::all(),
             'project' => Project::where('start_status', 1)->get(),
-        ]);
+        ];
+
+        return view('pages.payment.index', $data);
     }
 
     public function getData(Request $request)
     {
+        // Get the authenticated user
         $currentUser = Auth::user();
+
         $currentUserRole = $currentUser->roles->first()->name;
 
-        // Optimize vendor lookup
-        $vendor = $currentUserRole === 'Vendor'
-            ? Vendor::where('user_id', $currentUser->id)->first()
-            : null;
+        $vendor = Vendor::where('user_id', $currentUser->id)->first();
 
-        // Base query for payment vendor with eager loading
-        $query = PaymentVendor::with(['project', 'vendor']);
-
-        // Filter by project if provided
-        if ($request->filled('project_id')) {
-            $query->where('project_id', $request->query('project_id'));
+        // Base query for payments
+        $querypayment = $request->query('project_id');
+        if ($request->query('project_id') === null) {
+            $query = PaymentVendor::with(['project', 'vendor']);
+        } else {
+            $query = PaymentVendor::with(['project', 'vendor'])->where('project_id', $querypayment);
         }
 
-        // Active project filter for all non-vendor roles
+        // Filter tasks based on user role
         if ($currentUserRole !== 'Vendor') {
-            $query->whereHas(
-                'project',
-                fn($projectQuery) =>
-                $projectQuery->where('start_status', 1)
-            );
+            $query->whereHas('project', function ($projectQuery) {
+                $projectQuery->where('start_status', 1);
+            });
 
             // Vendor filter
-            if ($request->filled('vendor_filter')) {
+            if ($request->has('vendor_filter') && !empty($request->input('vendor_filter'))) {
                 $query->where('vendor_id', $request->input('vendor_filter'));
             }
 
             // Project filter
-            if ($request->filled('project_filter')) {
+            if ($request->has('project_filter') && !empty($request->input('project_filter'))) {
                 $query->where('project_id', $request->input('project_filter'));
             }
         } else {
-            // Filter by vendor for Vendor role
+            // Owner role: filter by their vendor
             $query->where('vendor_id', $vendor->id)
-                ->whereHas(
-                    'project',
-                    fn($projectQuery) =>
-                    $projectQuery->where('start_status', 1)
-                );
+                ->whereHas('project', function ($projectQuery) {
+                    $projectQuery->where('start_status', 1);
+                });
         }
+
+        // Always order by most recent
+        $query->orderBy('created_at', 'desc');
 
         return DataTables::of($query)
             ->addIndexColumn()
