@@ -178,7 +178,6 @@ class TaskController extends Controller
             ->rawColumns(['action', 'project', 'vendor', 'start_date', 'end_date', 'status', 'priority', 'parent_tasks'])
             ->make(true);
     }
-
     public function reportTask(Request $request)
     {
         DB::beginTransaction();
@@ -186,8 +185,9 @@ class TaskController extends Controller
             // Validate the request
             $request->validate([
                 'task_id' => 'required|exists:tasks,id',
-                'description' => 'nullable|string|max:1000',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5048' // Single image, max 5MB
+                'description' => 'required|string',
+                'issue' => 'nullable|string',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5048' // Single image, max 5MB
             ]);
 
             // Find the task
@@ -243,6 +243,7 @@ class TaskController extends Controller
                 'vendor_id' => $task->vendor_id,
                 'title' => $task->title,
                 'description' => $request->input('description', ''),
+                'issue' => $request->input('issue', ''),
                 'image' => $filename
             ]);
             $reportVendor->save();

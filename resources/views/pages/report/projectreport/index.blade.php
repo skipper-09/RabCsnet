@@ -903,20 +903,24 @@
                     }
 
                     // Task report button click handler
-                    $('#datatable').on('click', '.task-report-button', function() {
+                    $('#datatask').on('click', '.task-report-button', function() {
                         const taskId = $(this).data('id');
 
                         // Create a modal with more detailed form
                         Swal.fire({
                             title: 'Laporan Tugas',
                             html: `
-                            <form id="taskReportForm">
+                            <form id="taskReportForm" class="text-start">
                                 <div class="form-group">
-                                    <label for="description" class="form-label">Deskripsi Laporan (Wajib)</label>
+                                    <label for="description" class="form-label required">Deskripsi Laporan (Wajib)</label>
                                     <textarea id="description" name="description" class="form-control" placeholder="Masukkan deskripsi laporan" rows="4" required></textarea>
                                 </div>
                                 <div class="form-group mt-3">
-                                    <label for="image" class="form-label">Unggah Gambar</label>
+                                    <label for="issue" class="form-label">Kendala/Masalah (Opsional)</label>
+                                    <textarea id="issue" name="issue" class="form-control" placeholder="Masukkan kendala atau masalah" rows="4" required></textarea>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label for="image" class="form-label required">Unggah Gambar</label>
                                     <input type="file" name="image" id="image" 
                                         class="form-control" 
                                         accept="image/*"
