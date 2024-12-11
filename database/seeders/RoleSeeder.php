@@ -111,13 +111,16 @@ class RoleSeeder extends Seeder
             'start-projects',
             'upload-atp',
             'download-atp',
+            'read-paymentvendors',
+            'create-paymentvendors',
+            'update-paymentvendors',
+            'delete-paymentvendors',
+            'complete-tasks',
             'read-reportvendors',
             'create-reportvendors',
             'update-reportvendors',
             'delete-reportvendors',
             'read-report-project',
-            'complete-tasks',
-            'setting-profile',
         ]);
 
         $accounting = Role::create(['name' => 'Accounting']);
