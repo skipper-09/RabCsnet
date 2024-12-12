@@ -103,12 +103,7 @@ class RoleSeeder extends Seeder
         $vendor->givePermissionTo([
             'read-dashboard',
             'read-projects',
-            'create-projects',
-            'update-projects',
-            'delete-projects',
             'read-detail-projects',
-            'approval-projects',
-            'start-projects',
             'upload-atp',
             'download-atp',
             'read-paymentvendors',
