@@ -226,7 +226,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::post('/report', [TaskController::class, 'reportTask'])
             ->name('tasks.report');
         Route::patch('/{task}/status', [TaskController::class, 'updateStatus'])
-            ->name('tasks.update-status');
+            ->name('tasks.update-status')->middleware('can:update-kanban-tasks');
     });
 
     Route::prefix('assign')->group(function () {
