@@ -162,7 +162,7 @@
                                                 <div class="col-md-12">
                                                     <div class="mb-3">
                                                         <label for="service_id" class="form-label">Pilih Jasa</label>
-                                                        <select name="service_id[]" class="form-control select2" multiple>
+                                                        <select name="service_id[]" class="form-control select2">
                                                             <option value="">Pilih Jasa</option>
                                                             @foreach ($service as $srv)
                                                                 <option value="{{ $srv->id }}"
