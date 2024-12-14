@@ -18,8 +18,8 @@ return new class extends Migration
             $table->foreignUuid('unit_id')->references('id')->on('units')->onDelete('cascade')->onUpdate('cascade');
             $table->string('item_code')->unique()->nullable(false);
             $table->string('material_price');
-            $table->string('service_price')->nullable();
-            $table->string('service_name')->nullable();
+            // $table->string('service_price')->nullable();
+            // $table->string('service_name')->nullable();
             $table->longText('description')->nullable();
             $table->boolean('status')->default(true);
             $table->timestamps();

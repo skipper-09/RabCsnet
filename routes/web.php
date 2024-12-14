@@ -7,6 +7,7 @@ use App\Http\Controllers\Master\ItemTypeController;
 use App\Http\Controllers\Master\ProjectTypeController;
 use App\Http\Controllers\Master\UnitController;
 use App\Http\Controllers\Master\ItemController;
+use App\Http\Controllers\Master\ServiceController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Project\DetailProjectController;
 use App\Http\Controllers\Project\PerijinanProjectController;
@@ -179,6 +180,16 @@ Route::prefix('admin')->middleware('auth')->group(function () {
             Route::get('/edit/{id}', [ProjectTypeController::class, 'show'])->name('projecttype.edit')->middleware('can:update-projecttypes');
             Route::put('/update/{id}', [ProjectTypeController::class, 'update'])->name('projecttype.update');
             Route::delete('/delete/{id}', [ProjectTypeController::class, 'destroy'])->name('projecttype.delete')->middleware('can:delete-projecttypes');
+        });
+
+        Route::prefix('service')->group(function () {
+            Route::get('/', [ServiceController::class, 'index'])->name('service')->middleware('can:read-services');
+            Route::get('getData', [ServiceController::class, 'getData'])->name('service.getdata');
+            Route::get('/tambah', [ServiceController::class, 'create'])->name('service.add')->middleware('can:create-services');
+            Route::post('store', [ServiceController::class, 'store'])->name('service.store');
+            Route::get('/edit/{id}', [ServiceController::class, 'show'])->name('service.edit')->middleware('can:update-services');
+            Route::put('/update/{id}', [ServiceController::class, 'update'])->name('service.update');
+            Route::delete('/delete/{id}', [ServiceController::class, 'destroy'])->name('service.delete')->middleware('can:delete-services');
         });
     });
 

@@ -5,12 +5,6 @@
     <link href="{{ asset('assets/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
-
-    <style>
-        #additional-details-section {
-            display: none;
-        }
-    </style>
 @endpush
 
 @section('content')
@@ -128,52 +122,6 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="my-3">
-                                        <!-- New Conditional Input Section -->
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Apakah anda membutuhkan Jasa
-                                                    juga?</label>
-                                                <select id="additional-details-select" name="has_additional_details"
-                                                    class="form-control">
-                                                    <option value="no">Tidak</option>
-                                                    <option value="yes">Ya</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <!-- Conditional Additional Details Section -->
-                                        <div id="additional-details-section">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label for="service_name" class="form-label">Nama Jasa</label>
-                                                        <input type="text" name="service_name" id="service_name"
-                                                            class="form-control @error('service_name') is-invalid @enderror"
-                                                            maxlength="255" placeholder="Masukkan Nama Jasa">
-                                                        @error('service_name')
-                                                            <div class="invalid-feedback">
-                                                                {{ $message }}
-                                                            </div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label for="service_price" class="form-label">Harga Jasa</label>
-                                                        <input type="number" name="service_price" id="service_price"
-                                                            class="form-control @error('service_price') is-invalid @enderror"
-                                                            placeholder="Masukkan Harga Jasa">
-                                                        @error('service_price')
-                                                            <div class="invalid-feedback">
-                                                                {{ $message }}
-                                                            </div>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                                 <div>
                                     <button class="btn btn-primary" type="submit">Submit</button>
@@ -198,20 +146,5 @@
         <script src="{{ asset('assets/js/pages/form-validation.init.js') }}"></script>
         <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
         <script src="{{ asset('assets/js/pages/form-advanced.init.js') }}"></script>
-
-        <script>
-            $(document).ready(function() {
-                // Conditional Details Section Toggle
-                $('#additional-details-select').change(function() {
-                    if ($(this).val() === 'yes') {
-                        $('#additional-details-section').show();
-                    } else {
-                        $('#additional-details-section').hide();
-                        // Clear input values when hidden
-                        $('#additional-details-section input, #additional-details-section textarea').val('');
-                    }
-                });
-            });
-        </script>
     @endpush
 @endsection

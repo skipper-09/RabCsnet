@@ -61,7 +61,7 @@
                 @endcanany
 
                 {{-- Master Data --}}
-                @canany(['read-itemtypes', 'read-companies', 'read-units', 'read-items', 'read-projecttypes'])
+                @canany(['read-itemtypes', 'read-companies', 'read-units', 'read-items', 'read-projecttypes', 'read-services'])
                     <li class="menu-title">Master Data</li>
                     <li>
                         <a href="javascript:void(0);" class="has-arrow waves-effect">
@@ -87,6 +87,10 @@
 
                             @can('read-projecttypes')
                                 <li><a href="{{ route('projecttype') }}">Project Types</a></li>
+                            @endcan
+
+                            @can('read-services')
+                                <li><a href="{{ route('service') }}">Services</a></li>
                             @endcan
                         </ul>
                     </li>

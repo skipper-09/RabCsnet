@@ -90,8 +90,6 @@ class ItemController extends Controller
             'unit_id' => 'required|exists:units,id',
             'material_price' => 'required|numeric',
             'description' => 'nullable|string',
-            'service_name' => 'nullable|string|max:255',
-            'service_price' => 'nullable|numeric',
         ], [
             'name.required' => 'Nama wajib diisi.',
             'type_id.required' => 'Tipe wajib diisi.',
@@ -101,9 +99,6 @@ class ItemController extends Controller
             'material_price.required' => 'Harga material wajib diisi.',
             'material_price.numeric' => 'Harga material harus berupa angka.',
             'description.string' => 'Deskripsi wajib berupa string.',
-            'service_name.string' => 'Nama jasa wajib berupa string.',
-            'service_name.max' => 'Nama jasa maksimal 255 karakter.',
-            'service_price.numeric' => 'Harga jasa harus berupa angka.',
         ]);
 
         // Simpan data item
@@ -148,8 +143,6 @@ class ItemController extends Controller
             'unit_id' => 'required|exists:units,id',
             'material_price' => 'required|numeric',
             'description' => 'nullable|string',
-            'service_name' => 'nullable|string|max:255',
-            'service_price' => 'nullable|numeric',
         ], [
             'name.required' => 'Nama wajib diisi.',
             'type_id.required' => 'Tipe wajib diisi.',
@@ -159,11 +152,9 @@ class ItemController extends Controller
             'material_price.required' => 'Harga material wajib diisi.',
             'material_price.numeric' => 'Harga material harus berupa angka.',
             'description.string' => 'Deskripsi wajib berupa string.',
-            'service_name.string' => 'Nama jasa wajib berupa string.',
-            'service_name.max' => 'Nama jasa maksimal 255 karakter.',
-            'service_price.numeric' => 'Harga jasa harus berupa angka.',
         ]);
 
+        // Simpan data item
         $item = Item::find($id);
         $oldItem = $item->toArray();
 
@@ -171,14 +162,14 @@ class ItemController extends Controller
 
         // Log activity for company update
         activity()
-        ->causedBy(Auth::user()) // Logs who performed the action
-        ->performedOn($item) // The entity being changed
-        ->event('updated') // Event of the action
-        ->withProperties([
-            'old' => $oldItem, // The data before update
-            'attributes' => $item->toArray() // The updated data
-        ])
-        ->log('Item di update dengan nama ' . $item->name);
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($item) // The entity being changed
+            ->event('updated') // Event of the action
+            ->withProperties([
+                'old' => $oldItem, // The data before update
+                'attributes' => $item->toArray() // The updated data
+            ])
+            ->log('Item di update dengan nama ' . $item->name);
 
         return redirect()->route('item')->with(['status' => 'Success', 'message' => 'Berhasil Mengubah Item']);
     }
@@ -220,7 +211,8 @@ class ItemController extends Controller
 
 
 
-    public function ExportItem(){
+    public function ExportItem()
+    {
         $now = now();
         return Excel::download(new ItemExport, "Item_$now.csv");
     }

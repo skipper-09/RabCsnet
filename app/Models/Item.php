@@ -11,7 +11,7 @@ class Item extends Model
 {
     use HasUuids;
     protected $primaryKey = 'id';
-    protected $fillable = ['name', 'type_id', 'item_code', 'unit_id', 'material_price', 'service_name', 'service_price', 'description','status'];
+    protected $fillable = ['name', 'type_id', 'item_code', 'unit_id', 'material_price', 'description','status'];
     protected static function boot()
     {
         parent::boot();
