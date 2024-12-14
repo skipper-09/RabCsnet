@@ -88,17 +88,21 @@ class ItemController extends Controller
             'name' => 'required|string|max:255',
             'type_id' => 'required|exists:type_items,id',
             'unit_id' => 'required|exists:units,id',
-            'material_price' => 'nullable|numeric',
-            'service_price' => 'required|numeric',
+            'material_price' => 'required|numeric',
             'description' => 'nullable|string',
+            'service_name' => 'nullable|string|max:255',
+            'service_price' => 'nullable|numeric',
         ], [
             'name.required' => 'Nama wajib diisi.',
             'type_id.required' => 'Tipe wajib diisi.',
             'type_id.exists' => 'Tipe tidak valid.',
             'unit_id.required' => 'Satuan wajib diisi.',
             'unit_id.exists' => 'Satuan tidak valid.',
+            'material_price.required' => 'Harga material wajib diisi.',
             'material_price.numeric' => 'Harga material harus berupa angka.',
-            'service_price.required' => 'Harga jasa wajib diisi.',
+            'description.string' => 'Deskripsi wajib berupa string.',
+            'service_name.string' => 'Nama jasa wajib berupa string.',
+            'service_name.max' => 'Nama jasa maksimal 255 karakter.',
             'service_price.numeric' => 'Harga jasa harus berupa angka.',
         ]);
 
@@ -142,17 +146,21 @@ class ItemController extends Controller
             'name' => 'required|string|max:255',
             'type_id' => 'required|exists:type_items,id',
             'unit_id' => 'required|exists:units,id',
-            'material_price' => 'nullable|numeric',
-            'service_price' => 'required|numeric',
+            'material_price' => 'required|numeric',
             'description' => 'nullable|string',
+            'service_name' => 'nullable|string|max:255',
+            'service_price' => 'nullable|numeric',
         ], [
             'name.required' => 'Nama wajib diisi.',
             'type_id.required' => 'Tipe wajib diisi.',
             'type_id.exists' => 'Tipe tidak valid.',
             'unit_id.required' => 'Satuan wajib diisi.',
             'unit_id.exists' => 'Satuan tidak valid.',
+            'material_price.required' => 'Harga material wajib diisi.',
             'material_price.numeric' => 'Harga material harus berupa angka.',
-            'service_price.required' => 'Harga jasa wajib diisi.',
+            'description.string' => 'Deskripsi wajib berupa string.',
+            'service_name.string' => 'Nama jasa wajib berupa string.',
+            'service_name.max' => 'Nama jasa maksimal 255 karakter.',
             'service_price.numeric' => 'Harga jasa harus berupa angka.',
         ]);
 
@@ -170,7 +178,7 @@ class ItemController extends Controller
             'old' => $oldItem, // The data before update
             'attributes' => $item->toArray() // The updated data
         ])
-        ->log('Company di update dengan nama ' . $item->name);
+        ->log('Item di update dengan nama ' . $item->name);
 
         return redirect()->route('item')->with(['status' => 'Success', 'message' => 'Berhasil Mengubah Item']);
     }
