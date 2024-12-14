@@ -48,7 +48,7 @@ class ProjectController extends Controller
                 }
                 if ($data->status_pengajuan == 'approved' && !$data->vendor_id) {
                     if ($userauth->can('start-projects')) {
-                        $button .= '<a href="' . route('project.start', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
+                        $button .= '<a href="' . route('project.start', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Start Project">
                         <i class="fas fa-upload"></i> Start Project</a>';
                     }
                 }
@@ -113,7 +113,7 @@ class ProjectController extends Controller
                     $button = implode('', $buttons);
                 }
 
-                if ($data->start_status == 0) {
+                if ($data->start_status == 0 && !$data->Projectfile) {
                     if ($userauth->can('update-projects')) {
                         $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
                         <i class="fas fa-pencil-alt"></i>
