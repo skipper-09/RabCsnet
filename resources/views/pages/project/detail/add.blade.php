@@ -6,6 +6,12 @@
     <link href="{{ asset('assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+
+    <style>
+        #additional-details-section {
+            display: none;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -126,8 +132,39 @@
                                             </table>
                                         </div>
                                     </div>
-                                </div>
 
+                                    <div class="my-3">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Apakah anda membutuhkan Jasa?</label>
+                                                <select id="additional-details-select" name="has_service"
+                                                    class="form-control">
+                                                    <option value="no">Tidak</option>
+                                                    <option value="yes">Ya</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!-- Conditional Service Section -->
+                                        <div id="additional-details-section" style="display: none;">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="service_id" class="form-label">Pilih Jasa</label>
+                                                        <select name="service_id[]" class="form-control select2" multiple>
+                                                            <option value="">Pilih Jasa</option>
+                                                            @foreach ($service as $srv)
+                                                                <option value="{{ $srv->id }}">{{ $srv->name }} -
+                                                                    Rp. {{ number_format($srv->price, 0, ',', '.') }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div>
                                     <button class="btn btn-primary" type="submit">Submit</button>
                                 </div>
@@ -198,6 +235,17 @@
                         $(this).find('th').text(index + 1);
                     });
                 }
+
+                // Conditional Details Section Toggle
+                $('#additional-details-select').change(function() {
+                    if ($(this).val() === 'yes') {
+                        $('#additional-details-section').show();
+                    } else {
+                        $('#additional-details-section').hide();
+                        // Clear service selections when hidden
+                        $('#additional-details-section select').val(null).trigger('change');
+                    }
+                });
             });
             $('.select2').select2();
         </script>

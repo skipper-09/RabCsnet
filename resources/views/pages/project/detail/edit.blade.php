@@ -136,8 +136,48 @@
                                             </table>
                                         </div>
                                     </div>
-                                </div>
 
+                                    <div class="my-3">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Apakah anda membutuhkan Jasa?</label>
+                                                <select id="additional-details-select" name="has_service"
+                                                    class="form-control">
+                                                    <option value="no"
+                                                        {{ $detailproject->detailitemporject->contains('service_id', '!=', null) ? '' : 'selected' }}>
+                                                        Tidak
+                                                    </option>
+                                                    <option value="yes"
+                                                        {{ $detailproject->detailitemporject->contains('service_id', '!=', null) ? 'selected' : '' }}>
+                                                        Ya
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!-- Conditional Service Section -->
+                                        <div id="additional-details-section"
+                                            style="{{ $detailproject->detailitemporject->contains('service_id', '!=', null) ? 'display: block;' : 'display: none;' }}">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="mb-3">
+                                                        <label for="service_id" class="form-label">Pilih Jasa</label>
+                                                        <select name="service_id[]" class="form-control select2" multiple>
+                                                            <option value="">Pilih Jasa</option>
+                                                            @foreach ($service as $srv)
+                                                                <option value="{{ $srv->id }}"
+                                                                    {{ $detailproject->detailitemporject->pluck('service_id')->contains($srv->id) ? 'selected' : '' }}>
+                                                                    {{ $srv->name }} - Rp.
+                                                                    {{ number_format($srv->price, 0, ',', '.') }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div>
                                     <button class="btn btn-primary" type="submit">Submit</button>
                                 </div>
@@ -209,7 +249,26 @@
                         $(this).find('th').text(index + 1);
                     });
                 }
+
+                function toggleServiceSection() {
+                    if ($('#additional-details-select').val() === 'yes') {
+                        $('#additional-details-section').show();
+                    } else {
+                        $('#additional-details-section').hide();
+                        $('#additional-details-section select').val(null).trigger('change');
+                    }
+                }
+
+                // Initial check on page load
+                toggleServiceSection();
+
+                // Toggle on change
+                $('#additional-details-select').change(toggleServiceSection);
+
+                // Ensure select2 is applied to service select
+                $('select[name="service_id[]"]').select2();
             });
+            
             $('.select2').select2();
         </script>
     @endpush

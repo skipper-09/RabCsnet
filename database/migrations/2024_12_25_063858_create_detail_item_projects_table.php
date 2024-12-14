@@ -15,9 +15,10 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('detail_id')->references('id')->on('detail_projects')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignUuid('item_id')->references('id')->on('items')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignUuid('service_id')->nullable()->references('id')->on('services')->onDelete('cascade')->onUpdate('cascade');
             $table->integer('quantity')->default(0);
-            $table->decimal('cost_material',15,2)->default(0);
-            $table->decimal('cost_service',15,2)->default(0);
+            $table->decimal('cost_material', 15, 2)->default(0);
+            $table->decimal('cost_service', 15, 2)->default(0);
             $table->timestamps();
         });
     }
