@@ -159,7 +159,7 @@
                                                                         <strong>Excel File:</strong>
                                                                         <a class="btn btn-primary btn-sm"
                                                                             href="{{ asset("
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                storage/files/excel/{$project->Projectfile->excel}") }}">Download</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            storage/files/excel/{$project->Projectfile->excel}") }}">Download</a>
                                                                     </li>
 
                                                                     <li class="mb-2">
@@ -167,7 +167,7 @@
                                                                         <strong>KMZ File:</strong>
                                                                         <a class="btn btn-primary btn-sm"
                                                                             href="{{ asset("
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                storage/files/kmz/{$project->Projectfile->kmz}") }}">Download</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            storage/files/kmz/{$project->Projectfile->kmz}") }}">Download</a>
                                                                     </li>
                                                                 </ul>
                                                             @else
@@ -1094,9 +1094,12 @@
                                     url: `{{ route('tasks.update-status', ':id') }}`.replace(':id',
                                         taskId),
                                     method: 'PATCH',
-                                    data: {
-                                        status: newStatus,
-                                        _token: '{{ csrf_token() }}'
+                                    data: function(d) {
+                                        return $.extend(d, {
+                                            status: newStatus,
+                                            project_id: project_id,
+                                            _token: '{{ csrf_token() }}'
+                                        });
                                     },
                                     success: function(response) {
                                         // Show success SweetAlert

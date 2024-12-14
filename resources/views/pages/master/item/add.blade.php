@@ -60,7 +60,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">Material
+                                            <label for="validationCustom01" class="form-label required">Material
                                                 Price</label>
                                             <input type="text" inputmode="numeric" name="material_price"
                                                 class="form-control @error('material_price') is-invalid @enderror"

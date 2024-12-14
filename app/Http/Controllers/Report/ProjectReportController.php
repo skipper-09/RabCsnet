@@ -50,16 +50,16 @@ class ProjectReportController extends Controller
         }
 
         //remaining days
-        $now = Carbon::now()->toDateString(); 
+        $now = Carbon::now()->toDateString();
         $endDate = Carbon::parse($project->end_date);
-        
+
         if ($endDate) {
             $remainingDays = $endDate->diffInDays($now);
         } else {
-            $remainingDays = 0; 
+            $remainingDays = 0;
         }
 
-        
+
 
 
         $statuses = [
@@ -70,9 +70,10 @@ class ProjectReportController extends Controller
 
         // Grouping tasks for Kanban view
         $kanbanTasks = Task::whereNull('parent_id')
+            ->where('project_id', $project_id)  // Add this line to filter by project_id
             ->with('project')
             ->get()
-            ->groupBy('status');  // Group tasks by status
+            ->groupBy('status');
 
 
         $data = [

@@ -52,7 +52,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="material_price" class="form-label">Material Price</label>
+                                            <label for="material_price" class="form-label required">Material Price</label>
                                             <input type="number" name="material_price"
                                                 value="{{ old('material_price', $item->material_price) }}"
                                                 class="form-control @error('material_price') is-invalid @enderror"
