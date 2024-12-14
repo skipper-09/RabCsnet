@@ -136,54 +136,6 @@
                                             </table>
                                         </div>
                                     </div>
-
-                                    <div class="my-3">
-                                        <!-- New Conditional Input Section -->
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Apakah anda membutuhkan Jasa
-                                                    juga?</label>
-                                                <select id="additional-details-select" name="has_additional_details"
-                                                    class="form-control">
-                                                    <option value="no"
-                                                        {{ $detailproject->service_name || $detailproject->service_price || $detailproject->service_description ? 'selected' : '' }}>
-                                                        Tidak</option>
-                                                    <option value="yes"
-                                                        {{ $detailproject->service_name || $detailproject->service_price || $detailproject->service_description ? 'selected' : '' }}>
-                                                        Ya</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <!-- Conditional Additional Details Section -->
-                                        <div id="additional-details-section"
-                                            style="{{ $detailproject->service_name || $detailproject->service_price || $detailproject->service_description ? 'display:block;' : 'display:none;' }}">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Nama Jasa</label>
-                                                        <input type="text" name="service_name"
-                                                            value="{{ old('service_name', $detailproject->service_name) }}"
-                                                            class="form-control">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Harga Jasa</label>
-                                                        <input type="number" name="service_price"
-                                                            value="{{ old('service_price', $detailproject->service_price) }}"
-                                                            class="form-control">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Keterangan Tambahan</label>
-                                                    <textarea name="service_description" class="form-control" rows="2">{{ old('service_description', $detailproject->service_description) }}</textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <div>
@@ -219,17 +171,6 @@
 
         <script>
             $(document).ready(function() {
-                // Conditional Details Section Toggle
-                $('#additional-details-select').change(function() {
-                    if ($(this).val() === 'yes') {
-                        $('#additional-details-section').show();
-                    } else {
-                        $('#additional-details-section').hide();
-                        // Clear input values when hidden
-                        $('#additional-details-section input, #additional-details-section textarea').val('');
-                    }
-                });
-
                 // Tambah baris baru
                 $('#addRow').click(function() {
                     const tableBody = $('#myTable tbody');
