@@ -177,7 +177,7 @@ class DashboardController extends Controller
                 return $tes;
             })
             ->editColumn('name', function ($data) {
-                return '<a href="' . route('report.project', ['project_id' => $data->id]) . '" class="text-primary "> '.$data->name.'</a>';
+                return $data->vendor_id != null ? '<a href="' . route('report.project', ['project_id' => $data->id]) . '" class="text-primary "> '.$data->name.'</a>' : $data->name;
             })
             ->rawColumns(['action', 'company', 'status', 'responsible_person', 'progress','end_date','name'])
             ->make(true);

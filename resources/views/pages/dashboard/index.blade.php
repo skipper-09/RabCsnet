@@ -164,8 +164,8 @@
                                 </div>
                                 <div class="col-3">
                                     <div class="mt-1">
-                                        <h4 class="text-primary">{{ $projectpending }}</h4>
-                                        <p class="text-primary mb-1">Pending</p>
+                                        <h4 class="text-info">{{ $projectpending }}</h4>
+                                        <p class="text-info mb-1">Pending</p>
                                     </div>
                                 </div>
 

@@ -30,9 +30,20 @@ class ProjectController extends Controller
 
     public function getData(Request $request)
     {
-        $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview'])
+
+
+        $currentUser = Auth::user();
+
+        $currentUserRole = $currentUser->roles->first()?->name; 
+        if ($currentUserRole == 'Vendor') {
+            $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview', 'responsibleperson', 'taskdata'])->where('status', 'in_progres')->where('vendor_id',Auth::user()->id)
             ->orderByDesc('id')
             ->get();
+        }else{
+            $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview'])
+                ->orderByDesc('id')
+                ->get();
+        }
         return DataTables::of($dataType)
             ->addIndexColumn()
             ->addColumn('action', function ($data) {
@@ -171,7 +182,7 @@ class ProjectController extends Controller
                 $review = ProjectReview::where('project_id', $data->id)->orderByDesc('id')->first();
                 return $review->reviewer->name ?? '-';
             })->editColumn('name', function ($data) {
-                return '<a href="' . route('report.project', ['project_id' => $data->id]) . '" class="text-primary "> '.$data->name.'</a>';
+                return $data->vendor_id != null ? '<a href="' . route('report.project', ['project_id' => $data->id]) . '" class="text-primary "> '.$data->name.'</a>' : $data->name;
             })
             ->rawColumns(['action', 'name','company', 'status', 'review', 'reviewer', 'status_pengajuan'])
             ->make(true);
