@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Profile;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Hash;
+use Exception;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
@@ -24,51 +27,66 @@ class ProfileController extends Controller
 
     public function update(Request $request, $id)
     {
-        $user = User::find($id);
+        try {
+            $user = User::find($id);
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('users', 'email')->ignore($user->id), // Abaikan pengguna saat ini berdasarkan ID
-            ],
-            'username' => [
-                'required',
-                'string',
-                Rule::unique('users', 'username')->ignore($user->id), // Abaikan pengguna saat ini berdasarkan ID
-            ],
-            'password' => [
-                'nullable',
-                'string',
-                'min:8',
-                'confirmed',
-                'regex:/[A-Z]/',
-                'regex:/[a-z]/',
-                'regex:/[0-9]/',
-            ],
-        ], [
-            'name.required' => 'Nama wajib diisi.',
-            'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
-            'email.unique' => 'Email sudah digunakan.',
-            'username.required' => 'Username wajib diisi.',
-            'username.unique' => 'Username sudah digunakan.',
-            'password.required' => 'Password wajib diisi.',
-            'password.min' => 'Password harus memiliki minimal :min karakter.',
-            'password.confirmed' => 'Konfirmasi password tidak cocok.',
-            'password.regex' => 'Password harus mengandung huruf besar, huruf kecil, angka, dan simbol (@$!%*?&).',
-        ]);
+            $request->validate([
+                'picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'name' => 'nullable|string|max:255',
+                'email' => [
+                    'nullable',
+                    'email',
+                    Rule::unique('users', 'email')->ignore($user->id), // Abaikan pengguna saat ini berdasarkan ID
+                ],
+                'username' => [
+                    'nullable',
+                    'string',
+                    Rule::unique('users', 'username')->ignore($user->id), // Abaikan pengguna saat ini berdasarkan ID
+                ],
+                'password' => [
+                    'nullable',
+                    'string',
+                    'min:8',
+                    'confirmed',
+                    'regex:/[A-Z]/',
+                    'regex:/[a-z]/',
+                    'regex:/[0-9]/',
+                ],
+            ], [
+                'picture.image' => 'File harus berupa gambar.',
+                'picture.mimes' => 'Format gambar tidak valid.',
+                'picture.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
+                'email.email' => 'Format email tidak valid.',
+                'email.unique' => 'Email sudah digunakan.',
+                'username.unique' => 'Username sudah digunakan.',
+                'password.min' => 'Password harus memiliki minimal :min karakter.',
+                'password.confirmed' => 'Konfirmasi password tidak cocok.',
+                'password.regex' => 'Password harus mengandung huruf besar, huruf kecil, angka, dan simbol (@$!%*?&).',
+            ]);
 
+            $filename = $user->picture;
 
-        $user->update([
-            'name' => $request->name,
-            'username' => $request->username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password) ?? $user->password,
-        ]);
+            if ($request->hasFile('picture')) {
+                $file = $request->file('picture');
+                $filename = 'user_' . rand(0, 999999999) . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('storage/images/user/'), $filename);
 
-        return redirect()->back()->with(['status' => 'Success', 'message' => 'Berhasil Update Profile']);
+                if ($user->picture !== 'default.png' && file_exists(public_path('storage/images/user/' . $user->picture))) {
+                    File::delete(public_path('storage/images/user/' . $user->picture));
+                }
+            }
 
+            $user->update([
+                'picture' => $filename,
+                'name' => $request->name,
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => Hash::make($request->password) ?? $user->password,
+            ]);
+
+            return redirect()->back()->with(['status' => 'Success', 'message' => 'Berhasil Update Profile']);
+        } catch (Exception $e) {
+            return redirect()->back()->with(['status' => 'Error', 'message' => 'Gagal Update Profile']);
+        }
     }
 }

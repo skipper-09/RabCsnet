@@ -3,10 +3,16 @@
 @section('tittle', $tittle)
 
 @push('css')
-    <!-- DataTables CSS -->
-    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet"
-        type="text/css" />
+    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}"
+        rel="stylesheet" />
     <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+
+    <style>
+        .action-buttons {
+            white-space: nowrap;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -28,7 +34,6 @@
     </div>
 
     <div class="container-fluid">
-
         <div class="page-content-wrapper">
             <div class="row">
                 <div class="col-12">
@@ -42,6 +47,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
+                                        <th>Image</th>
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Role</th>
@@ -88,6 +94,20 @@
                             orderable: false,
                             searchable: false,
                             class: 'text-center',
+                        },
+                        {
+                            data: 'picture',
+                            name: 'picture',
+                            orderable: false,
+                            className: 'align-middle',
+                            render: function(data, type, row) {
+                                if (data) {
+                                    const imageUrl =
+                                        `{{ asset('storage/images/user') }}/${data}`;
+                                    return `<img src="${imageUrl}" alt="Profile Image" class="rounded-circle header-profile-user">`;
+                                }
+                                return '<span class="text-muted">No image</span>';
+                            }
                         },
                         {
                             data: 'name',

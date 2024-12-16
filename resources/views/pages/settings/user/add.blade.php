@@ -2,9 +2,22 @@
 @section('tittle', $tittle)
 
 @push('css')
-    <link href="assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+
+    <style>
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .preview-container {
+            margin-top: 10px;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -39,6 +52,23 @@
                                 class="needs-validation" novalidate>
                                 @csrf
                                 <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label for="picture" class="form-label">Foto</label>
+                                            <input type="file" name="picture" id="picture"
+                                                class="form-control @error('picture') is-invalid @enderror" accept="image/*"
+                                                onchange="previewImage(this)">
+                                            <small class="text-muted">Format yang diterima: JPEG, PNG, JPG, GIF. Ukuran
+                                                maksimal:
+                                                2MB</small>
+                                            @error('picture')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <div class="preview-container">
+                                                <img id="imagePreview" src="#" alt="Preview" class="image-preview">
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="validationCustom01" class="form-label">Username</label>
@@ -146,5 +176,25 @@
         <script src="{{ asset('assets/js/pages/form-validation.init.js') }}"></script>
         <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
         <script src="{{ asset('assets/js/pages/form-advanced.init.js') }}"></script>
+
+        <script>
+            // Image preview function
+            function previewImage(input) {
+                const preview = document.getElementById('imagePreview');
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                } else {
+                    preview.src = '#';
+                    preview.style.display = 'none';
+                }
+            }
+        </script>
     @endpush
 @endsection

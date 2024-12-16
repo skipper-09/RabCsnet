@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Exception;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -62,6 +63,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'username' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'email' => 'required|string|unique:users,email|max:255',
@@ -69,9 +71,42 @@ class UserController extends Controller
             'password_confirmation' => 'required|string|min:6|max:255',
             'is_block' => 'required|boolean',
             'role' => 'required'
+        ], [
+            'picture.image' => 'File harus berupa gambar.',
+            'picture.mimes' => 'Format gambar tidak valid.',
+            'picture.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
+            'username.required' => 'Username wajib diisi.',
+            'username.string' => 'Username harus berupa teks.',
+            'username.max' => 'Username maksimal 255 karakter.',
+            'name.required' => 'Nama wajib diisi.',
+            'name.string' => 'Nama harus berupa teks.',
+            'name.max' => 'Nama maksimal 255 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.string' => 'Email harus berupa teks.',
+            'email.max' => 'Email maksimal 255 karakter.',
+            'email.unique' => 'Email sudah digunakan.',
+            'password.required' => 'Password wajib diisi.',
+            'password.string' => 'Password harus berupa teks.',
+            'password.min' => 'Password minimal 6 karakter.',
+            'password.max' => 'Password maksimal 255 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'password_confirmation.required' => 'Konfirmasi password wajib diisi.',
+            'password_confirmation.string' => 'Konfirmasi password harus berupa teks.',
+            'password_confirmation.min' => 'Konfirmasi password minimal 6 karakter.',
+            'password_confirmation.max' => 'Konfirmasi password maksimal 255 karakter.',
+            'is_block.required' => 'Status wajib diisi.',
+            'role.required' => 'Role wajib diisi.',
         ]);
 
+        $filename = '';
+        if ($request->hasFile('picture')) {
+            $file = $request->file('picture');
+            $filename = 'user_' . rand(0, 999999999) . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('storage/images/user/'), $filename);
+        }
+
         $user = User::create([
+            'picture' => $filename,
             'username' => $request->username,
             'name' => $request->name,
             'email' => $request->email,
@@ -96,17 +131,34 @@ class UserController extends Controller
 
     public function show($id)
     {
+        // Find the user by the given ID
         $user = User::find($id);
 
+        // Get the currently authenticated user
+        $currentUser = Auth::user();
+
+        // Check the role of the current user, get the first role if exists
+        $userRole = $currentUser->roles->first() ? $currentUser->roles->first()->name : null;
+
+        // If the current user's role is 'Developer', allow viewing all roles
+        if ($userRole === 'Developer') {
+            $roles = Role::all();  // Developer can see all roles
+        } else {
+            $roles = Role::whereNotIn('name', ['Developer'])->get();  // Others can't see 'Developer' role
+        }
+
+        // Prepare the data to pass to the view
         $data = [
             'tittle' => 'User',
             'user' => $user,
-            'role' => Role::whereNotIn('name', ['Developer'])->get(),
-            'userRoles' => $user->roles->pluck('name')->toArray(),
+            'role' => $roles,  // Roles depend on the current user's role
+            'userRoles' => $user->roles->pluck('name')->toArray(),  // User's roles
         ];
 
+        // Return the view with the data
         return view('pages.settings.user.edit', $data);
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -117,6 +169,7 @@ class UserController extends Controller
         $oldUser = $user->toArray();
 
         $rules = [
+            'picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'username' => 'nullable|string|max:255',
             'name' => 'nullable|string|max:255',
             'email' => 'nullable|string|email|unique:users,email,' . $user->id . '|max:255',
@@ -128,6 +181,19 @@ class UserController extends Controller
         $request->validate($rules);
 
         $updateData = $request->only(['username', 'name', 'email', 'is_block']);
+
+        $filename = $user->picture;
+
+        if ($request->hasFile('picture')) {
+            $file = $request->file('picture');
+            $filename = 'user_' . rand(0, 999999999) . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('storage/images/user/'), $filename);
+            $updateData['picture'] = $filename;
+
+            if ($user->picture !== 'default.png' && file_exists(public_path('storage/images/user/' . $user->picture))) {
+                File::delete(public_path('storage/images/user/' . $user->picture));
+            }
+        }
 
         if ($request->filled('password')) {
             $updateData['password'] = Hash::make($request->password);
@@ -141,15 +207,15 @@ class UserController extends Controller
 
         // Log activity for user update
         activity()
-        ->causedBy(Auth::user()) // Logs who performed the action
-        ->performedOn($user) // The entity being changed
-        ->event('updated') // Event of the action
-        ->withProperties([
-            'old' => $oldUser, // The data before update
-            'attributes' => $user->toArray() // The updated data
-        ])
-        ->log('User di update dengan nama ' . $user->name);
-    
+            ->causedBy(Auth::user()) // Logs who performed the action
+            ->performedOn($user) // The entity being changed
+            ->event('updated') // Event of the action
+            ->withProperties([
+                'old' => $oldUser, // The data before update
+                'attributes' => $user->toArray() // The updated data
+            ])
+            ->log('User di update dengan nama ' . $user->name);
+
         return redirect()->route('user')->with(['status' => 'Success!', 'message' => 'User updated successfully!']);
     }
 
@@ -172,7 +238,7 @@ class UserController extends Controller
                     'attributes' => $userData // The data before deletion
                 ])
                 ->log('User dihapus dengan nama ' . $user->name);
-            
+
             return response()->json([
                 'status' => 'success',
                 'success' => true,
