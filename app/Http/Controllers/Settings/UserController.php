@@ -44,7 +44,9 @@ class UserController extends Controller
             return '<div class="d-flex gap-2">' . $button . '</div>';
         })->addColumn('role', function ($data) {
             return $data->roles[0]->name;
-        })->rawColumns(['action', 'role'])->make(true);
+        })->editColumn('picture', function ($data) {
+            return $data->picture == null ? '<img src="' . asset('assets/images/avataaars.png') . '" alt="Profile Image" class="rounded-circle header-profile-user">' :'<img src="' . asset("storage/images/user/$data->picture") . '" alt="Profile Image" class="rounded-circle header-profile-user">' ;
+        })->rawColumns(['action', 'role','picture'])->make(true);
     }
 
     public function create()

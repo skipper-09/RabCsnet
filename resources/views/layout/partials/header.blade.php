@@ -218,8 +218,13 @@
             <div class="dropdown d-inline-block">
                 <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
                     data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    @if (Auth::user()->picture == null)
+                    <img class="rounded-circle header-profile-user"
+                        src="{{ asset('assets/images/avataaars.png') }}" alt="Header Avatar">                        
+                    @else
                     <img class="rounded-circle header-profile-user"
                         src="{{ asset('storage/images/user/' . Auth::user()->picture) }}" alt="Header Avatar">
+                    @endif
                     <span class="d-none d-xl-inline-block ms-1">{{ Auth::user()->name }}</span>
                     <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                 </button>

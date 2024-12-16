@@ -6,8 +6,13 @@
         <div class="user-sidebar text-center">
             <div class="dropdown">
                 <div class="user-img">
+                    @if (Auth::user()->picture == null)
+                    <img src="{{ asset('assets/images/avataaars.png') }}" alt="" class="rounded-circle">
+                    <span class="avatar-online bg-success"></span>        
+                    @else
                     <img src="{{ asset('storage/images/user/' . Auth::user()->picture) }}" alt="" class="rounded-circle">
                     <span class="avatar-online bg-success"></span>
+                    @endif
                 </div>
                 <div class="user-info">
                     <h5 class="mt-3 font-size-16 text-white">{{ Auth::user()->name }}</h5>

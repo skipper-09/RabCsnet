@@ -99,15 +99,6 @@
                             data: 'picture',
                             name: 'picture',
                             orderable: false,
-                            className: 'align-middle',
-                            render: function(data, type, row) {
-                                if (data) {
-                                    const imageUrl =
-                                        `{{ asset('storage/images/user') }}/${data}`;
-                                    return `<img src="${imageUrl}" alt="Profile Image" class="rounded-circle header-profile-user">`;
-                                }
-                                return '<span class="text-muted">No image</span>';
-                            }
                         },
                         {
                             data: 'name',
