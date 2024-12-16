@@ -95,12 +95,13 @@
 
                                     <div class="col-lg-12">
                                         <div class="table-responsive">
-                                            <table class="table mb-3" id="myTable">
+                                            <table class="table" id="myTable">
                                                 <thead>
                                                     <tr>
                                                         <th>No</th>
                                                         <th>Item</th>
                                                         <th>Jumlah</th>
+                                                        <th>Jasa</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
@@ -125,6 +126,19 @@
                                                                     inputmode="numeric">
                                                             </td>
                                                             <td>
+                                                                <select name="service_id[]" class="form-control select2">
+                                                                    <option value="">Pilih Jasa</option>
+                                                                    @foreach ($service as $srv)
+                                                                        <option value="{{ $srv->id }}"
+                                                                            {{ $detail->service_id == $srv->id ? 'selected' : '' }}>
+                                                                            {{ $srv->name }} -
+                                                                            Rp.
+                                                                            {{ number_format($srv->price, 0, ',', '.') }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </td>
+                                                            <td>
                                                                 <button type="button"
                                                                     class="btn btn-danger btn-sm delete-btn">
                                                                     Delete
@@ -134,47 +148,6 @@
                                                     @endforeach
                                                 </tbody>
                                             </table>
-                                        </div>
-                                    </div>
-
-                                    <div class="my-3">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Apakah anda membutuhkan Jasa?</label>
-                                                <select id="additional-details-select" name="has_service"
-                                                    class="form-control">
-                                                    <option value="no"
-                                                        {{ $detailproject->detailitemporject->contains('service_id', '!=', null) ? '' : 'selected' }}>
-                                                        Tidak
-                                                    </option>
-                                                    <option value="yes"
-                                                        {{ $detailproject->detailitemporject->contains('service_id', '!=', null) ? 'selected' : '' }}>
-                                                        Ya
-                                                    </option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <!-- Conditional Service Section -->
-                                        <div id="additional-details-section"
-                                            style="{{ $detailproject->detailitemporject->contains('service_id', '!=', null) ? 'display: block;' : 'display: none;' }}">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="mb-3">
-                                                        <label for="service_id" class="form-label">Pilih Jasa</label>
-                                                        <select name="service_id[]" class="form-control select2">
-                                                            <option value="">Pilih Jasa</option>
-                                                            @foreach ($service as $srv)
-                                                                <option value="{{ $srv->id }}"
-                                                                    {{ $detailproject->detailitemporject->pluck('service_id')->contains($srv->id) ? 'selected' : '' }}>
-                                                                    {{ $srv->name }} - Rp.
-                                                                    {{ number_format($srv->price, 0, ',', '.') }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -216,23 +189,34 @@
                     const tableBody = $('#myTable tbody');
                     const rowIndex = tableBody.children('tr').length + 1;
                     const newRow = `
-                <tr>
-                    <th scope="row">${rowIndex}</th>
-                    <td>
-                        <select name="item_id[]" class="form-control select2">
-                            <option selected>Pilih Item Unit</option>
-                            @foreach ($item as $unit)
-                            <option value="{{ $unit->id }}">{{ $unit->name }}</option>
-                            @endforeach
-                        </select>
-                    </td>
-                    <td>
-                        <input type="text" name="quantity[]" class="form-control" inputmode="numeric">
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger btn-sm delete-btn">Delete</button>
-                    </td>
-                </tr>`;
+                    <tr>
+                        <th scope="row">${rowIndex}</th>
+                        <td>
+                            <select name="item_id[]" class="form-control select2">
+                                <option selected>Pilih Item Unit</option>
+                                @foreach ($item as $unit)
+                                <option value="{{ $unit->id }}">{{ $unit->name }}</option>
+                                @endforeach
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" name="quantity[]" class="form-control" inputmode="numeric">
+                        </td>
+                        <td>
+                            <select name="service_id[]" class="form-control select2">
+                                <option value="">Pilih Jasa</option>
+                                @foreach ($service as $srv)
+                                <option value="{{ $srv->id }}">
+                                    {{ $srv->name }} - 
+                                    Rp. {{ number_format($srv->price, 0, ',', '.') }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm delete-btn">Delete</button>
+                        </td>
+                    </tr>`;
                     tableBody.append(newRow);
                     tableBody.find('.select2').select2();
                 });
@@ -250,26 +234,8 @@
                     });
                 }
 
-                function toggleServiceSection() {
-                    if ($('#additional-details-select').val() === 'yes') {
-                        $('#additional-details-section').show();
-                    } else {
-                        $('#additional-details-section').hide();
-                        $('#additional-details-section select').val(null).trigger('change');
-                    }
-                }
-
-                // Initial check on page load
-                toggleServiceSection();
-
-                // Toggle on change
-                $('#additional-details-select').change(toggleServiceSection);
-
-                // Ensure select2 is applied to service select
-                $('select[name="service_id[]"]').select2();
+                $('.select2').select2();
             });
-            
-            $('.select2').select2();
         </script>
     @endpush
 @endsection

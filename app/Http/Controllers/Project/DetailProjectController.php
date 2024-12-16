@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DetailProjectController extends Controller
 {
@@ -66,14 +67,12 @@ class DetailProjectController extends Controller
             'type_id.required' => 'Tipe Projek Wajib di isi',
             'name.required' => 'Nama Wajib di isi',
             'description.required' => 'Deskripsi Wajib di isi',
-            'service_id.required' => 'Jasa Wajib di isi',
             'quantity.required' => 'Jumlah Wajib di isi',
         ]);
 
         DB::beginTransaction();
 
         try {
-
             $project = DetailProject::create([
                 'project_id' => $id,
                 'type_project_id' => $request->type_id,
@@ -82,38 +81,45 @@ class DetailProjectController extends Controller
             ]);
 
             $items = $request->item_id;
-            $services = $request->service_id;
+            $services = $request->service_id ?? [];
             $quantities = $request->quantity;
 
             foreach ($items as $index => $itemId) {
                 $itemall = Item::find($itemId);
 
-                // Get service price if service_id is provided
-                $cost_service = 0;
-                if (isset($services[$index])) {
+                // Default service to null
+                $serviceId = null;
+                $costService = 0;
+
+                // Check if service is selected for this item
+                if (!empty($services[$index])) {
                     $service = Service::find($services[$index]);
-                    // $cost_service = $service ? $service->price * $quantities[$index] : 0;  // Use service price if available
-                    $cost_service = $service ? $service->price : 0;
+                    if ($service) {
+                        $serviceId = $service->id;
+                        $costService = $service->price;
+                    }
                 }
 
                 // Create detail item project
                 DetailItemProject::create([
                     'detail_id' => $project->id,
                     'item_id' => $itemId,
-                    'service_id' => $services[$index] ?? null,  // Assign service_id if provided, otherwise null
+                    'service_id' => $serviceId,
                     'quantity' => $quantities[$index],
                     'cost_material' => $itemall->material_price * $quantities[$index],
-                    'cost_service' => $cost_service
+                    'cost_service' => $costService
                 ]);
             }
 
             DB::commit();
+
+            return redirect()->route('project.detail', ['id' => $id])
+                ->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Project!']);
         } catch (Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with(['status' => 'Error', 'message' => 'Gagal Menambahkan Project Detail']);
+            return redirect()->back()
+                ->with(['status' => 'Error', 'message' => 'Gagal Menambahkan Project Detail: ' . $e->getMessage()]);
         }
-
-        return redirect()->route('project.detail', ['id' => $id])->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Project!']);
     }
 
     public function show($id, $iddetail)
@@ -132,9 +138,8 @@ class DetailProjectController extends Controller
         return view('pages.project.detail.edit', $data);
     }
 
-    public function update(Request $request, $iddetail, $id)
+    public function update(Request $request, $id, $iddetail)
     {
-
         $request->validate([
             'type_id' => 'required',
             'name' => 'required',
@@ -143,67 +148,68 @@ class DetailProjectController extends Controller
             'service_id' => 'nullable|array',
             'quantity' => 'required|array',
         ], [
-            'type_id.required' => 'Tipe Projek Wajib diisi',
-            'name.required' => 'Nama Wajib diisi',
-            'description.required' => 'Deskripsi Wajib diisi',
-            'item_id.required' => 'Item Wajib diisi',
-            'quantity.required' => 'Jumlah Wajib diisi',
+            'type_id.required' => 'Tipe Projek Wajib di isi',
+            'name.required' => 'Nama Wajib di isi',
+            'description.required' => 'Deskripsi Wajib di isi',
+            'quantity.required' => 'Jumlah Wajib di isi',
         ]);
 
         DB::beginTransaction();
 
         try {
-            // Cari DetailProject berdasarkan ID
-            $detailProject = DetailProject::findOrFail($id);
-
-            // Update DetailProject
-            $detailProject->update([
-                'project_id' => $iddetail,
+            $project = DetailProject::findOrFail($iddetail);
+            $project->update([
+                'project_id' => $id,
                 'type_project_id' => $request->type_id,
                 'name' => $request->name,
-                'description' => $request->description,
+                'description' => $request->description
             ]);
 
-            // Hapus DetailItemProject terkait
-            DetailItemProject::where('detail_id', $id)->delete();
+            // Hapus detail item project yang lama
+            DetailItemProject::where('detail_id', $iddetail)->delete();
 
             $items = $request->item_id;
-            $services = $request->service_id;
+            $services = $request->service_id ?? [];
             $quantities = $request->quantity;
 
             foreach ($items as $index => $itemId) {
                 $itemall = Item::find($itemId);
 
-                // Get service price if service_id is provided
-                $cost_service = 0;
-                if (isset($services[$index]) && $request->has('service_id') && $request->has_service === 'yes') {
+                // Default service to null
+                $serviceId = null;
+                $costService = 0;
+
+                // Check if service is selected for this item
+                if (!empty($services[$index])) {
                     $service = Service::find($services[$index]);
-                    // $cost_service = $service ? $service->price * $quantities[$index] : 0;  // Use service price if available
-                    $cost_service = $service ? $service->price : 0;
+                    if ($service) {
+                        $serviceId = $service->id;
+                        $costService = $service->price;
+                    }
                 }
 
+                // Create detail item project
                 DetailItemProject::create([
-                    'detail_id' => $detailProject->id,
+                    'detail_id' => $project->id,
                     'item_id' => $itemId,
-                    'service_id' => $services[$index] ?? null,  // Assign service_id if provided, otherwise null
+                    'service_id' => $serviceId,
                     'quantity' => $quantities[$index],
                     'cost_material' => $itemall->material_price * $quantities[$index],
-                    'cost_service' => $cost_service
+                    'cost_service' => $costService
                 ]);
             }
 
             DB::commit();
 
-            return redirect()
-                ->route('project.detail', ['id' => $iddetail])
-                ->with(['status' => 'Success', 'message' => 'Berhasil Memperbarui Detail Project!']);
+            return redirect()->route('project.detail', ['id' => $id])
+                ->with(['status' => 'Success', 'message' => 'Berhasil Memperbarui Project!']);
         } catch (Exception $e) {
             DB::rollBack();
-            return redirect()
-                ->back()
-                ->with(['status' => 'Error', 'message' => 'Gagal Memperbarui Detail Project: ' . $e->getMessage()]);
+            return redirect()->back()
+                ->with(['status' => 'Error', 'message' => 'Gagal Memperbarui Project Detail: ' . $e->getMessage()]);
         }
     }
+
 
     public function destroy(string $iddetail, string $id)
     {

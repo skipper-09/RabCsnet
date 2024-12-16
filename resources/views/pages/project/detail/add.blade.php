@@ -6,12 +6,6 @@
     <link href="{{ asset('assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
-
-    <style>
-        #additional-details-section {
-            display: none;
-        }
-    </style>
 @endpush
 
 @section('content')
@@ -103,6 +97,7 @@
                                                         <th>No</th>
                                                         <th>Item</th>
                                                         <th>Jumlah</th>
+                                                        <th>Jasa</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
@@ -123,6 +118,17 @@
                                                                 inputmode="numeric">
                                                         </td>
                                                         <td>
+                                                            <select name="service_id[]" class="form-control select2">
+                                                                <option value="">Pilih Jasa</option>
+                                                                @foreach ($service as $srv)
+                                                                    <option value="{{ $srv->id }}">
+                                                                        {{ $srv->name }} -
+                                                                        Rp. {{ number_format($srv->price, 0, ',', '.') }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </td>
+                                                        <td>
                                                             <button type="button" class="btn btn-danger btn-sm delete-btn">
                                                                 Delete
                                                             </button>
@@ -130,38 +136,6 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
-                                        </div>
-                                    </div>
-
-                                    <div class="my-3">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Apakah anda membutuhkan Jasa?</label>
-                                                <select id="additional-details-select" name="has_service"
-                                                    class="form-control">
-                                                    <option value="no">Tidak</option>
-                                                    <option value="yes">Ya</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <!-- Conditional Service Section -->
-                                        <div id="additional-details-section" style="display: none;">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="mb-3">
-                                                        <label for="service_id" class="form-label">Pilih Jasa</label>
-                                                        <select name="service_id[]" class="form-control select2">
-                                                            <option value="">Pilih Jasa</option>
-                                                            @foreach ($service as $srv)
-                                                                <option value="{{ $srv->id }}">{{ $srv->name }} -
-                                                                    Rp. {{ number_format($srv->price, 0, ',', '.') }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -202,23 +176,34 @@
                     const tableBody = $('#myTable tbody');
                     const rowIndex = tableBody.children('tr').length + 1;
                     const newRow = `
-                <tr>
-                    <th scope="row">${rowIndex}</th>
-                    <td>
-                        <select name="item_id[]" class="form-control select2">
-                            <option selected>Pilih Item Unit</option>
-                            @foreach ($item as $unit)
-                            <option value="{{ $unit->id }}">{{ $unit->name }}</option>
-                            @endforeach
-                        </select>
-                    </td>
-                    <td>
-                        <input type="text" name="quantity[]" class="form-control" inputmode="numeric">
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger btn-sm delete-btn">Delete</button>
-                    </td>
-                </tr>`;
+                    <tr>
+                        <th scope="row">${rowIndex}</th>
+                        <td>
+                            <select name="item_id[]" class="form-control select2">
+                                <option selected>Pilih Item Unit</option>
+                                @foreach ($item as $unit)
+                                <option value="{{ $unit->id }}">{{ $unit->name }}</option>
+                                @endforeach
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" name="quantity[]" class="form-control" inputmode="numeric">
+                        </td>
+                        <td>
+                            <select name="service_id[]" class="form-control select2">
+                                <option value="">Pilih Jasa</option>
+                                @foreach ($service as $srv)
+                                <option value="{{ $srv->id }}">
+                                    {{ $srv->name }} - 
+                                    Rp. {{ number_format($srv->price, 0, ',', '.') }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm delete-btn">Delete</button>
+                        </td>
+                    </tr>`;
                     tableBody.append(newRow);
                     tableBody.find('.select2').select2();
                 });
@@ -236,18 +221,8 @@
                     });
                 }
 
-                // Conditional Details Section Toggle
-                $('#additional-details-select').change(function() {
-                    if ($(this).val() === 'yes') {
-                        $('#additional-details-section').show();
-                    } else {
-                        $('#additional-details-section').hide();
-                        // Clear service selections when hidden
-                        $('#additional-details-section select').val(null).trigger('change');
-                    }
-                });
+                $('.select2').select2();
             });
-            $('.select2').select2();
         </script>
     @endpush
 @endsection
