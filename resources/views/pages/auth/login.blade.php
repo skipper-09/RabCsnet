@@ -13,7 +13,7 @@
                                 <div class="px-2 py-3">
                                     <div class="text-center">
                                         <a href="{{ route('dashboard') }}">
-                                            <img src="{{ asset(getAppLogo()) }}" height="22"
+                                            <img src="{{ asset('storage/' . getAppLogo()) }}" height="22"
                                                 alt="logo">
                                         </a>
                                         <h5 class="text-primary mb-2 mt-4">Welcome Back !</h5>
