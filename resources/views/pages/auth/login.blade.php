@@ -5,7 +5,7 @@
 @section('content')
     <div class="home-center">
         <div class="home-desc-center">
-            <div class="container-fluid">
+            <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-md-8 col-lg-6 col-xl-5">
                         <div class="card">
@@ -13,11 +13,11 @@
                                 <div class="px-2 py-3">
                                     <div class="text-center">
                                         <a href="{{ route('dashboard') }}">
-                                            <img src="{{ asset('assets/images/logo-dark.png') }}" height="22"
+                                            <img src="{{ asset(getAppLogo()) }}" height="22"
                                                 alt="logo">
                                         </a>
                                         <h5 class="text-primary mb-2 mt-4">Welcome Back !</h5>
-                                        <p class="text-muted">Sign in to continue to Morvin.</p>
+                                        <p class="text-muted">Sign in to continue to {{ getAppName() }}</p>
                                     </div>
 
 

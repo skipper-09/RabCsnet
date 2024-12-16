@@ -12,14 +12,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
+    <link rel="website icon" href="{{ asset(getAppLogo()) }}">
 
     @include('layout.partials.css')
   
-
     @stack('css')
-
-
 </head>
 
 

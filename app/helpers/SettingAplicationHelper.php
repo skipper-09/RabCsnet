@@ -26,10 +26,16 @@ if (!function_exists('formatDate')) {
     }
 }
 
-// Fetch the application name using the Setting function
 if (!function_exists('getAppName')) {
     function getAppName()
     {
-        return Setting('name'); // Get the application name from the settings table
+        return Setting('name');
+    }
+}
+
+if (!function_exists('getAppLogo')) {
+    function getAppLogo()
+    {
+        return Setting('logo');
     }
 }
