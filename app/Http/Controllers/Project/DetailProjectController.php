@@ -107,7 +107,7 @@ class DetailProjectController extends Controller
                     'service_id' => $serviceId,
                     'quantity' => $quantities[$index],
                     'cost_material' => $itemall->material_price * $quantities[$index],
-                    'cost_service' => $costService
+                    'cost_service' => $costService * $quantities[$index]
                 ]);
             }
 
@@ -195,7 +195,7 @@ class DetailProjectController extends Controller
                     'service_id' => $serviceId,
                     'quantity' => $quantities[$index],
                     'cost_material' => $itemall->material_price * $quantities[$index],
-                    'cost_service' => $costService
+                    'cost_service' => $costService * $quantities[$index]
                 ]);
             }
 

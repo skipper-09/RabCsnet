@@ -113,10 +113,7 @@
                                                                 @endforeach
                                                             </select>
                                                         </td>
-                                                        <td>
-                                                            <input type="text" name="quantity[]" class="form-control"
-                                                                inputmode="numeric">
-                                                        </td>
+                                                       
                                                         <td>
                                                             <select name="service_id[]" class="form-control select2">
                                                                 <option value="">Pilih Jasa</option>
@@ -127,6 +124,10 @@
                                                                     </option>
                                                                 @endforeach
                                                             </select>
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="quantity[]" class="form-control"
+                                                                inputmode="numeric">
                                                         </td>
                                                         <td>
                                                             <button type="button" class="btn btn-danger btn-sm delete-btn">
@@ -186,9 +187,7 @@
                                 @endforeach
                             </select>
                         </td>
-                        <td>
-                            <input type="text" name="quantity[]" class="form-control" inputmode="numeric">
-                        </td>
+                       
                         <td>
                             <select name="service_id[]" class="form-control select2">
                                 <option value="">Pilih Jasa</option>
@@ -199,6 +198,9 @@
                                 </option>
                                 @endforeach
                             </select>
+                        </td>
+                         <td>
+                            <input type="text" name="quantity[]" class="form-control" inputmode="numeric">
                         </td>
                         <td>
                             <button type="button" class="btn btn-danger btn-sm delete-btn">Delete</button>

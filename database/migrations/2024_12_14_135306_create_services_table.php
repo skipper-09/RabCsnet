@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('service_code')->unique()->nullable(false);
             $table->string('name');
-            $table->string('price');
+            $table->decimal('price',15,2)->default(0);
             $table->timestamps();
         });
     }
