@@ -76,12 +76,17 @@ class ProfileController extends Controller
                 }
             }
 
+            if ($request->filled('password')) {
+                $user->update([
+                    'password' => Hash::make($request->password),
+                ]);
+            }
+
             $user->update([
                 'picture' => $filename,
                 'name' => $request->name,
                 'username' => $request->username,
                 'email' => $request->email,
-                'password' => Hash::make($request->password) ?? $user->password,
             ]);
 
             return redirect()->back()->with(['status' => 'Success', 'message' => 'Berhasil Update Profile']);
