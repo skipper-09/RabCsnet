@@ -20,7 +20,7 @@ class ItemExport implements FromCollection, WithHeadings
                 'Kode'=>$item->item_code,
                 'Unit'=>$item->unit->name,
                 'Harga Material'=>$item->material_price,
-                'Harga Jasa'=>$item->service_price,
+                // 'Harga Jasa'=>$item->service_price,
                 'Deskripsi'=>$item->description,
                 'Status'=>$item->status == 1 ? 'Aktif' : "Tidak Aktif"
             ];
@@ -36,7 +36,7 @@ class ItemExport implements FromCollection, WithHeadings
             'Kode',
             'Unit',
             'Harga Material',
-            'Harga Jasa',
+            // 'Harga Jasa',
             'Deskripsi',
             'Status'
         ];
