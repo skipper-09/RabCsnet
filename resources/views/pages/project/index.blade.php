@@ -50,7 +50,9 @@
                                         <th>Status Review</th>
                                         <th>Review</th>
                                         <th>Reviewer</th>
+                                        @canany(['update-projects', 'delete-projects', 'approval-projects', 'start-projects', 'read-detail-projects', 'enable-atp-upload', 'disable-atp-upload', 'upload-atp', 'download-atp'])
                                         <th>Action</th>
+                                        @endcanany
                                     </tr>
                                 </thead>
                             </table>

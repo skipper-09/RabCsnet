@@ -84,7 +84,9 @@
                                             <th style="width: 15%">Vendor</th>
                                             <th style="width: 15%">Nama</th>
                                             <th>Deskripsi</th>
+                                            @canany(['update-reportvendors', 'delete-reportvendors'])
                                             <th class="text-center" style="width: 10%">Action</th>
+                                            @endcanany
                                         </tr>
                                     </thead>
                                 </table>
