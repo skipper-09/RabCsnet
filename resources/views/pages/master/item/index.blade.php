@@ -56,7 +56,6 @@
                                             <th>Type</th>
                                             <th>Unit</th>
                                             <th>Material Price</th>
-                                            <th>Service Price</th>
                                             <th>Deskripsi</th>
                                             <th>Action</th>
                                         </tr>
@@ -115,16 +114,6 @@
                         {
                             data: 'material_price',
                             name: 'material_price',
-                        },
-                        {
-                            data: 'service_price',
-                            name: 'service_price',
-                            render: function(data) {
-                                return new Intl.NumberFormat('id-ID', {
-                                    style: 'currency',
-                                    currency: 'IDR'
-                                }).format(data);
-                            }
                         },
                         {
                             data: 'description',
