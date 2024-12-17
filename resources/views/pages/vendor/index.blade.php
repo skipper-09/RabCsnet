@@ -3,9 +3,9 @@
 @section('tittle', $tittle)
 
 @push('css')
-<link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
-<link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet">
-<link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
 @endpush
 
 @section('content')
@@ -50,7 +50,9 @@
                                             <th>Website</th>
                                             <th>User</th>
                                             <th>Status</th>
-                                            <th>Action</th>
+                                            @canany(['update-vendors', 'delete-vendors'])
+                                                <th>Action</th>
+                                            @endcanany
                                         </tr>
                                     </thead>
                                 </table>

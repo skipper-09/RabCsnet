@@ -159,7 +159,7 @@
                                                                         <strong>Excel File:</strong>
                                                                         <a class="btn btn-primary btn-sm"
                                                                             href="{{ asset("
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        storage/files/excel/{$project->Projectfile->excel}") }}">Download</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                storage/files/excel/{$project->Projectfile->excel}") }}">Download</a>
                                                                     </li>
 
                                                                     <li class="mb-2">
@@ -167,7 +167,7 @@
                                                                         <strong>KMZ File:</strong>
                                                                         <a class="btn btn-primary btn-sm"
                                                                             href="{{ asset("
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        storage/files/kmz/{$project->Projectfile->kmz}") }}">Download</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                storage/files/kmz/{$project->Projectfile->kmz}") }}">Download</a>
                                                                     </li>
                                                                 </ul>
                                                             @else
@@ -295,7 +295,9 @@
                                                             <th style="width: 10%">Tanggal Selesai</th>
                                                             <th style="width: 10%">Status</th>
                                                             <th style="width: 10%">Prioritas</th>
-                                                            <th style="width: 10%" class="text-center">Action</th>
+                                                            @canany(['complete-tasks', 'update-tasks', 'delete-tasks'])
+                                                                <th style="width: 10%" class="text-center">Action</th>
+                                                            @endcanany
                                                         </tr>
                                                     </thead>
                                                 </table>
@@ -374,7 +376,9 @@
                                                     <th style="width: 15%">Vendor</th>
                                                     <th style="width: 15%">Amount</th>
                                                     <th>Note</th>
-                                                    <th class="text-center" style="width: 10%">Action</th>
+                                                    @canany(['update-paymentvendors', 'delete-paymentvendors'])
+                                                        <th class="text-center" style="width: 10%">Action</th>
+                                                    @endcanany
                                                 </tr>
                                             </thead>
                                         </table>
@@ -779,11 +783,6 @@
                                 name: 'payment_date',
                                 className: 'align-middle'
                             },
-                            // {
-                            //     data: 'project',
-                            //     name: 'project.name',
-                            //     className: 'align-middle'
-                            // },
                             {
                                 data: 'vendor',
                                 name: 'vendor.name',

@@ -48,7 +48,9 @@
                                             <th>Service Code</th>
                                             <th>Name</th>
                                             <th>Price</th>
-                                            <th>Action</th>
+                                            @canany(['update-services', 'delete-services'])
+                                                <th>Action</th>
+                                            @endcanany
                                         </tr>
                                     </thead>
                                 </table>

@@ -46,7 +46,9 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Name</th>
-                                            <th>Action</th>
+                                            @canany(['update-roles', 'delete-roles'])
+                                                <th>Action</th>
+                                            @endcanany
                                         </tr>
                                     </thead>
                                 </table>

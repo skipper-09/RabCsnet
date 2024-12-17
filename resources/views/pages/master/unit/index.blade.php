@@ -50,7 +50,9 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Name</th>
-                                            <th>Action</th>
+                                            @canany(['update-units', 'delete-units'])
+                                                <th>Action</th>
+                                            @endcanany
                                         </tr>
                                     </thead>
                                 </table>

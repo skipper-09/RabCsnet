@@ -46,7 +46,9 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Name</th>
-                                            <th>Action</th>
+                                            @canany(['update-projecttypes', 'delete-projecttypes'])
+                                                <th>Action</th>
+                                            @endcanany
                                         </tr>
                                     </thead>
                                 </table>

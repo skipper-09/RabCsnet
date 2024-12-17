@@ -57,7 +57,9 @@
                                             <th>Unit</th>
                                             <th>Material Price</th>
                                             <th>Deskripsi</th>
-                                            <th>Action</th>
+                                            @canany(['update-items', 'delete-items'])
+                                                <th>Action</th>
+                                            @endcanany
                                         </tr>
                                     </thead>
                                 </table>

@@ -1,10 +1,11 @@
 @extends('layout.base')
 
-@section('tittle', $tittle)  {{-- Corrected 'tittle' to 'title' --}}
+@section('tittle', $tittle) {{-- Corrected 'tittle' to 'title' --}}
 
 @push('css')
     <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
-    <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}"
+        rel="stylesheet" />
     <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
     <style>
         .image-thumbnail {
@@ -84,7 +85,9 @@
                                             <th style="width: 15%">Vendor</th>
                                             <th style="width: 15%">Amount</th>
                                             <th>Note</th>
-                                            <th class="text-center" style="width: 10%">Action</th>
+                                            @canany(['update-paymentvendors', 'delete-paymentvendors'])
+                                                <th class="text-center" style="width: 10%">Action</th>
+                                            @endcanany
                                         </tr>
                                     </thead>
                                 </table>
@@ -125,7 +128,7 @@
             $('#FilterProject').select2({
                 placeholder: "Pilih Project",
             });
-            
+
             // Initialize DataTable
             const table = $("#datatable").DataTable({
                 processing: true,
@@ -137,8 +140,7 @@
                         d.project_filter = $('#FilterProject').val();
                     }
                 },
-                columns: [
-                    {
+                columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         orderable: false,
@@ -178,7 +180,8 @@
                         name: 'note',
                         className: 'align-middle',
                         render: function(data, type, row) {
-                            return data ? data.substring(0, 100) + (data.length > 100 ? '...' : '') : '-';
+                            return data ? data.substring(0, 100) + (data.length > 100 ? '...' :
+                                '') : '-';
                         }
                     },
                     @canany(['update-paymentvendors', 'delete-paymentvendors'])

@@ -39,10 +39,12 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <div class="mb-3">
-                                <a href="{{ route('user.add') }}" class="btn btn-primary btn-sm">Tambah
-                                    {{ $tittle }}</a>
-                            </div>
+                            @can('create-users')
+                                <div class="mb-3">
+                                    <a href="{{ route('user.add') }}" class="btn btn-primary btn-sm">Tambah
+                                        {{ $tittle }}</a>
+                                </div>
+                            @endcan
                             <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
                                 <thead>
                                     <tr>
@@ -51,7 +53,9 @@
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Role</th>
-                                        <th>Action</th>
+                                        @canany(['update-users', 'delete-users'])
+                                            <th>Action</th>
+                                        @endcanany
                                     </tr>
                                 </thead>
                             </table>
@@ -113,12 +117,14 @@
                             data: 'role',
                             name: 'role'
                         },
-                        {
-                            data: 'action',
-                            name: 'action',
-                            orderable: false,
-                            searchable: false
-                        }
+                        @canany(['update-users', 'delete-users'])
+                            {
+                                data: 'action',
+                                name: 'action',
+                                orderable: false,
+                                searchable: false
+                            }
+                        @endcanany
                     ],
                 });
 

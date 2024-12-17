@@ -61,8 +61,10 @@
                                             <th style="width: 15%">Reviewer</th>
                                             <th>Note</th>
                                             <th style="width: 10%">Status</th>
-                                            <th style="width: 15%">Tanggal Review</th>
-                                            <th class="text-center" style="width: 10%">Aksi</th>
+                                            <th style="width: 15%">Review Date</th>
+                                            @canany(['update-projectreviews', 'delete-projectreviews'])
+                                                <th class="text-center" style="width: 10%">Action</th>
+                                            @endcanany
                                         </tr>
                                     </thead>
                                 </table>

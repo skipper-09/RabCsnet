@@ -48,7 +48,9 @@
                                             <th>Name</th>
                                             <th>Address</th>
                                             <th>Phone</th>
-                                            <th>Action</th>
+                                            @canany(['update-companies', 'delete-companies'])
+                                                <th>Action</th>
+                                            @endcanany
                                         </tr>
                                     </thead>
                                 </table>

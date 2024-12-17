@@ -94,7 +94,9 @@
                                                     <th style="width: 10%">Tanggal Selesai</th>
                                                     <th style="width: 10%">Status</th>
                                                     <th style="width: 10%">Prioritas</th>
-                                                    <th style="width: 10%" class="text-center">Action</th>
+                                                    @canany(['complete-tasks', 'update-tasks', 'delete-tasks'])
+                                                        <th style="width: 10%" class="text-center">Action</th>
+                                                    @endcanany
                                                 </tr>
                                             </thead>
                                         </table>
