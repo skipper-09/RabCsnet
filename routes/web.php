@@ -35,6 +35,7 @@ Route::get('/', function () {
 
 Route::prefix('auth')->group(function () {
     Route::get('login', [AuthController::class, 'index'])->name('login')->middleware('guest');
+    Route::get('reset-password', [AuthController::class, 'ResetPassword'])->name('resetpassword')->middleware('guest');
     Route::post('signin', [AuthController::class, 'signin'])->name('auth.signin');
     Route::get('signout', [AuthController::class, 'signout'])->name('auth.signout');
 });

@@ -63,4 +63,14 @@ class AuthController extends Controller
 
         return redirect()->route('login');
     }
+
+
+
+
+    public function ResetPassword(){
+        $data = [
+            'tittle'=>'Reset Password',
+        ];
+        return view('pages.auth.resetpassword',$data);
+    }
 }
