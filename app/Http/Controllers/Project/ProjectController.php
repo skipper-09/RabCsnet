@@ -33,10 +33,12 @@ class ProjectController extends Controller
 
 
         $currentUser = Auth::user();
+        $currentUserRole = $currentUser->roles->first()?->name;
 
-        $currentUserRole = $currentUser->roles->first()?->name; 
+        $vendor = Vendor::where('user_id', $currentUser->id)->first();
+
         if ($currentUserRole == 'Vendor') {
-            $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview', 'responsibleperson', 'taskdata'])->where('status', 'in_progres')->where('vendor_id',Auth::user()->id)
+            $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview', 'responsibleperson', 'taskdata'])->where('vendor_id', $vendor->id)
             ->orderByDesc('id')
             ->get();
         }else{
@@ -377,7 +379,7 @@ class ProjectController extends Controller
             $project = Project::findOrFail($id);
 
             // Check if status is canceled and status_pengajuan is rejected
-            if ($project->status === 'canceled' && $project->status_pengajuan === 'rejected') {
+            if ($project->status === 'canceled' && $project->status_pengajuan === 'rejected' ||$project->status === 'canceled' && $project->status_pengajuan === 'revision') {
                 // Update project status to pending
                 $project->update([
                     'status' => 'pending',
