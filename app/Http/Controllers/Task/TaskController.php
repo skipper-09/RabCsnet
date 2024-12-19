@@ -124,6 +124,18 @@ class TaskController extends Controller
                 // Periksa status tugas
                 $isInProgress = $data->status === 'in_progres'; // Tombol hanya akan tampil jika statusnya 'in_progress'
 
+                // Show report task modal button only for role except Vendor
+                if ($currentUserRole !== 'Vendor') {
+                    $report = ReportVendor::where('task_id', $data->id)->first();
+                    if ($report) {
+                        $button .= ' <button type="button" class="btn btn-sm btn-primary task-report-view"
+                                data-id="' . $data->id . '" 
+                                data-toggle="tooltip" data-placement="bottom" title="View Report Task">
+                                <i class="fas fa-file-alt"></i> 
+                            </button>';
+                    }
+                }
+
                 // Show details button only for main tasks with subtasks
                 if ($data->parent_id === null && $data->subTasks->count() > 0) {
                     $button .= ' <a href="' . route('tasks.details', ['id' => $data->id]) . '" class="btn btn-sm btn-info action mr-1" data-id=' . $data->id . ' data-type="details" data-toggle="tooltip" data-placement="bottom" title="View Details"><i class="fas fa-eye"></i></a>';
@@ -178,6 +190,65 @@ class TaskController extends Controller
             ->rawColumns(['action', 'project', 'vendor', 'start_date', 'end_date', 'status', 'priority', 'parent_tasks'])
             ->make(true);
     }
+
+    public function showReportTask($id)
+    {
+        try {
+            // Get the current user and their role
+            $currentUser = Auth::user();
+            $currentUserRole = $currentUser->roles->first()->name;
+
+            // Find the task
+            $task = Task::with(['project', 'vendor'])->findOrFail($id);
+
+            // Get the report for the task
+            $report = ReportVendor::where('task_id', $id)->first();
+
+            if (!$report) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Report not found for this task'
+                ], 404);
+            }
+
+            // Check authorization
+            if ($currentUserRole === 'Vendor' && $task->vendor_id !== $currentUser->vendor->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized to view this report'
+                ], 403);
+            }
+
+            // Prepare the report data
+            $reportData = [
+                'task' => [
+                    'title' => $task->title,
+                    'project' => $task->project->name,
+                    'vendor' => $task->vendor->name,
+                    'start_date' => $task->start_date,
+                    'end_date' => $task->end_date,
+                ],
+                'report' => [
+                    'id' => $report->id,
+                    'description' => $report->description,
+                    'image' => $report->image,
+                    'submitted_at' => $report->created_at->format('d-m-Y H:i:s'),
+                    'issue' => $report->issue
+                ]
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => $reportData
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error retrieving report: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function reportTask(Request $request)
     {
         DB::beginTransaction();

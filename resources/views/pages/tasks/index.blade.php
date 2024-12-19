@@ -157,6 +157,72 @@
         </div>
     </div>
 
+    <!-- Modal for displaying task report -->
+    <div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel">Task Report Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Task Information Section -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0">Task Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Task Name:</strong> <span id="taskName"></span></p>
+                                    <p><strong>Project:</strong> <span id="projectName"></span></p>
+                                    <p><strong>Vendor:</strong> <span id="vendorName"></span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Start Date:</strong> <span id="startDate"></span></p>
+                                    <p><strong>End Date:</strong> <span id="endDate"></span></p>
+                                    <p><strong>Submitted:</strong> <span id="submittedAt"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Report Details Section -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0">Report Details</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <h6>Description:</h6>
+                                    <p id="reportDescription" class="text-muted"></p>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <h6>Issues:</h6>
+                                    <p id="reportIssue" class="text-muted"></p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <h6>Report Image:</h6>
+                                    <img id="reportImage" class="img-fluid" alt="Report Image"
+                                        style="max-width: 100%; max-height: 200px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @push('js')
         <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
@@ -306,6 +372,62 @@
                                 title: 'Failed to update task status',
                                 showConfirmButton: false,
                                 timer: 3000
+                            });
+                        }
+                    });
+                });
+
+                // Show task report modal
+                $('#datatable').on('click', '.task-report-view', function() {
+                    const taskId = $(this).data('id');
+
+                    $.ajax({
+                        url: `{{ route('tasks.report.show', ':id') }}`.replace(':id', taskId),
+                        method: 'GET',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Show the report data in modal
+                                $('#reportModal').modal('show');
+
+                                // Populate task information
+                                $('#taskName').text(response.data.task.title);
+                                $('#projectName').text(response.data.task.project);
+                                $('#vendorName').text(response.data.task.vendor);
+                                $('#startDate').text(response.data.task.start_date);
+                                $('#endDate').text(response.data.task.end_date);
+
+                                // Populate report information
+                                $('#reportDescription').text(response.data.report.description);
+                                $('#reportIssue').text(response.data.report.issue);
+                                $('#submittedAt').text(response.data.report.submitted_at);
+
+                                // Handle image display
+                                if (response.data.report.image) {
+                                    const imagePath =
+                                        `${window.location.origin}/storage/images/reportvendor/${response.data.report.image}`;
+                                    $('#reportImage')
+                                        .attr('src', imagePath)
+                                        .show();
+                                } else {
+                                    $('#reportImage').hide();
+                                }
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Error loading report'
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: xhr.responseJSON ? xhr.responseJSON.message :
+                                    'Error loading report'
                             });
                         }
                     });

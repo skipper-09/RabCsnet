@@ -235,6 +235,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::post('/{id}/toggle-completion', [TaskController::class, 'toggleCompletion'])
             ->name('tasks.toggle-completion')
             ->middleware('can:complete-tasks');
+        Route::get('/report/{taskId}', [TaskController::class, 'showReportTask'])->name('tasks.report.show');
         Route::post('/report', [TaskController::class, 'reportTask'])
             ->name('tasks.report');
         Route::patch('/{task}/status', [TaskController::class, 'updateStatus'])
