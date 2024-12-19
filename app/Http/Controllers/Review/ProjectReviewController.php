@@ -141,13 +141,8 @@ class ProjectReviewController extends Controller
                 break;
 
             case 'Owner':
-                // Ambil project yang sudah direview (baik oleh accounting maupun developer)
-                // tapi belum direview oleh owner
-                $projects = Project::where('status_pengajuan', 'in_review')
-                    ->whereHas('ProjectReview.reviewer.roles', function ($query) {
-                        $query->whereIn('name', ['Accounting', 'Developer']);
-                    })
-                    ->whereDoesntHave('ProjectReview.reviewer.roles', function ($query) {
+                // Ambil project yang sudah direview (baik oleh accounting maupun developer) tapi belum direview oleh owner
+                $projects = Project::whereDoesntHave('ProjectReview.reviewer.roles', function ($query) {
                         $query->where('name', 'Owner');
                     })
                     ->whereHas('Projectfile')
@@ -172,8 +167,7 @@ class ProjectReviewController extends Controller
 
             case 'Developer':
                 // Untuk Developer, ambil SEMUA project yang belum fully reviewed
-                $projects = Project::whereIn('status_pengajuan', ['pending', 'in_review', 'revision'])
-                    ->whereHas('Projectfile')
+                $projects = Project::whereHas('Projectfile')
                     ->with([
                         'Projectfile',
                         'summary',
