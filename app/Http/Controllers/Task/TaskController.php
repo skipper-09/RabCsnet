@@ -22,7 +22,7 @@ class TaskController extends Controller
     {
         // Define status mapping as per the database values
         $statuses = [
-            'pending' => 'To Do',
+            // 'pending' => 'To Do',
             'in_progres' => 'In Progress',
             'complated' => 'Completed',  // Fixed typo here
         ];

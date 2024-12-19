@@ -63,7 +63,7 @@ class ProjectReportController extends Controller
 
 
         $statuses = [
-            'pending' => 'To Do',
+            // 'pending' => 'To Do',
             'in_progres' => 'In Progress',
             'complated' => 'Completed',  // Fixed typo here
         ];
