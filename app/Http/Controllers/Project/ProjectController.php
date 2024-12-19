@@ -38,7 +38,7 @@ class ProjectController extends Controller
         $vendor = Vendor::where('user_id', $currentUser->id)->first();
 
         if ($currentUserRole == 'Vendor') {
-            $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview', 'responsibleperson', 'taskdata'])->where('vendor_id', $vendor->id)
+            $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview', 'responsibleperson', 'taskdata'])->where('start_status', 1)->where('vendor_id', $vendor->id)
             ->orderByDesc('id')
             ->get();
         }else{
