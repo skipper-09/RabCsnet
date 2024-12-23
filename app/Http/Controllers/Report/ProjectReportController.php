@@ -30,6 +30,7 @@ class ProjectReportController extends Controller
 
         $totalTasks = array_sum($statusData);
 
+       
         $statusLabels = [
             'pending' => 'Pending Tasks',
             'in_progres' => 'In Progress',
@@ -60,6 +61,14 @@ class ProjectReportController extends Controller
         }
 
 
+        $projectprogres = Project::with(['taskdata'])->where('status', 'in_progres')
+            ->orderByDesc('id')
+            ->get();
+        $progressCollection = $projectprogres->map(function ($proyek) {
+            return $proyek->progress();
+        });
+        $averageProgress = $progressCollection->avg();
+
 
 
         $statuses = [
@@ -86,6 +95,8 @@ class ProjectReportController extends Controller
             'remainingdays' => $remainingDays,
             'statuses' => $statuses,
             'kanbanTasks' => $kanbanTasks,
+            'totaltask' => $totalTasks,
+            'percentace' => $averageProgress
         ];
         return view('pages.report.projectreport.index', $data);
     }

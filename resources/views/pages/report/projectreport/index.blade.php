@@ -64,40 +64,51 @@
                         <div class="card-body">
                             <!-- Nav tabs -->
                             <ul class="nav nav-tabs nav-tabs-custom nav-justified" role="tablist">
+                                @if (!Auth::user()->roles->contains('name', 'Vendor'))
                                 <li class="nav-item">
                                     <a class="nav-link active" data-bs-toggle="tab" href="#home1" role="tab">
                                         <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
                                         <span class="d-none d-sm-block">Overview</span>
                                     </a>
                                 </li>
+                                @endif
+                                @if (!Auth::user()->roles->contains('name', 'Vendor'))
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#distribusi" role="tab">
                                         <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
                                         <span class="d-none d-sm-block">Distribusi</span>
                                     </a>
                                 </li>
+                                @endif
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#messages1" role="tab">
                                         <span class="d-block d-sm-none"><i class="far fa-envelope"></i></span>
                                         <span class="d-none d-sm-block">Task List</span>
                                     </a>
                                 </li>
+                                
+                                @if (!Auth::user()->roles->contains('name', 'Vendor'))
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#gantchart" role="tab">
                                         <span class="d-block d-sm-none"><i class="fas fa-cog"></i></span>
                                         <span class="d-none d-sm-block">Gant Chart</span>
                                     </a>
                                 </li>
+                                @endif
+                                
+                                @if (!Auth::user()->roles->contains('name', 'Vendor'))
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#payvendor" role="tab">
                                         <span class="d-block d-sm-none"><i class="fas fa-cog"></i></span>
                                         <span class="d-none d-sm-block">Payment Vendor</span>
                                     </a>
                                 </li>
+                                @endif
                             </ul>
 
                             <!-- Tab panes -->
                             <div class="tab-content p-3 text-muted">
+                                @if (!Auth::user()->roles->contains('name', 'Vendor'))
                                 <div class="tab-pane active" id="home1" role="tabpanel">
                                     <div class="row">
                                         <div class="col-md-6">
@@ -239,6 +250,7 @@
 
                                     </div>
                                 </div>
+                              
                                 <div class="tab-pane" id="distribusi" role="tabpanel">
                                     <h5>Distribusi Project</h5>
                                     <div class="table-responsive">
@@ -257,8 +269,12 @@
                                         </table>
                                     </div>
                                 </div>
-                                <div class="tab-pane" id="messages1" role="tabpanel">
+                                @endif
+
+                                {{-- //task --}}
+                                <div class="tab-pane {{ Auth::user()->roles->contains('name', 'Vendor') ? 'active' : '' }}" id="messages1" role="tabpanel">
                                     <div class="card-title d-flex justify-content-between align-items-center mb-2">
+                                        @if (!Auth::user()->roles->contains('name', 'Vendor'))
                                         <ul class="nav nav-pills gap-2 mb-3" id="task-view-tabs" role="tablist">
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link active" id="list-tab" data-bs-toggle="pill"
@@ -266,6 +282,7 @@
                                                     List Tasks
                                                 </button>
                                             </li>
+                                           
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link" id="kanban-tab" data-bs-toggle="pill"
                                                     data-bs-target="#kanban-view" type="button" role="tab">
@@ -273,12 +290,13 @@
                                                 </button>
                                             </li>
                                         </ul>
-                                        @can('create-tasks')
+                                        @endif
+                                        {{-- @can('create-tasks')
                                             <div class="mb-3">
                                                 <a href="{{ route('tasks.add') }}" class="btn btn-primary btn-sm">Tambah
                                                     {{ $tittle }}</a>
                                             </div>
-                                        @endcan
+                                        @endcan --}}
                                     </div>
                                     <div class="tab-content" id="task-view-content">
                                         <!-- List View Tab -->
@@ -352,6 +370,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                @if (!Auth::user()->roles->contains('name', 'Vendor'))
                                 <div class="tab-pane" id="gantchart" role="tabpanel">
                                     <div class="row">
                                         <div class="col-xl-12">
@@ -364,6 +383,7 @@
                                         </div> <!-- end col -->
                                     </div>
                                 </div>
+                                
                                 <div class="tab-pane" id="payvendor" role="tabpanel">
                                     <div class="table-responsive">
                                         <table id="datapayment" class="table table-hover" style="width: 100%;">
@@ -384,6 +404,7 @@
                                         </table>
                                     </div>
                                 </div>
+                                @endif
                             </div>
 
                         </div>
@@ -1203,6 +1224,8 @@
 
 
                     function initializeCalendar() {
+                        var totaltask =  @json($totaltask);
+                        var percentace =  @json($percentace);
                         var calendarEl = document.getElementById('calendar');
 
                         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -1276,12 +1299,12 @@
                             },
                             resourceAreaWidth: '40%',
                             resourceAreaColumns: [{
-                                    headerContent: 'Task',
+                                    headerContent: `Task - Total ${totaltask}`,
                                     field: 'task',
                                     cellClassNames: 'task',
                                 },
                                 {
-                                    headerContent: 'Progress',
+                                    headerContent: `Progress - ${percentace}%`,
                                     field: 'progress',
                                 },
                             ],
