@@ -30,7 +30,7 @@ class ProjectReportController extends Controller
 
         $totalTasks = array_sum($statusData);
 
-       
+
         $statusLabels = [
             'pending' => 'Pending Tasks',
             'in_progres' => 'In Progress',
@@ -101,7 +101,6 @@ class ProjectReportController extends Controller
         return view('pages.report.projectreport.index', $data);
     }
 
-
     public function getDataReview(Request $request)
     {
         $project_id = $request->query('project_id');
@@ -137,8 +136,6 @@ class ProjectReportController extends Controller
             ->make(true);
     }
 
-
-
     public function DetailProjectReport(Request $request)
     {
         $project_id = $request->input('project_id');
@@ -162,11 +159,8 @@ class ProjectReportController extends Controller
             ->make(true);
     }
 
-
     public function DetailItem(Request $request, $id)
     {
-
-
         $item = DetailItemProject::with(['detail', 'item'])->where('detail_id', $id)->get();
         return DataTables::of($item)
             ->addIndexColumn()

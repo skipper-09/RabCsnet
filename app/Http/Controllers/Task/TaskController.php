@@ -15,6 +15,7 @@ use Exception;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TaskController extends Controller
 {
@@ -61,8 +62,6 @@ class TaskController extends Controller
         } else {
             $query = Task::with(['project', 'vendor', 'subTasks'])->whereNull('parent_id')->where('project_id', $querytask);
         }
-
-
 
         // Calculate progress for each main task
         $totalProgress = $query->get()->map(function ($task) {
@@ -133,6 +132,22 @@ class TaskController extends Controller
                                 data-toggle="tooltip" data-placement="bottom" title="View Report Task">
                                 <i class="fas fa-file-alt"></i> 
                             </button>';
+                    } else {
+                        // Jika tidak ada laporan, jangan tampilkan tombol
+                        $button = '';
+                    }
+                } else {
+                    $vendor = Vendor::where('user_id', Auth::id())->first();
+                    $report = ReportVendor::where('task_id', $data->id)->where('vendor_id', $vendor->id)->first();
+                    if ($report) {
+                        $button .= ' <button type="button" class="btn btn-sm btn-primary task-report-view"
+                                data-id="' . $data->id . '" 
+                                data-toggle="tooltip" data-placement="bottom" title="View Report Task">
+                                <i class="fas fa-file-alt"></i> 
+                            </button>';
+                    } else {
+                        // Jika tidak ada laporan, jangan tampilkan tombol
+                        $button = '';
                     }
                 }
 
@@ -330,7 +345,7 @@ class TaskController extends Controller
             ]);
         } catch (Exception $e) {
             DB::rollBack();
-            \Log::error('Task Report Error: ' . $e->getMessage());
+            Log::error('Task Report Error: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,
@@ -377,8 +392,8 @@ class TaskController extends Controller
             ];
 
             return view('pages.tasks.detail', $data);
-        } catch (\Exception $e) {
-            \Log::error('Task details error: ' . $e->getMessage());
+        } catch (Exception $e) {
+            Log::error('Task details error: ' . $e->getMessage());
             return redirect()->route('tasks')->with('error', 'An error occurred while fetching task details.');
         }
     }
@@ -406,7 +421,7 @@ class TaskController extends Controller
         })->first();
 
         // Detailed logging
-        \Log::info('Report Vendor Debug', [
+        Log::info('Report Vendor Debug', [
             'task_id' => $task->id,
             'vendor_id' => $task->vendor_id,
             'report_found' => $reportVendor ? true : false,
@@ -554,7 +569,7 @@ class TaskController extends Controller
             }
 
             // Log task creation
-            \Log::info('Task Created Successfully', [
+            Log::info('Task Created Successfully', [
                 'task_id' => $task->id,
                 'task_title' => $task->title,
                 'created_by' => $currentUser->id
@@ -568,7 +583,7 @@ class TaskController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
 
-            \Log::error('Task Creation Failed', [
+            Log::error('Task Creation Failed', [
                 'error_message' => $e->getMessage(),
                 'error_trace' => $e->getTraceAsString(),
                 'user_id' => $currentUser->id
@@ -649,7 +664,6 @@ class TaskController extends Controller
 
         return view('pages.tasks.edit', $baseData);
     }
-
 
     public function update(Request $request, $id)
     {
@@ -736,7 +750,7 @@ class TaskController extends Controller
             }
 
             // Log task update
-            \Log::info('Task Updated Successfully', [
+            Log::info('Task Updated Successfully', [
                 'task_id' => $task->id,
                 'task_title' => $task->title,
                 'updated_by' => $currentUser->id
@@ -750,7 +764,7 @@ class TaskController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
 
-            \Log::error('Task Update Failed', [
+            Log::error('Task Update Failed', [
                 'error_message' => $e->getMessage(),
                 'error_trace' => $e->getTraceAsString(),
                 'user_id' => $currentUser->id
@@ -793,14 +807,14 @@ class TaskController extends Controller
             // Current authenticated user
             $currentUser = Auth::user();
 
-            // Check if user has permission to complete tasks
-            if (!$currentUser->can('complete-tasks')) {
-                DB::rollBack();
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'You are not authorized to complete this task.'
-                ], 403);
-            }
+            // // Check if user has permission to complete tasks
+            // if (!$currentUser->can('complete-tasks')) {
+            //     DB::rollBack();
+            //     return response()->json([
+            //         'status' => 'error',
+            //         'message' => 'You are not authorized to complete this task.'
+            //     ], 403);
+            // }
 
             // Store the original status for logging
             $originalStatus = $task->status;
@@ -839,7 +853,7 @@ class TaskController extends Controller
             DB::rollBack();
 
             // Log the error
-            \Log::error('Task Completion Toggle Failed', [
+            Log::error('Task Completion Toggle Failed', [
                 'error_message' => $e->getMessage(),
                 'error_trace' => $e->getTraceAsString(),
                 'task_id' => $id,
