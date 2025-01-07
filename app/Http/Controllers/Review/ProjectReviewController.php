@@ -33,15 +33,16 @@ class ProjectReviewController extends Controller
         $currentUserRole = $currentUser->roles->first()->name;
 
         // For Developers, show ALL project reviews
-        if ($currentUserRole === 'Developer') {
+        if ($currentUserRole === 'Accounting' || $currentUserRole === 'Owner') {
             $dataReview = ProjectReview::with(['project', 'reviewer'])
                 ->orderByDesc('created_at')
+                ->where('reviewer_id', $currentUser->id)
                 ->get();
+            
         } else {
             // Existing logic for other roles
             $dataReview = ProjectReview::with(['project', 'reviewer'])
                 ->orderByDesc('created_at')
-                ->where('reviewer_id', $currentUser->id)
                 ->get();
         }
 

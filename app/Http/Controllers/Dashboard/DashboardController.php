@@ -115,6 +115,29 @@ class DashboardController extends Controller
             ];
 
             return view('pages.dashboard.vendordashboard', $data);
+        } else if ($currentUserRole == 'Project Manager' || $currentUserRole == 'Waspam') {
+            $projectCount = Project::where('status_pengajuan', 'approved')->whereHas('Projectfile')->count();
+            $taskCounts = Task::selectRaw("
+                    COUNT(*) as total_tasks,
+                    SUM(CASE WHEN status = 'in_progres' THEN 1 ELSE 0 END) as pending_tasks,
+                    SUM(CASE WHEN status = 'complated' THEN 1 ELSE 0 END) as finished_tasks
+                ")
+                ->first();
+
+            $data = [
+                'tittle' => 'Dashboard',
+                'project' => $projectCount,
+                'taskall' => $taskCounts->total_tasks ?? 0,
+                'taskfinish' => $taskCounts->finished_tasks ?? 0,
+                'taskpending' => $taskCounts->pending_tasks ?? 0,
+                'projectall' => $projectall,
+                'projeccomplate' => $projectcomplate,
+                'projectinprogres' => $projectinprogres,
+                'projectpending' => $projectpending,
+                'projectprogress' => $averageProgress,
+            ];
+
+            return view('pages.dashboard.projectmanagerdashboard', $data);
         }
 
         return view('pages.dashboard.index', $data);
@@ -177,9 +200,9 @@ class DashboardController extends Controller
                 return $tes;
             })
             ->editColumn('name', function ($data) {
-                return $data->vendor_id != null ? '<a href="' . route('report.project', ['project_id' => $data->id]) . '" class="text-primary "> '.$data->name.'</a>' : $data->name;
+                return $data->vendor_id != null ? '<a href="' . route('report.project', ['project_id' => $data->id]) . '" class="text-primary "> ' . $data->name . '</a>' : $data->name;
             })
-            ->rawColumns(['action', 'company', 'status', 'responsible_person', 'progress','end_date','name'])
+            ->rawColumns(['action', 'company', 'status', 'responsible_person', 'progress', 'end_date', 'name'])
             ->make(true);
     }
 }

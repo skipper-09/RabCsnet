@@ -464,12 +464,12 @@ class TaskController extends Controller
 
         $projectQuery = Project::where('start_status', 1)->with('vendor');
 
-        if (in_array($currentUserRole, ['Accounting', 'Owner', 'Developer'])) {
-            $baseData['projects'] = $projectQuery->get();
-        } else {
+        if ($currentUserRole == 'Vendor') {
             $baseData['projects'] = $projectQuery
                 ->where('vendor_id', $currentUser->vendor_id)
                 ->get();
+        } else {
+            $baseData['projects'] = $projectQuery->get();
         }
 
         return view('pages.tasks.add', $baseData);
@@ -535,7 +535,7 @@ class TaskController extends Controller
         $currentUserRole = $currentUser->roles->first()->name;
 
         // Additional vendor validation for non-admin roles
-        if (!in_array($currentUserRole, ['Accounting', 'Owner', 'Developer'])) {
+        if ($currentUserRole == 'Vendor') {
             if ($vendor_id != $currentUser->vendor_id) {
                 return redirect()->back()
                     ->with('error', 'You are not authorized to create tasks for this vendor.')
@@ -644,12 +644,12 @@ class TaskController extends Controller
         // Query proyek berdasarkan start_status
         $projectQuery = Project::where('start_status', 1)->with('vendor');
 
-        if (in_array($currentUserRole, ['Accounting', 'Owner', 'Developer'])) {
-            $baseData['projects'] = $projectQuery->get();
-        } else {
+        if ($currentUserRole == 'Vendor') {
             $baseData['projects'] = $projectQuery
                 ->where('vendor_id', $currentUser->vendor_id)
                 ->get();
+        } else {
+            $baseData['projects'] = $projectQuery->get();
         }
 
         // Jika task saat ini memiliki project_id, ambil parent tasks sesuai vendor_id
@@ -705,7 +705,7 @@ class TaskController extends Controller
         $currentUserRole = $currentUser->roles->first()->name;
 
         // Additional vendor validation for non-admin roles
-        if (!in_array($currentUserRole, ['Accounting', 'Owner', 'Developer'])) {
+        if ($currentUserRole == 'Vendor') {
             if ($vendor_id != $currentUser->vendor_id) {
                 return redirect()->back()
                     ->with('error', 'You are not authorized to update tasks for this vendor.')

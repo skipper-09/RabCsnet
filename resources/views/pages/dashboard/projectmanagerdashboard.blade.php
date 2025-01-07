@@ -18,12 +18,10 @@
                         <h4>Dashboard</h4>
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="javascript: void(0);">Morvin</a></li>
-                            {{-- <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li> --}}
                             <li class="breadcrumb-item active">Dashboard</li>
                         </ol>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -34,64 +32,73 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="row">
-                        <!-- Kartu: Total Proyek Belum Direview -->
-                        <div class="col-xl-4 col-md-4">
-                            <a href="{{ route('review') }}">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="text-center">
-                                            <p class="font-size-16">Proyek Belum Direview</p>
-                                            <div class="mini-stat-icon mx-auto mb-4 mt-3">
-                                                <span class="avatar-title rounded-circle bg-soft-primary">
-                                                    <i class="mdi mdi-alert-outline text-primary font-size-20"></i>
+                        <div class="col-xl-3 col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="">
+                                        <h4 class="header-title mb-4 fw-bold">Jumlah Proyek</h4>
+                                        <div class="media align-items-center gap-2  pb-2 mt-2">
+                                            <div class="avatar-sm mb-3 mt-2">
+                                                <span class="avatar-title rounded-circle bg-primary shadow">
+                                                    <i class="mdi mdi-apps text-white font-size-24"></i>
                                                 </span>
                                             </div>
-                                            <h5 class="font-size-22">{{ $totalProjectsNotReviewed }}</h5>
-                                            <p class="text-muted">Proyek yang menunggu review</p>
+                                            <h4 class="text-muted fw-bold">{{ $project }}</h4>
                                         </div>
                                     </div>
                                 </div>
-                            </a>
+                            </div>
                         </div>
-
-                        <!-- Kartu: Total Proyek Selesai -->
-                        <div class="col-xl-4 col-md-4">
-                            <a href="{{ route('project') }}">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="text-center">
-                                            <p class="font-size-16">Proyek Selesai</p>
-                                            <div class="mini-stat-icon mx-auto mb-4 mt-3">
-                                                <span class="avatar-title rounded-circle bg-soft-success">
-                                                    <i class="mdi mdi-check-circle-outline text-success font-size-20"></i>
+                        <div class="col-xl-3 col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="">
+                                        <h4 class="header-title mb-4 fw-bold">Jumlah Task</h4>
+                                        <div class="media align-items-center gap-2  pb-2 mt-2">
+                                            <div class="avatar-sm mb-3 mt-2">
+                                                <span class="avatar-title rounded-circle bg-info shadow">
+                                                    <i class="mdi mdi-progress-upload text-white font-size-24"></i>
                                                 </span>
                                             </div>
-                                            <h5 class="font-size-22">{{ $totalCompletedProjects }}</h5>
-                                            <p class="text-muted">Proyek berhasil diselesaikan</p>
+                                            <h4 class="text-muted fw-bold">{{ $taskall }}</h4>
                                         </div>
                                     </div>
                                 </div>
-                            </a>
+                            </div>
                         </div>
-
-                        <!-- Kartu: Proyek untuk Direview (Berdasarkan Role) -->
-                        <div class="col-xl-4 col-md-4">
-                            <a href="{{ route('review') }}">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="text-center">
-                                            <p class="font-size-16">Proyek untuk Direview</p>
-                                            <div class="mini-stat-icon mx-auto mb-4 mt-3">
-                                                <span class="avatar-title rounded-circle bg-soft-warning">
-                                                    <i class="mdi mdi-pencil-outline text-warning font-size-20"></i>
+                        <div class="col-xl-3 col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="">
+                                        <h4 class="header-title mb-4 fw-bold">Task Selesai</h4>
+                                        <div class="media align-items-center gap-2  pb-2 mt-2">
+                                            <div class="avatar-sm mb-3 mt-2">
+                                                <span class="avatar-title rounded-circle bg-success shadow">
+                                                    <i class="mdi mdi-progress-check text-white font-size-24"></i>
                                                 </span>
                                             </div>
-                                            <h5 class="font-size-22">{{ $projectsToReview }}</h5>
-                                            <p class="text-muted">Proyek yang ditugaskan untuk direview</p>
+                                            <h4 class="text-muted fw-bold">{{ $taskfinish }}</h4>
                                         </div>
                                     </div>
                                 </div>
-                            </a>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="">
+                                        <h4 class="header-title mb-4 fw-bold">Task Pending</h4>
+                                        <div class="media align-items-center gap-2  pb-2 mt-2">
+                                            <div class="avatar-sm mb-3 mt-2">
+                                                <span class="avatar-title rounded-circle bg-warning shadow">
+                                                    <i class="mdi mdi-progress-alert text-white font-size-24"></i>
+                                                </span>
+                                            </div>
+                                            <h4 class="text-muted fw-bold">{{ $taskpending }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -113,18 +120,6 @@
                                                 <th>Progress</th>
                                             </tr>
                                         </thead>
-                                        {{-- <tbody>
-                                        @foreach ($project as $item)
-                                        <tr>
-                                            <td>{{ $item->name }}</td>
-                                            <td>{{ $item->company->name }}</td>
-                                            <td>{{ $item->status }}</td>
-                                            <td>{{ $item->responsible_person }}</td>
-                                            <td>{{ $item->end_date }}</td>
-                                            <td>{{ $item->end_date }}</td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody> --}}
                                     </table>
                                 </div>
                             </div>
@@ -132,12 +127,10 @@
                     </div>
                 </div>
                 <div class="col-xl-4 col-md-4">
-
                     <div class="card">
                         <div class="card-body">
                             <div class="text-left">
                                 <p class="font-size-16 fw-bold">Overall Progress</p>
-                                {{-- <div id="list-chart-2" class="apex-charts" dir="ltr"></div> --}}
                                 <div class="text-center" dir="ltr">
                                     <input data-plugin="knob" data-width="120" data-height="120" data-linecap=round
                                         data-fgColor="#50a5f1" value="{{ $projectprogress }}" data-skin="tron"
@@ -173,7 +166,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>

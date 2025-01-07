@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 
 class ReportVendorController extends Controller
@@ -207,7 +208,7 @@ class ReportVendorController extends Controller
 
             return redirect()->route('report')->with(['status' => 'Success', 'message' => 'Berhasil Menambahkan Report!']);
         } catch (Exception $e) {
-            \Log::error('Error occurred while creating report vendor', [
+            Log::error('Error occurred while creating report vendor', [
                 'error_message' => $e->getMessage(),
                 'stack_trace' => $e->getTraceAsString(),
             ]);
@@ -361,7 +362,7 @@ class ReportVendorController extends Controller
             return redirect()->route('report')->with(['status' => 'Success', 'message' => 'Berhasil Mengubah Report!']);
         } catch (Exception $e) {
             // Log exception message jika terjadi error
-            \Log::error('Error occurred while updating report vendor', [
+            Log::error('Error occurred while updating report vendor', [
                 'error_message' => $e->getMessage(),
                 'stack_trace' => $e->getTraceAsString(),
             ]);
