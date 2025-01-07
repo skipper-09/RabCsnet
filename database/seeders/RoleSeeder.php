@@ -103,6 +103,50 @@ class RoleSeeder extends Seeder
             'setting-profile',
         ]);
 
+        $projectManager = Role::create(['name' => 'Project Manager']);
+
+        $projectManager->givePermissionTo([
+            'read-dashboard',
+            'read-projects',
+            'create-projects',
+            'update-projects',
+            'delete-projects',
+            'read-detail-projects',
+            'start-projects',
+            'upload-atp',
+            'download-atp',
+            'read-vendors',
+            'create-vendors',
+            'update-vendors',
+            'delete-vendors',
+            'read-projectreviews',
+            'read-tasks',
+            'create-tasks',
+            'update-tasks',
+            'delete-tasks',
+            'complete-tasks',
+            'update-kanban-tasks',
+            'read-project-timeline',
+            'read-reportvendors',
+            'read-report-project',
+            'setting-profile',
+        ]);
+
+        $waspam = Role::create(['name' => 'Waspam']);
+
+        $waspam->givePermissionTo([
+            'read-dashboard',
+            'read-projects',
+            'read-detail-projects',
+            'read-vendors',
+            'read-projectreviews',
+            'read-tasks',
+            'read-project-timeline',
+            'read-reportvendors',
+            'read-report-project',
+            'setting-profile',
+        ]);
+
         $vendor = Role::create(['name' => 'Vendor']);
 
         $vendor->givePermissionTo([

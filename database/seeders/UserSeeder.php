@@ -46,5 +46,21 @@ class UserSeeder extends Seeder
             'email' => 'owner@gmail.com',
             'password' => Hash::make('owner'),
         ])->assignRole('Owner');
+
+        User::create([
+            'id'=>'209852f9-2a63-4006-a929-2490c11e2d91',
+            'name' => 'Project Manager',
+            'username' => 'project_manager',
+            'email' => 'project_manager@gmail.com',
+            'password' => Hash::make('project_manager'),
+        ])->assignRole('Project Manager');
+
+        User::create([
+            'id'=>'5a147d19-8002-4f37-afaf-8615ffb55b02',
+            'name' => 'Waspam',
+            'username' => 'waspam',
+            'email' => 'waspam@gmail.com',
+            'password' => Hash::make('waspam'),
+        ])->assignRole('Waspam');
     }
 }
