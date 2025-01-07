@@ -22,9 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $projects = Cache::remember('projects', 60, function () {
-            return Project::where('start_status',1)->get();
-        });
+        $projects = Project::where('start_status', 1)->get();
     
         View::share('projects', $projects);
     }
