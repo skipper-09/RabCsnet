@@ -45,8 +45,8 @@ class UserController extends Controller
         })->addColumn('role', function ($data) {
             return $data->roles[0]->name;
         })->editColumn('picture', function ($data) {
-            return $data->picture == null ? '<img src="' . asset('assets/images/avataaars.png') . '" alt="Profile Image" class="rounded-circle header-profile-user">' :'<img src="' . asset("storage/images/user/$data->picture") . '" alt="Profile Image" class="rounded-circle header-profile-user">' ;
-        })->rawColumns(['action', 'role','picture'])->make(true);
+            return $data->picture == null ? '<img src="' . asset('assets/images/avataaars.png') . '" alt="Profile Image" class="rounded-circle header-profile-user">' : '<img src="' . asset("storage/images/user/$data->picture") . '" alt="Profile Image" class="rounded-circle header-profile-user">';
+        })->rawColumns(['action', 'role', 'picture'])->make(true);
     }
 
     public function create()
@@ -167,58 +167,104 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Find the user
         $user = User::findOrFail($id);
+
+        // Store old user data for logging
         $oldUser = $user->toArray();
 
-        $rules = [
+        // Validate the request
+        $validationRules = [
             'picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'username' => 'nullable|string|max:255',
-            'name' => 'nullable|string|max:255',
-            'email' => 'nullable|string|email|unique:users,email,' . $user->id . '|max:255',
-            'is_block' => 'nullable|boolean',
-            'role' => 'nullable|exists:roles,name',
-            'password' => 'nullable|string|min:6|confirmed'
+            'username' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|max:255|unique:users,email,' . $id,
+            'is_block' => 'required|boolean',
+            'role' => 'required'
         ];
 
-        $request->validate($rules);
+        // Only validate password if it's being updated
+        if ($request->filled('password')) {
+            $validationRules['password'] = 'required|string|min:6|max:255|confirmed';
+            $validationRules['password_confirmation'] = 'required|string|min:6|max:255';
+        }
 
-        $updateData = $request->only(['username', 'name', 'email', 'is_block']);
+        $validationMessages = [
+            'picture.image' => 'File harus berupa gambar.',
+            'picture.mimes' => 'Format gambar tidak valid.',
+            'picture.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
+            'username.required' => 'Username wajib diisi.',
+            'username.string' => 'Username harus berupa teks.',
+            'username.max' => 'Username maksimal 255 karakter.',
+            'name.required' => 'Nama wajib diisi.',
+            'name.string' => 'Nama harus berupa teks.',
+            'name.max' => 'Nama maksimal 255 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.string' => 'Email harus berupa teks.',
+            'email.max' => 'Email maksimal 255 karakter.',
+            'email.unique' => 'Email sudah digunakan.',
+            'is_block.required' => 'Status wajib diisi.',
+            'role.required' => 'Role wajib diisi.',
+        ];
 
-        $filename = $user->picture;
+        if ($request->filled('password')) {
+            $validationMessages['password.required'] = 'Password wajib diisi.';
+            $validationMessages['password.string'] = 'Password harus berupa teks.';
+            $validationMessages['password.min'] = 'Password minimal 6 karakter.';
+            $validationMessages['password.max'] = 'Password maksimal 255 karakter.';
+            $validationMessages['password.confirmed'] = 'Konfirmasi password tidak cocok.';
+            $validationMessages['password_confirmation.required'] = 'Konfirmasi password wajib diisi.';
+            $validationMessages['password_confirmation.string'] = 'Konfirmasi password harus berupa teks.';
+            $validationMessages['password_confirmation.min'] = 'Konfirmasi password minimal 6 karakter.';
+            $validationMessages['password_confirmation.max'] = 'Konfirmasi password maksimal 255 karakter.';
+        }
 
+        $request->validate($validationRules, $validationMessages);
+
+        // Handle file upload
         if ($request->hasFile('picture')) {
+            // Delete old picture if exists
+            if ($user->picture && file_exists(public_path('storage/images/user/' . $user->picture))) {
+                unlink(public_path('storage/images/user/' . $user->picture));
+            }
+
             $file = $request->file('picture');
             $filename = 'user_' . rand(0, 999999999) . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('storage/images/user/'), $filename);
-            $updateData['picture'] = $filename;
-
-            if ($user->picture !== 'default.png' && file_exists(public_path('storage/images/user/' . $user->picture))) {
-                File::delete(public_path('storage/images/user/' . $user->picture));
-            }
+            $user->picture = $filename;
         }
 
+        // Update user data
+        $user->username = $request->username;
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->is_block = $request->is_block;
+
+        // Only update password if provided
         if ($request->filled('password')) {
-            $updateData['password'] = Hash::make($request->password);
+            $user->password = Hash::make($request->password);
         }
 
-        $user->update($updateData);
+        $user->save();
 
-        if ($request->has('role')) {
-            $user->syncRoles($request->role);
-        }
+        // Update roles
+        $user->syncRoles([$request->role]);
 
         // Log activity for user update
         activity()
-            ->causedBy(Auth::user()) // Logs who performed the action
-            ->performedOn($user) // The entity being changed
-            ->event('updated') // Event of the action
+            ->causedBy(Auth::user())
+            ->performedOn($user)
+            ->event('updated')
             ->withProperties([
-                'old' => $oldUser, // The data before update
-                'attributes' => $user->toArray() // The updated data
+                'old' => $oldUser,
+                'attributes' => $user->toArray()
             ])
             ->log('User di update dengan nama ' . $user->name);
 
-        return redirect()->route('user')->with(['status' => 'Success!', 'message' => 'User updated successfully!']);
+        return redirect()->route('user')->with([
+            'status' => 'Success!',
+            'message' => 'User updated successfully!'
+        ]);
     }
 
     /**

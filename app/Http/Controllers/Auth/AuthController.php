@@ -29,9 +29,9 @@ class AuthController extends Controller
             $user = $user->first();
 
             if ($user->is_block == 1) {
-                return response()->json([
+                return redirect()->back()->withErrors([
                     'message' => 'Akun ini telah di kunci, silahkan hubungi admin untuk membuka akun.'
-                ], 500);
+                ]);
             } else {
                 if (Auth::guard('web')->attempt(['username' => $request->username, 'password' => $request->password])) {
                     $request->session()->regenerate();
