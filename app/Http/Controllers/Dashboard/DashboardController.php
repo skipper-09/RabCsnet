@@ -21,8 +21,7 @@ class DashboardController extends Controller
         $currentUser = Auth::user();
 
         // Dapatkan role pengguna saat ini
-        $currentUserRole = $currentUser->roles->first()?->name; // Menggunakan null coalescing operator
-
+        $currentUserRole = $currentUser->roles->first()?->name;
 
         // Hitung jumlah proyek yang belum direview
         $totalProjectsNotReviewed = Project::where('status_pengajuan', 'pending')->count();
@@ -33,7 +32,13 @@ class DashboardController extends Controller
         // Tentukan proyek yang perlu direview berdasarkan role
         $projectsToReview = 0; // Default 0
         switch ($currentUserRole) {
+            case 'Developer':
+                // Developer memiliki akses penuh untuk melihat semua proyek yang perlu direview
+                $projectsToReview = Project::whereIn('status_pengajuan', ['pending', 'in_review'])->count();
+                break;
+                
             case 'Accounting':
+                // Hitung proyek yang belum direview oleh Accounting
                 $projectsToReview = Project::where('status_pengajuan', 'pending')
                     ->whereDoesntHave('ProjectReview', function ($query) {
                         $query->whereHas('reviewer.roles', function ($roleQuery) {
@@ -41,36 +46,37 @@ class DashboardController extends Controller
                         });
                     })->count();
                 break;
-
+        
             case 'Owner':
-                $projectsToReview = Project::where('status_pengajuan', 'pending')
+                // Hitung proyek yang belum direview oleh Owner
+                $projectsToReview = Project::whereIn('status_pengajuan', ['in_review', 'pending'])
                     ->whereDoesntHave('ProjectReview', function ($query) {
-                        $query->whereHas('reviewer.roles', function ($roleQuery) {
-                            $roleQuery->where('name', 'Owner');
+                        $query->whereHas('reviewer.roles', function ($q) {
+                            $q->where('name', 'Owner');
                         });
-                    })->count();
+                    })
+                    ->count();
                 break;
-
-            case 'Developer':
-                $projectsToReview = Project::whereIn('status_pengajuan', ['pending', 'in_review'])
-                    ->whereHas('Projectfile')
-                    ->count(); // Tambahkan count() untuk menghitung jumlah proyek
-                break;
-
+        
             default:
-                // Role lain tidak memiliki akses
+                // Role lain tidak memiliki akses untuk menghitung proyek yang perlu direview
+                $projectsToReview = 0;
                 break;
         }
 
-        $projectTableDt = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview'])->where('status', 'in_progres')
+        // Ambil data proyek dengan status 'in_progres'
+        $projectTableDt = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview'])
+            ->where('status', 'in_progres')
             ->orderByDesc('id')
             ->get();
 
-        $projectall = Project::all()->count();
-        $projectcomplate = Project::where('status', 'finish')->get()->count();
-        $projectinprogres = Project::where('status', 'in_progres')->get()->count();
-        $projectpending = Project::where('status', 'pending')->get()->count();
+        // Hitung jumlah proyek berdasarkan status
+        $projectall = Project::count();
+        $projectcomplate = Project::where('status', 'finish')->count();
+        $projectinprogres = Project::where('status', 'in_progres')->count();
+        $projectpending = Project::where('status', 'pending')->count();
 
+        // Hitung rata-rata progress proyek
         $projectprogres = Project::with(['taskdata'])->where('status', 'in_progres')
             ->orderByDesc('id')
             ->get();
@@ -79,8 +85,7 @@ class DashboardController extends Controller
         });
         $averageProgress = $progressCollection->avg();
 
-
-        // Data yang akan diteruskan ke view
+        // Data untuk view default
         $data = [
             'tittle' => 'Dashboard',
             'totalProjectsNotReviewed' => $totalProjectsNotReviewed,
@@ -94,16 +99,14 @@ class DashboardController extends Controller
             'projectprogress' => $averageProgress,
         ];
 
-
+        // Vendor
         if ($currentUserRole == 'Vendor') {
-            $vendor_id = Vendor::where('user_id', $currentUser->id)->value('id'); // Mengambil hanya nilai ID
+            $vendor_id = Vendor::where('user_id', $currentUser->id)->value('id');
             $projectCount = Project::where('vendor_id', $vendor_id)->count();
             $taskCounts = Task::where('vendor_id', $vendor_id)
-                ->selectRaw("
-                    COUNT(*) as total_tasks,
-                    SUM(CASE WHEN status = 'in_progres' THEN 1 ELSE 0 END) as pending_tasks,
-                    SUM(CASE WHEN status = 'complated' THEN 1 ELSE 0 END) as finished_tasks
-                ")
+                ->selectRaw("COUNT(*) as total_tasks, 
+                         SUM(CASE WHEN status = 'in_progres' THEN 1 ELSE 0 END) as pending_tasks,
+                         SUM(CASE WHEN status = 'complated' THEN 1 ELSE 0 END) as finished_tasks")
                 ->first();
 
             $data = [
@@ -115,13 +118,14 @@ class DashboardController extends Controller
             ];
 
             return view('pages.dashboard.vendordashboard', $data);
-        } else if ($currentUserRole == 'Project Manager' || $currentUserRole == 'Waspam') {
+        }
+
+        // Project Manager atau Waspam
+        else if ($currentUserRole == 'Project Manager' || $currentUserRole == 'Waspam') {
             $projectCount = Project::where('status_pengajuan', 'approved')->whereHas('Projectfile')->count();
-            $taskCounts = Task::selectRaw("
-                    COUNT(*) as total_tasks,
-                    SUM(CASE WHEN status = 'in_progres' THEN 1 ELSE 0 END) as pending_tasks,
-                    SUM(CASE WHEN status = 'complated' THEN 1 ELSE 0 END) as finished_tasks
-                ")
+            $taskCounts = Task::selectRaw("COUNT(*) as total_tasks, 
+                                      SUM(CASE WHEN status = 'in_progres' THEN 1 ELSE 0 END) as pending_tasks, 
+                                      SUM(CASE WHEN status = 'complated' THEN 1 ELSE 0 END) as finished_tasks")
                 ->first();
 
             $data = [
@@ -142,8 +146,6 @@ class DashboardController extends Controller
 
         return view('pages.dashboard.index', $data);
     }
-
-
 
     public function getData(Request $request)
     {
