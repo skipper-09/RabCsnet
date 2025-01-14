@@ -21,7 +21,12 @@ class CompanySeeder extends Seeder
                     'address' => 'Jl. Letjen S Parman No.58, Sumberrejo, Pakis, Kec. Banyuwangi, Kabupaten Banyuwangi, Jawa Timur 68419',
                     'phone' => '6282111777179',
                 ],
-
+                [
+                    'id'=> '3c795b1b-9354-46db-8ad0-156dc52159e5',
+                    'name'=> 'PT. Internusa Duta Makmur',
+                    'address'=> 'Ruko Gajah Mada Square, Jl. Gajah Mada.187 Blok A 21, Kaliwates Kidul, Kaliwates, Kec. Kaliwates, Kabupaten Jember, Jawa Timur 68121',
+                    'phone'=> '6282116879977',
+                ]
             ]
         );
     }
