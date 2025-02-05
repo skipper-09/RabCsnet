@@ -13,16 +13,15 @@ class ItemExport implements FromCollection, WithHeadings
      */
     public function collection()
     {
-        return Item::with(['unit', 'type'])->get()->map(function ($item) {
+        return Item::with(['unit', 'type'])->get()->map(function ($item,$index) {
             return [
+                'No' =>$index + 1,
                 'Nama'=>$item->name,
                 'Tipe'=>$item->type->name,
-                'Kode'=>$item->item_code,
+                'uraian'=>$item->description,
                 'Unit'=>$item->unit->name,
                 'Harga Material'=>$item->material_price,
-                // 'Harga Jasa'=>$item->service_price,
-                'Deskripsi'=>$item->description,
-                'Status'=>$item->status == 1 ? 'Aktif' : "Tidak Aktif"
+                'Harga Jasa'=>$item->service_price,
             ];
         });
         ;
@@ -31,14 +30,13 @@ class ItemExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'Nama',
-            'Tipe',
-            'Kode',
-            'Unit',
-            'Harga Material',
-            // 'Harga Jasa',
-            'Deskripsi',
-            'Status'
+            'N0',
+            'ITEM DESIGN',
+            'TIPE',
+            'URAIAN DESIGN',
+            'SATUAN',
+            'MATERIAL',
+            'JASA',
         ];
     }
 }

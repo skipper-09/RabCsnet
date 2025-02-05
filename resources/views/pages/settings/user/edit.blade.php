@@ -48,7 +48,7 @@
                     <div class="card">
                         <div class="card-body">
                             <form action="{{ route('user.update', ['id' => $user->id]) }}" method="POST"
-                                enctype="multipart/form-data" class="needs-validation" novalidate>
+                                enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
                                 <div class="row">

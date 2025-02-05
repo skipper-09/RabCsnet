@@ -49,13 +49,13 @@
                     <div class="card">
                         <div class="card-body">
                             <form action="{{ route('user.store') }}" method="POST" enctype="multipart/form-data"
-                                class="needs-validation" novalidate>
+                                 >
                                 @csrf
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="mb-3">
                                             <label for="picture" class="form-label">Foto</label>
-                                            <input type="file" name="picture" id="picture"
+                                            <input type="file" name="picture" id="picture" 
                                                 class="form-control @error('picture') is-invalid @enderror" accept="image/*"
                                                 onchange="previewImage(this)">
                                             <small class="text-muted">Format yang diterima: JPEG, PNG, JPG, GIF. Ukuran
@@ -71,85 +71,82 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">Username</label>
-                                            <input type="text" name="username" class="form-control"
-                                                id="validationCustom01" required>
-                                            <div class="valid-feedback">
-                                                Looks good!
-                                            </div>
+                                            <label for="validationCustom01" class="form-label required">Username</label>
+                                            <input type="text" name="username" class="form-control @error('username') is-invalid @enderror"
+                                                id="validationCustom01"   value="{{ old("username") }}">
+                                            @error('username')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">Nama</label>
-                                            <input type="text" name="name" class="form-control"
-                                                id="validationCustom01" required>
-                                            <div class="valid-feedback">
-                                                Looks good!
-                                            </div>
+                                            <label for="validationCustom01" class="form-label required">Nama</label>
+                                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
+                                                id="validationCustom01"    value="{{ old("name") }}" >
+                                                @error('name')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">Email</label>
-                                            <input type="email" name="email" class="form-control"
-                                                id="validationCustom01" required>
-                                            <div class="valid-feedback">
-                                                Looks good!
-                                            </div>
+                                            <label for="validationCustom01" class="form-label required">Email</label>
+                                            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
+                                                id="validationCustom01"    value="{{ old("email") }}" >
+                                                @error('email')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">Password</label>
-                                            <input type="password" name="password" class="form-control"
-                                                id="validationCustom01" required>
-                                            <div class="valid-feedback">
-                                                Looks good!
-                                            </div>
+                                            <label for="validationCustom01" class="form-label required">Password</label>
+                                            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
+                                                id="validationCustom01">
+                                                @error('password')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">Confirm Password</label>
-                                            <input type="password" name="password_confirmation" class="form-control"
-                                                id="validationCustom01" required>
-                                            <div class="valid-feedback">
-                                                Looks good!
-                                            </div>
+                                            <label for="validationCustom01" class="form-label required">Confirm Password</label>
+                                            <input type="password" name="password_confirmation" class="form-control  @error('password_confirmation') is-invalid @enderror"
+                                                id="validationCustom01"  >
+                                                @error('password_confirmation')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">
+                                            <label for="validationCustom01" class="form-label required">
                                                 User Access
                                             </label>
                                             <select name="is_block" class="form-control select2" aria-label="Default select example">
                                                 <option value="0">Not Blocked</option>
                                                 <option value="1">Blocked</option>
                                             </select>
-                                            </select>
-                                            <div class="valid-feedback">
-                                                Looks good!
-                                            </div>
+                                            
+                                           
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="validationCustom01" class="form-label">
+                                            <label for="validationCustom01" class="form-label required">
                                                 Role User
                                             </label>
-                                            <select name="role" class="form-control select2" aria-label="Default select example">
+                                            <select name="role" class="form-control select2  @error('role') is-invalid @enderror" aria-label="Default select example">
                                                 <option value="">Piih Role User</option>
                                                 @foreach ($role as $item)
-                                                    
                                                 <option value="{{ $item->name }}">{{ $item->name }}</option>
                                                 @endforeach
                                             </select>
-                                            </select>
-                                            <div class="valid-feedback">
-                                                Looks good!
-                                            </div>
+                                            @error('role')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                           
                                         </div>
                                     </div>
                                 </div>

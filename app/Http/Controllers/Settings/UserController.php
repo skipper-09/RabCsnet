@@ -28,7 +28,9 @@ class UserController extends Controller
 
     public function getData(Request $request)
     {
-        $user = User::orderByDesc('id')->get();
+        $user = User::whereDoesntHave('roles', function ($query) {
+            $query->where('name', 'Developer');
+        })->orderByDesc('id')->get();
 
         return DataTables::of($user)->addIndexColumn()->addColumn('action', function ($data) {
             $userauth = User::with('roles')->where('id', Auth::id())->first();
@@ -69,8 +71,8 @@ class UserController extends Controller
             'username' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'email' => 'required|string|unique:users,email|max:255',
-            'password' => 'required|string|min:6|max:255|confirmed',
-            'password_confirmation' => 'required|string|min:6|max:255',
+            'password' => 'required|string|min:6|max:255',
+            'password_confirmation' => 'required|string|min:6|max:255|confirmed',
             'is_block' => 'required|boolean',
             'role' => 'required'
         ], [
@@ -91,7 +93,7 @@ class UserController extends Controller
             'password.string' => 'Password harus berupa teks.',
             'password.min' => 'Password minimal 6 karakter.',
             'password.max' => 'Password maksimal 255 karakter.',
-            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'password_confirmation.confirmed' => 'Konfirmasi password tidak cocok.',
             'password_confirmation.required' => 'Konfirmasi password wajib diisi.',
             'password_confirmation.string' => 'Konfirmasi password harus berupa teks.',
             'password_confirmation.min' => 'Konfirmasi password minimal 6 karakter.',
@@ -185,8 +187,8 @@ class UserController extends Controller
 
         // Only validate password if it's being updated
         if ($request->filled('password')) {
-            $validationRules['password'] = 'required|string|min:6|max:255|confirmed';
-            $validationRules['password_confirmation'] = 'required|string|min:6|max:255';
+            $validationRules['password'] = 'required|string|min:6|max:255';
+            $validationRules['password_confirmation'] = 'required|string|min:6|max:255|confirmed';
         }
 
         $validationMessages = [
@@ -212,7 +214,7 @@ class UserController extends Controller
             $validationMessages['password.string'] = 'Password harus berupa teks.';
             $validationMessages['password.min'] = 'Password minimal 6 karakter.';
             $validationMessages['password.max'] = 'Password maksimal 255 karakter.';
-            $validationMessages['password.confirmed'] = 'Konfirmasi password tidak cocok.';
+            $validationMessages['password_confirmation.confirmed'] = 'Konfirmasi password tidak cocok.';
             $validationMessages['password_confirmation.required'] = 'Konfirmasi password wajib diisi.';
             $validationMessages['password_confirmation.string'] = 'Konfirmasi password harus berupa teks.';
             $validationMessages['password_confirmation.min'] = 'Konfirmasi password minimal 6 karakter.';
