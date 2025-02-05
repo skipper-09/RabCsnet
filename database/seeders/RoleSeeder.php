@@ -134,12 +134,17 @@ class RoleSeeder extends Seeder
             'setting-profile',
         ]);
 
-        $waspam = Role::create(['name' => 'Waspam']);
+        $adminPM = Role::create(['name'=> 'Admin PM']);
 
-        $waspam->givePermissionTo([
+        $adminPM->givePermissionTo([
             'read-dashboard',
             'read-projects',
+            'create-projects',
+            'update-projects',
+            'delete-projects',
             'read-detail-projects',
+            'approval-projects',
+            'start-projects',
             'enable-atp-upload',
             'disable-atp-upload',
             'upload-atp',
@@ -154,6 +159,22 @@ class RoleSeeder extends Seeder
             'delete-tasks',
             'complete-tasks',
             'update-kanban-tasks',
+            'read-project-timeline',
+            'read-reportvendors',
+            'read-report-project',
+            'setting-profile',
+        ]);
+
+        $waspam = Role::create(['name' => 'Waspam']);
+
+        $waspam->givePermissionTo([
+            'read-dashboard',
+            'read-projects',
+            'read-detail-projects',
+            'enable-atp-upload',
+            'disable-atp-upload',
+            'upload-atp',
+            'download-atp',
             'read-project-timeline',
             'read-reportvendors',
             'read-report-project',

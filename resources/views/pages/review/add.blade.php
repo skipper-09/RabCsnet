@@ -81,6 +81,43 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- Add this button near your project select -->
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <h6 class="text-primary mb-3">
+                                                <i class="mdi mdi-package me-2"></i>Project Items
+                                            </h6>
+                                            <button type="button" class="btn btn-primary" id="viewProjectDetails" disabled>
+                                                <i class="mdi mdi-eye me-1"></i>View Project Items
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Modified Modal Structure -->
+                                    <div class="modal fade" id="projectDetailsModal" tabindex="-1"
+                                        aria-labelledby="projectDetailsModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-xl">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="projectDetailsModalLabel">
+                                                        Project Details: <span id="modalProjectNameBadge"></span>
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div id="modalProjectItems">
+                                                        <!-- Project items will be dynamically inserted here -->
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -118,6 +155,24 @@
                                                             data-project-amount="{{ $project->amount ?? '0' }}"
                                                             data-project-reviewer="{{ $project->reviewed_by }}"
                                                             data-project-review-note="{{ $project->review_note }}"
+                                                            data-project-details="{{ json_encode(
+                                                                $project->detailproject->map(function ($detail) {
+                                                                    return [
+                                                                        'name' => $detail->name,
+                                                                        'code' => $detail->code,
+                                                                        'type' => $detail->projecttype->name ?? 'N/A',
+                                                                        'items' => $detail->detailitemporject->map(function ($item) {
+                                                                            return [
+                                                                                'item_name' => $item->item->name ?? 'N/A',
+                                                                                'quantity' => $item->quantity,
+                                                                                'cost_material' => $item->cost_material,
+                                                                                'cost_service' => $item->cost_service,
+                                                                                'service_name' => $item->service->name ?? 'N/A',
+                                                                            ];
+                                                                        }),
+                                                                    ];
+                                                                }),
+                                                            ) }}"
                                                             {{ old('project_id') == $project->id ? 'selected' : '' }}>
                                                             {{ $project->name }} - {{ $project->code }}
                                                         </option>
@@ -205,6 +260,13 @@
                     $('#charCount').text(maxLength - currentLength);
                 });
 
+                // Initialize modal and pagination settings
+                const projectDetailsModal = new bootstrap.Modal(document.getElementById('projectDetailsModal'));
+                const viewProjectDetailsBtn = document.getElementById('viewProjectDetails');
+                const itemsPerPage = 5; // Number of items per page
+                let currentPage = 1;
+                let currentData = null;
+
                 $('#project_id').on('change', function() {
                     const selectedOption = $(this).find('option:selected');
                     const projectFileData = selectedOption.data('project-file');
@@ -212,6 +274,16 @@
                     const projectName = selectedOption.text().trim();
                     const reviewerName = selectedOption.data('project-reviewer');
                     const reviewNote = selectedOption.data('project-review-note');
+                    const projectDetails = selectedOption.data('project-details');
+
+                    // Enable/disable view button based on selection
+                    viewProjectDetailsBtn.disabled = !selectedOption.val();
+
+                    // Store the data for modal use
+                    viewProjectDetailsBtn.dataset.projectData = JSON.stringify({
+                        projectName,
+                        projectDetails
+                    });
 
                     const projectDetailsContainer = $('#projectDetailsContainer');
                     const projectFileDetailsContainer = $('#fileDetailsContent');
@@ -224,9 +296,6 @@
                     projectSummaryDetailsContainer.html('No summary available');
                     projectInfoContainer.html('No information available');
                     projectNameBadge.text(projectName);
-
-                    console.log("Raw Project File Data:", projectFileData);
-                    console.log("Raw Project Summary Data:", projectSummaryData);
 
                     // Clear previous details
                     projectFileDetailsContainer.html('No files available');
@@ -245,17 +314,17 @@
                         let fileDetailsHtml = `
         <ul class="list-unstyled mb-0">
             ${projectFileData.excel ? `
-                        <li class="mb-2">
-                            <i class="mdi mdi-file-excel text-success me-2"></i>
-                            <strong>Excel File:</strong> 
-                            <a href="{{ asset('storage/files/excel/${projectFileData.excel}') }}" download>${projectFileData.excel}</a>
-                        </li>` : ''}
+                                                                                                        <li class="mb-2">
+                                                                                                            <i class="mdi mdi-file-excel text-success me-2"></i>
+                                                                                                            <strong>Excel File:</strong> 
+                                                                                                            <a href="{{ asset('storage/files/excel/${projectFileData.excel}') }}" download>${projectFileData.excel}</a>
+                                                                                                        </li>` : ''}
             ${projectFileData.kmz ? `
-                        <li class="mb-2">
-                            <i class="mdi mdi-map text-danger me-2"></i>
-                            <strong>KMZ File:</strong> 
-                            <a href="{{ asset('storage/files/kmz/${projectFileData.kmz}') }}" download>${projectFileData.kmz}</a>
-                        </li>` : ''}
+                                                                                                        <li class="mb-2">
+                                                                                                            <i class="mdi mdi-map text-danger me-2"></i>
+                                                                                                            <strong>KMZ File:</strong> 
+                                                                                                            <a href="{{ asset('storage/files/kmz/${projectFileData.kmz}') }}" download>${projectFileData.kmz}</a>
+                                                                                                        </li>` : ''}
         </ul>
     `;
                         projectFileDetailsContainer.html(fileDetailsHtml);
@@ -326,6 +395,167 @@
                     }
                 });
 
+                function renderPagination(totalPages, currentPage) {
+                    let paginationHtml = `
+        <nav aria-label="Page navigation" class="mt-3">
+            <ul class="pagination justify-content-center">
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <button type="button" class="page-link" data-page="${currentPage - 1}">Previous</button>
+                </li>
+    `;
+
+                    for (let i = 1; i <= totalPages; i++) {
+                        paginationHtml += `
+            <li class="page-item ${currentPage === i ? 'active' : ''}">
+                <button type="button" class="page-link" data-page="${i}">${i}</button>
+            </li>
+        `;
+                    }
+
+                    paginationHtml += `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <button type="button" class="page-link" data-page="${currentPage + 1}">Next</button>
+                </li>
+            </ul>
+        </nav>
+    `;
+                    return paginationHtml;
+                }
+
+                function renderTable(items, start, end) {
+                    const formatNumber = new Intl.NumberFormat('id-ID', {
+                        style: 'decimal',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+
+                    let tableHtml = `
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>No</th>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Material Cost</th>
+                        <th>Service Cost</th>
+                        <th>Service</th>
+                        <th>Total Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+                    items.slice(start, end).forEach((item, index) => {
+                        const materialCost = parseFloat(item.cost_material || 0);
+                        const serviceCost = parseFloat(item.cost_service || 0);
+                        const quantity = parseFloat(item.quantity || 0);
+                        const totalCost = (materialCost + serviceCost) * quantity;
+
+                        tableHtml += `
+            <tr>
+                <td class="text-center">${start + index + 1}</td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <i class="mdi mdi-package-variant text-primary me-2"></i>
+                        ${item.item_name}
+                    </div>
+                </td>
+                <td class="text-end">${formatNumber.format(quantity)}</td>
+                <td class="text-end">Rp ${formatNumber.format(materialCost)}</td>
+                <td class="text-end">Rp ${formatNumber.format(serviceCost)}</td>
+                <td>${item.service_name}</td>
+                <td class="text-end">Rp ${formatNumber.format(totalCost)}</td>
+            </tr>
+        `;
+                    });
+
+                    const totalCost = items.reduce((total, item) => {
+                        return total + (parseFloat(item.cost_material || 0) + parseFloat(item.cost_service ||
+                            0)) * parseFloat(item.quantity || 0);
+                    }, 0);
+
+                    tableHtml += `
+                </tbody>
+                <tfoot class="table-light">
+                    <tr>
+                        <th colspan="6" class="text-end">Total:</th>
+                        <th class="text-end">Rp ${formatNumber.format(totalCost)}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    `;
+
+                    return tableHtml;
+                }
+                // Update the event listener code to handle the pagination
+                function attachPaginationHandlers(allItems, itemsPerPage) {
+                    document.querySelectorAll('.pagination .page-link').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const newPage = parseInt(this.dataset.page);
+                            const totalPages = Math.ceil(allItems.length / itemsPerPage);
+
+                            if (newPage >= 1 && newPage <= totalPages) {
+                                currentPage = newPage;
+                                const newStart = (currentPage - 1) * itemsPerPage;
+                                const newEnd = newStart + itemsPerPage;
+
+                                // Re-render table and pagination
+                                document.getElementById('modalProjectItems').innerHTML = `
+                    <div class="mb-4">
+                        ${renderTable(allItems, newStart, newEnd)}
+                        ${renderPagination(totalPages, currentPage)}
+                    </div>
+                `;
+
+                                // Reattach event handlers to new pagination buttons
+                                attachPaginationHandlers(allItems, itemsPerPage);
+                            }
+                        });
+                    });
+                }
+
+                viewProjectDetailsBtn.addEventListener('click', function() {
+                    const data = JSON.parse(this.dataset.projectData);
+                    currentData = data;
+                    currentPage = 1;
+
+                    // Update modal title
+                    document.getElementById('modalProjectNameBadge').textContent = data.projectName;
+
+                    // Flatten all items from all details into a single array
+                    const allItems = data.projectDetails.reduce((acc, detail) => {
+                        return acc.concat(detail.items.map(item => ({
+                            ...item,
+                            detail_name: detail.name,
+                            detail_code: detail.code,
+                            detail_type: detail.type
+                        })));
+                    }, []);
+
+                    // Calculate pagination
+                    const totalItems = allItems.length;
+                    const totalPages = Math.ceil(totalItems / itemsPerPage);
+                    const start = (currentPage - 1) * itemsPerPage;
+                    const end = start + itemsPerPage;
+
+                    // Render table and pagination
+                    const contentHtml = `
+        <div class="mb-4">
+            ${renderTable(allItems, start, end)}
+            ${renderPagination(totalPages, currentPage)}
+        </div>
+    `;
+
+                    document.getElementById('modalProjectItems').innerHTML = contentHtml;
+
+                    // Attach pagination handlers
+                    attachPaginationHandlers(allItems, itemsPerPage);
+
+                    // Show the modal
+                    projectDetailsModal.show();
+                });
 
                 // Trigger change event if a project is pre-selected
                 $('#project_id').trigger('change');
