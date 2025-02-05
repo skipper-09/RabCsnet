@@ -159,6 +159,7 @@ class DetailProjectController extends Controller
             'name' => 'required',
             'description' => 'required',
             'item_id' => 'required|array',
+            'material' => 'required|array',
             'service_id' => 'nullable|array',
             'quantity' => 'required|array',
         ], [
@@ -184,6 +185,7 @@ class DetailProjectController extends Controller
 
             $items = $request->item_id;
             $services = $request->service_id ?? [];
+            $materials = $request->material ?? [];
             $quantities = $request->quantity;
 
             foreach ($items as $index => $itemId) {
@@ -191,13 +193,23 @@ class DetailProjectController extends Controller
 
                 $serviceId = null;
                 $costService = 0;
+                $costMaterial = 0;
 
                 if (!empty($services[$index])) {
                     $service = $services[$index];
-                    if ($service == 1) {
+                    if ($service == "on") {
                         $costService = $itemall->service_price;
                     }else{
                         $costService = 0;
+                    }
+                }
+
+                if (!empty($materials[$index])) {
+                    $material = $materials[$index];
+                    if ($material == "on") {
+                        $costMaterial = $itemall->material_price;
+                    }else{
+                        $costMaterial = 0;
                     }
                 }
 
@@ -207,7 +219,7 @@ class DetailProjectController extends Controller
                     'item_id' => $itemId,
                     'service_id' => $serviceId,
                     'quantity' => $quantities[$index],
-                    'cost_material' => $itemall->material_price * $quantities[$index],
+                    'cost_material' =>$costMaterial* $quantities[$index],
                     'cost_service' => $costService * $quantities[$index]
                 ]);
             }

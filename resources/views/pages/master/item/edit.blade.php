@@ -54,7 +54,7 @@
                                     <div class="mb-3">
                                         <label for="material_price" class="form-label required">Material Price</label>
                                         <input type="number" name="material_price"
-                                            value="{{ old('material_price', $item->material_price) }}"
+                                            value="{{ old('material_price', number_format($item->material_price)) }}"
                                             class="form-control @error('material_price') is-invalid @enderror"
                                             id="material_price">
                                         @error('material_price')
