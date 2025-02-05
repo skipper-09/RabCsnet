@@ -39,85 +39,101 @@
         <div class="page-content-wrapper">
             {{-- Project Details Section --}}
             @if ($projects->isNotEmpty())
+                <!-- Project Details Container -->
                 <div id="projectDetailsContainer" class="row" style="display:none;">
                     <div class="col-12">
-                        <div class="card border-primary">
+                        <div class="card border-primary shadow-lg rounded">
                             <div
                                 class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                                 <h5 class="card-title mb-0">
-                                    <i class="mdi mdi-information-outline me-2"></i>Project Details
+                                    <i class="mdi mdi-information-outline me-2"></i> Project Details
                                 </h5>
-                                <span class="badge bg-light text-primary" id="projectNameBadge"></span>
+                                <span class="badge bg-light text-primary p-2" id="projectNameBadge"></span>
                             </div>
                             <div class="card-body">
                                 <div class="row">
+                                    <!-- Project Information -->
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <h6 class="text-primary mb-3">
+                                                <i class="mdi mdi-chart-line me-2"></i> Project Information
+                                            </h6>
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th>Vendor</th>
+                                                            <td id="projectVendor"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Total Amount</th>
+                                                            <td id="projectAmount"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Reviewer</th>
+                                                            <td id="projectReviewer"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Review Note</th>
+                                                            <td id="projectReviewNote"></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Project Files -->
                                     <div class="col-md-6">
                                         <div id="projectFileDetails" class="mb-3">
                                             <h6 class="text-primary mb-3">
-                                                <i class="mdi mdi-file-document-outline me-2"></i>Project Files
+                                                <i class="mdi mdi-file-document-outline me-2"></i> Project Files
                                             </h6>
-                                            <div class="alert alert-soft-primary" role="alert" id="fileDetailsContent">
-                                                No files available
-                                            </div>
+                                            <div id="fileDetailsContent" class="list-group shadow-sm"></div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div id="projectInfo" class="mb-3">
-                                            <h6 class="text-primary mb-3">
-                                                <i class="mdi mdi-chart-line me-2"></i>Project Information
-                                            </h6>
-                                            <div class="alert alert-soft-success" role="alert" id="projectInfoContent">
-                                                No information available
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
+
+                                    <!-- Project Summary -->
+                                    <div class="col-md-12">
                                         <div id="projectSummaryDetails" class="mb-3">
                                             <h6 class="text-primary mb-3">
-                                                <i class="mdi mdi-chart-line me-2"></i>Project Summary
+                                                <i class="mdi mdi-chart-line me-2"></i> Project Summary
                                             </h6>
-                                            <div class="alert alert-soft-success" role="alert" id="summaryDetailsContent">
+                                            <div class="alert alert-info shadow-sm" id="summaryDetailsContent">
                                                 No summary available
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Add this button near your project select -->
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <h6 class="text-primary mb-3">
-                                                <i class="mdi mdi-package me-2"></i>Project Items
-                                            </h6>
-                                            <button type="button" class="btn btn-primary" id="viewProjectDetails" disabled>
-                                                <i class="mdi mdi-eye me-1"></i>View Details
-                                            </button>
-                                        </div>
+                                    <!-- View Details Button -->
+                                    <div class="col-md-12 text-center">
+                                        <button type="button" class="btn btn-lg btn-primary shadow-lg"
+                                            id="viewProjectDetails" disabled>
+                                            <i class="mdi mdi-eye me-1"></i> View Details
+                                        </button>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                                    <!-- Modified Modal Structure -->
-                                    <div class="modal fade" id="projectDetailsModal" tabindex="-1"
-                                        aria-labelledby="projectDetailsModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog modal-xl">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="projectDetailsModalLabel">
-                                                        Project Details: <span id="modalProjectNameBadge"></span>
-                                                    </h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div id="modalProjectItems">
-                                                        <!-- Project items will be dynamically inserted here -->
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-bs-dismiss="modal">Close</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                    <!-- Modal for Project Details -->
+                    <div class="modal fade" id="projectDetailsModal" tabindex="-1"
+                        aria-labelledby="projectDetailsModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-xl">
+                            <div class="modal-content">
+                                <div class="modal-header bg-gradient-primary text-white">
+                                    <h5 class="modal-title">
+                                        Project Details: <span id="modalProjectNameBadge"></span>
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="modalProjectItems"></div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                 </div>
                             </div>
                         </div>
@@ -149,7 +165,7 @@
                                                     <option value="">Pilih Project</option>
                                                     @foreach ($projects as $project)
                                                         <option value="{{ $project->id }}"
-                                                            data-project-file="{{ json_encode($project->Projectfile ?? []) }}"
+                                                            data-project-file="{{ json_encode($project->Projectfile->first() ?? []) }}"
                                                             data-project-summary="{{ $project->formatted_total_summary ?? '0' }}"
                                                             data-project-vendor="{{ $project->vendor->name ?? 'Belum ditentukan' }}"
                                                             data-project-amount="{{ $project->amount ?? '0' }}"
@@ -252,317 +268,114 @@
         <script src="{{ asset('assets/js/pages/form-advanced.init.js') }}"></script>
 
         <script>
+            function numberFormat(value, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
+                value = parseFloat(value) || 0; // Pastikan angka valid
+                value = value.toFixed(decimals); // Tetapkan jumlah desimal yang benar
+
+                const parts = value.toString().split('.');
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+
+                return 'Rp ' + parts.join(decimalSeparator); // Tambahkan "Rp" di depan hasil format
+            }
+
+
             $(document).ready(function() {
-                // Character count for review note
-                $('#review_note').on('input', function() {
-                    const maxLength = 255;
-                    const currentLength = $(this).val().length;
-                    $('#charCount').text(maxLength - currentLength);
-                });
+                $('#project_id').change(function() {
+                    let selectedOption = $(this).find(':selected');
 
-                // Initialize modal and pagination settings
-                const projectDetailsModal = new bootstrap.Modal(document.getElementById('projectDetailsModal'));
-                const viewProjectDetailsBtn = document.getElementById('viewProjectDetails');
-                const itemsPerPage = 5; // Number of items per page
-                let currentPage = 1;
-                let currentData = null;
+                    let projectName = selectedOption.text();
+                    let projectFile = selectedOption.data('project-file');
+                    let projectSummary = selectedOption.data('project-summary') || '0';
+                    let projectVendor = selectedOption.data('project-vendor') || 'Unknown';
+                    let projectAmount = selectedOption.data('project-amount') || '0';
+                    let projectReviewer = selectedOption.data('project-reviewer') || 'Not reviewed';
+                    let projectReviewNote = selectedOption.data('project-review-note') || 'No review note';
+                    let projectDetails = selectedOption.data('project-details') || [];
 
-                $('#project_id').on('change', function() {
-                    const selectedOption = $(this).find('option:selected');
-                    const projectFileData = selectedOption.data('project-file');
-                    const projectSummaryData = selectedOption.data('project-summary');
-                    const projectName = selectedOption.text().trim();
-                    const reviewerName = selectedOption.data('project-reviewer');
-                    const reviewNote = selectedOption.data('project-review-note');
-                    const projectDetails = selectedOption.data('project-details');
+                    // Remove any existing formatting and convert to a valid number
+                    const cleanedSummary = projectSummary.replace(/\./g, '').replace(',', '.');
+                    const numericSummary = parseFloat(cleanedSummary);
 
-                    // Enable/disable view button based on selection
-                    viewProjectDetailsBtn.disabled = !selectedOption.val();
+                    // Tampilkan project detail card
+                    $('#projectDetailsContainer').fadeIn();
+                    $('#projectNameBadge').text(projectName);
+                    $('#summaryDetailsContent').text(numberFormat(numericSummary));
+                    $('#projectVendor').text(projectVendor);
+                    $('#projectAmount').text(numberFormat(projectAmount));
+                    $('#projectReviewer').text(projectReviewer);
+                    $('#projectReviewNote').text(projectReviewNote);
 
-                    // Store the data for modal use
-                    viewProjectDetailsBtn.dataset.projectData = JSON.stringify({
-                        projectName,
-                        projectDetails
-                    });
+                    let fileContent = "";
 
-                    const projectDetailsContainer = $('#projectDetailsContainer');
-                    const projectFileDetailsContainer = $('#fileDetailsContent');
-                    const projectSummaryDetailsContainer = $('#summaryDetailsContent');
-                    const projectInfoContainer = $('#projectInfoContent');
-                    const projectNameBadge = $('#projectNameBadge');
+                    if (projectFile && typeof projectFile === "object") {
+                        let fileKMZ = projectFile.kmz ? projectFile.kmz : null;
+                        let fileExcel = projectFile.excel ? projectFile.excel : null;
 
-                    // Clear previous details
-                    projectFileDetailsContainer.html('No files available');
-                    projectSummaryDetailsContainer.html('No summary available');
-                    projectInfoContainer.html('No information available');
-                    projectNameBadge.text(projectName);
-
-                    // Clear previous details
-                    projectFileDetailsContainer.html('No files available');
-                    projectSummaryDetailsContainer.html('No summary available');
-                    projectNameBadge.text(projectName);
-
-                    // Format the total summary using JavaScript's Intl.NumberFormat
-                    function numberFormat(value, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
-                        value = parseFloat(value).toFixed(decimals); // Pastikan value memiliki desimal yang benar
-                        const parts = value.toString().split('.');
-                        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
-                        return parts.join(decimalSeparator);
-                    }
-
-                    // Project File Details
-                    if (projectFileData && (projectFileData.excel || projectFileData.kmz)) {
-                        let fileDetailsHtml = `
-        <ul class="list-unstyled mb-0">
-            ${projectFileData.excel ? `
-                                                                                                                        <li class="mb-2">
-                                                                                                                            <i class="mdi mdi-file-excel text-success me-2"></i>
-                                                                                                                            <strong>Excel File:</strong> 
-                                                                                                                            <a href="{{ asset('storage/files/excel/${projectFileData.excel}') }}" download>${projectFileData.excel}</a>
-                                                                                                                        </li>` : ''}
-            ${projectFileData.kmz ? `
-                                                                                                                        <li class="mb-2">
-                                                                                                                            <i class="mdi mdi-map text-danger me-2"></i>
-                                                                                                                            <strong>KMZ File:</strong> 
-                                                                                                                            <a href="{{ asset('storage/files/kmz/${projectFileData.kmz}') }}" download>${projectFileData.kmz}</a>
-                                                                                                                        </li>` : ''}
-        </ul>
-    `;
-                        projectFileDetailsContainer.html(fileDetailsHtml);
-                    }
-
-                    // Project Summary Details
-                    if (projectSummaryData) {
-                        // Remove any existing formatting and convert to a valid number
-                        const cleanedSummary = projectSummaryData.replace(/\./g, '').replace(',', '.');
-                        const numericSummary = parseFloat(cleanedSummary);
-
-                        if (!isNaN(numericSummary)) {
-                            const formattedTotalSummary = numberFormat(numericSummary);
-
-                            let summaryDetailsHtml = `
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <span>
-                                                    <i class="mdi mdi-cash me-2 text-success"></i>
-                                                    <strong>Total Summary:</strong>
-                                                </span>
-                                                <span class="h5 mb-0 text-primary">Rp ${formattedTotalSummary}</span>
-                                            </div>
-                                        `;
-                            projectSummaryDetailsContainer.html(summaryDetailsHtml);
+                        if (fileExcel) {
+                            fileContent += `<a href="{{ asset('storage/files/excel/${fileExcel}') }}" download class="list-group-item list-group-item-action d-flex align-items-center">
+                                    <i class="mdi mdi-file-excel me-2 fs-5 text-success"></i>
+                                    <span class="file-name">${fileExcel}</span>
+                                </a>`;
                         }
-                    }
 
-                    // Ambil nilai amount langsung tanpa perlu manipulasi string
-                    const numericAmount = selectedOption.data('project-amount');
-
-                    // Pastikan nilai amount valid
-                    if (!isNaN(numericAmount)) {
-                        // Format angka ke dalam format yang diinginkan (contohnya format uang dengan ribuan)
-                        const formattedAmount = numberFormat(numericAmount);
-
-                        // Buat HTML untuk menampilkan informasi project
-                        const projectInfoHtml = `
-                            <ul class="list-unstyled mb-0">
-                                <li class="mb-2">
-                                    <i class="mdi mdi-account text-success me-2"></i>
-                                    <strong>Vendor:</strong> ${selectedOption.data('project-vendor') || 'Unknown'}
-                                </li>
-                                <li class="mb-2">
-                                    <i class="mdi mdi-cash text-primary me-2"></i>
-                                    <strong>Project Amount:</strong> Rp ${formattedAmount}
-                                </li>
-                                <li class="mb-2">
-                                    <i class="mdi mdi-account-circle text-warning me-2"></i>
-                                    <strong>Reviewed By:</strong> ${reviewerName || 'Not Reviewed'}
-                                </li>
-                                <li class="mb-2">
-                                    <i class="mdi mdi-comment-text-outline text-info me-2"></i>
-                                    <strong>Review Note:</strong> ${reviewNote || 'No Review Note'}
-                                </li>
-                            </ul>
-                        `;
-
-                        // Update kontainer dengan HTML yang dihasilkan
-                        projectInfoContainer.html(projectInfoHtml);
-                    }
-                    // Show container only if there's content
-                    if (projectFileDetailsContainer.children().length > 0 ||
-                        projectSummaryDetailsContainer.children().length > 0 ||
-                        projectInfoContainer.children().length > 0) {
-                        projectDetailsContainer.show();
+                        if (fileKMZ) {
+                            fileContent += `<a href="{{ asset('storage/files/kmz/${fileKMZ}') }}}" download class="list-group-item list-group-item-action d-flex align-items-center">
+                                    <i class="mdi mdi-map-marker-radius me-2 fs-5 text-warning"></i>
+                                    <span class="file-name">${fileKMZ}</span>
+                                </a>`;
+                        }
                     } else {
-                        projectDetailsContainer.hide();
+                        fileContent = `<div class="alert alert-warning">No files available</div>`;
                     }
-                });
 
-                function renderPagination(totalPages, currentPage) {
-                    let paginationHtml = `
-        <nav aria-label="Page navigation" class="mt-3">
-            <ul class="pagination justify-content-center">
-                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                    <button type="button" class="page-link" data-page="${currentPage - 1}">Previous</button>
-                </li>
-    `;
+                    if ($('#fileDetailsContent').length > 0) {
+                        $('#fileDetailsContent').html(fileContent);
+                    }
 
-                    for (let i = 1; i <= totalPages; i++) {
-                        paginationHtml += `
-            <li class="page-item ${currentPage === i ? 'active' : ''}">
-                <button type="button" class="page-link" data-page="${i}">${i}</button>
+                    // Aktifkan tombol "View Details"
+                    $('#viewProjectDetails').prop('disabled', false).off('click').on('click', function() {
+                        $('#modalProjectNameBadge').text(projectName);
+
+                        let modalContent = `<div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered">
+            <thead class="table-primary text-center">
+                <tr>
+                    <th>Project Name</th>
+                    <th>Code</th>
+                    <th>Type</th>
+                    <th>Items</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+                        projectDetails.forEach(detail => {
+                            let items = detail.items.length > 0 ? detail.items.map(item => `
+            <li class="mb-1">
+                <strong>${item.item_name}</strong> 
+                <br>Qty: <span class="badge bg-secondary">${item.quantity}</span> 
+                <br>Material Cost: <span class="badge bg-success">${numberFormat(item.cost_material)}</span> 
+                <br>Service Cost: <span class="badge bg-warning">${numberFormat(item.cost_service)}</span> 
+                <br>Service: <span class="text-muted">${item.service_name}</span>
             </li>
-        `;
-                    }
+        `).join("") : `<span class="text-muted">No items available</span>`;
 
-                    paginationHtml += `
-                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                    <button type="button" class="page-link" data-page="${currentPage + 1}">Next</button>
-                </li>
-            </ul>
-        </nav>
-    `;
-                    return paginationHtml;
-                }
-
-                function renderTable(items, start, end) {
-                    // Fungsi untuk meniru number_format PHP
-                    function numberFormat(value, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
-                        value = parseFloat(value).toFixed(decimals); // Pastikan value memiliki desimal yang benar
-                        const parts = value.toString().split('.');
-                        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
-                        return parts.join(decimalSeparator);
-                    }
-
-                    let tableHtml = `
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>No</th>
-                        <th>Item</th>
-                        <th>Quantity</th>
-                        <th>Material Cost</th>
-                        <th>Service Cost</th>
-                        <th>Total Cost</th>
-                    </tr>
-                </thead>
-                <tbody>
-    `;
-
-                    // Render baris tabel untuk setiap item
-                    items.slice(start, end).forEach((item, index) => {
-                        const materialCost = parseFloat(item.cost_material || 0);
-                        const serviceCost = parseFloat(item.cost_service || 0);
-                        const quantity = parseFloat(item.quantity || 0);
-                        const totalCost = materialCost + serviceCost;
-
-                        tableHtml += `
+                            modalContent += `
             <tr>
-                <td class="text-center">${start + index + 1}</td>
+                <td>${detail.name}</td>
+                <td>${detail.code}</td>
+                <td>${detail.type}</td>
                 <td>
-                    <div class="d-flex align-items-center">
-                        <i class="mdi mdi-package-variant text-primary me-2"></i>
-                        ${item.item_name}
-                    </div>
+                    <ul class="list-unstyled ps-3">${items}</ul>
                 </td>
-                <td class="text-end">${numberFormat(quantity, 0)}</td>
-                <td class="text-end">${materialCost != 0 ? 'Rp ' + numberFormat(materialCost, 0) : '-'}</td>
-                <td class="text-end">${serviceCost != 0 ? 'Rp ' + numberFormat(serviceCost, 0) : '-'}</td>
-                <td class="text-end">${totalCost != 0 ? 'Rp ' + numberFormat(totalCost, 0) : '-'}</td>
-            </tr>
-        `;
-                    });
-
-                    // Hitung total biaya dari semua item
-                    const totalCost = items.reduce((total, item) => {
-                        return total + (parseFloat(item.cost_material || 0) + parseFloat(item.cost_service ||
-                            0));
-                    }, 0);
-
-                    // Tambahkan footer tabel dengan total biaya
-                    tableHtml += `
-                </tbody>
-                <tfoot class="table-light">
-                    <tr>
-                        <th colspan="5" class="text-end">Total:</th>
-                        <th class="text-end">Rp ${numberFormat(totalCost, 0)}</th>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-    `;
-
-                    return tableHtml;
-                }
-                // Update the event listener code to handle the pagination
-                function attachPaginationHandlers(allItems, itemsPerPage) {
-                    document.querySelectorAll('.pagination .page-link').forEach(button => {
-                        button.addEventListener('click', function() {
-                            const newPage = parseInt(this.dataset.page);
-                            const totalPages = Math.ceil(allItems.length / itemsPerPage);
-
-                            if (newPage >= 1 && newPage <= totalPages) {
-                                currentPage = newPage;
-                                const newStart = (currentPage - 1) * itemsPerPage;
-                                const newEnd = newStart + itemsPerPage;
-
-                                // Re-render table and pagination
-                                document.getElementById('modalProjectItems').innerHTML = `
-                    <div class="mb-4">
-                        ${renderTable(allItems, newStart, newEnd)}
-                        ${renderPagination(totalPages, currentPage)}
-                    </div>
-                `;
-
-                                // Reattach event handlers to new pagination buttons
-                                attachPaginationHandlers(allItems, itemsPerPage);
-                            }
+            </tr>`;
                         });
+
+                        modalContent += `</tbody></table></div>`;
+
+                        $('#modalProjectItems').html(modalContent);
+                        $('#projectDetailsModal').modal('show');
                     });
-                }
-
-                viewProjectDetailsBtn.addEventListener('click', function() {
-                    const data = JSON.parse(this.dataset.projectData);
-                    currentData = data;
-                    currentPage = 1;
-
-                    // Update modal title
-                    document.getElementById('modalProjectNameBadge').textContent = data.projectName;
-
-                    // Flatten all items from all details into a single array
-                    const allItems = data.projectDetails.reduce((acc, detail) => {
-                        return acc.concat(detail.items.map(item => ({
-                            ...item,
-                            detail_name: detail.name,
-                            detail_code: detail.code,
-                            detail_type: detail.type
-                        })));
-                    }, []);
-
-                    // Calculate pagination
-                    const totalItems = allItems.length;
-                    const totalPages = Math.ceil(totalItems / itemsPerPage);
-                    const start = (currentPage - 1) * itemsPerPage;
-                    const end = start + itemsPerPage;
-
-                    // Render table and pagination
-                    const contentHtml = `
-        <div class="mb-4">
-            ${renderTable(allItems, start, end)}
-            ${renderPagination(totalPages, currentPage)}
-        </div>
-    `;
-
-                    document.getElementById('modalProjectItems').innerHTML = contentHtml;
-
-                    // Attach pagination handlers
-                    attachPaginationHandlers(allItems, itemsPerPage);
-
-                    // Show the modal
-                    projectDetailsModal.show();
                 });
-
-                // Trigger change event if a project is pre-selected
-                $('#project_id').trigger('change');
             });
         </script>
     @endpush
