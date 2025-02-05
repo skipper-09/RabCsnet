@@ -89,7 +89,7 @@
                                                 <i class="mdi mdi-package me-2"></i>Project Items
                                             </h6>
                                             <button type="button" class="btn btn-primary" id="viewProjectDetails" disabled>
-                                                <i class="mdi mdi-eye me-1"></i>View Project Items
+                                                <i class="mdi mdi-eye me-1"></i>View Details
                                             </button>
                                         </div>
                                     </div>
@@ -303,28 +303,29 @@
                     projectNameBadge.text(projectName);
 
                     // Format the total summary using JavaScript's Intl.NumberFormat
-                    const formatNumber = new Intl.NumberFormat('id-ID', {
-                        style: 'decimal',
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
+                    function numberFormat(value, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
+                        value = parseFloat(value).toFixed(decimals); // Pastikan value memiliki desimal yang benar
+                        const parts = value.toString().split('.');
+                        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+                        return parts.join(decimalSeparator);
+                    }
 
                     // Project File Details
                     if (projectFileData && (projectFileData.excel || projectFileData.kmz)) {
                         let fileDetailsHtml = `
         <ul class="list-unstyled mb-0">
             ${projectFileData.excel ? `
-                                                                                                        <li class="mb-2">
-                                                                                                            <i class="mdi mdi-file-excel text-success me-2"></i>
-                                                                                                            <strong>Excel File:</strong> 
-                                                                                                            <a href="{{ asset('storage/files/excel/${projectFileData.excel}') }}" download>${projectFileData.excel}</a>
-                                                                                                        </li>` : ''}
+                                                                                                                        <li class="mb-2">
+                                                                                                                            <i class="mdi mdi-file-excel text-success me-2"></i>
+                                                                                                                            <strong>Excel File:</strong> 
+                                                                                                                            <a href="{{ asset('storage/files/excel/${projectFileData.excel}') }}" download>${projectFileData.excel}</a>
+                                                                                                                        </li>` : ''}
             ${projectFileData.kmz ? `
-                                                                                                        <li class="mb-2">
-                                                                                                            <i class="mdi mdi-map text-danger me-2"></i>
-                                                                                                            <strong>KMZ File:</strong> 
-                                                                                                            <a href="{{ asset('storage/files/kmz/${projectFileData.kmz}') }}" download>${projectFileData.kmz}</a>
-                                                                                                        </li>` : ''}
+                                                                                                                        <li class="mb-2">
+                                                                                                                            <i class="mdi mdi-map text-danger me-2"></i>
+                                                                                                                            <strong>KMZ File:</strong> 
+                                                                                                                            <a href="{{ asset('storage/files/kmz/${projectFileData.kmz}') }}" download>${projectFileData.kmz}</a>
+                                                                                                                        </li>` : ''}
         </ul>
     `;
                         projectFileDetailsContainer.html(fileDetailsHtml);
@@ -337,7 +338,7 @@
                         const numericSummary = parseFloat(cleanedSummary);
 
                         if (!isNaN(numericSummary)) {
-                            const formattedTotalSummary = formatNumber.format(numericSummary);
+                            const formattedTotalSummary = numberFormat(numericSummary);
 
                             let summaryDetailsHtml = `
                                             <div class="d-flex justify-content-between align-items-center">
@@ -358,7 +359,7 @@
                     // Pastikan nilai amount valid
                     if (!isNaN(numericAmount)) {
                         // Format angka ke dalam format yang diinginkan (contohnya format uang dengan ribuan)
-                        const formattedAmount = formatNumber.format(numericAmount);
+                        const formattedAmount = numberFormat(numericAmount);
 
                         // Buat HTML untuk menampilkan informasi project
                         const projectInfoHtml = `
@@ -423,11 +424,13 @@
                 }
 
                 function renderTable(items, start, end) {
-                    const formatNumber = new Intl.NumberFormat('id-ID', {
-                        style: 'decimal',
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
+                    // Fungsi untuk meniru number_format PHP
+                    function numberFormat(value, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
+                        value = parseFloat(value).toFixed(decimals); // Pastikan value memiliki desimal yang benar
+                        const parts = value.toString().split('.');
+                        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+                        return parts.join(decimalSeparator);
+                    }
 
                     let tableHtml = `
         <div class="table-responsive">
@@ -439,18 +442,18 @@
                         <th>Quantity</th>
                         <th>Material Cost</th>
                         <th>Service Cost</th>
-                        <th>Service</th>
                         <th>Total Cost</th>
                     </tr>
                 </thead>
                 <tbody>
     `;
 
+                    // Render baris tabel untuk setiap item
                     items.slice(start, end).forEach((item, index) => {
                         const materialCost = parseFloat(item.cost_material || 0);
                         const serviceCost = parseFloat(item.cost_service || 0);
                         const quantity = parseFloat(item.quantity || 0);
-                        const totalCost = (materialCost + serviceCost) * quantity;
+                        const totalCost = materialCost + serviceCost;
 
                         tableHtml += `
             <tr>
@@ -461,26 +464,27 @@
                         ${item.item_name}
                     </div>
                 </td>
-                <td class="text-end">${formatNumber.format(quantity)}</td>
-                <td class="text-end">Rp ${formatNumber.format(materialCost)}</td>
-                <td class="text-end">Rp ${formatNumber.format(serviceCost)}</td>
-                <td>${item.service_name}</td>
-                <td class="text-end">Rp ${formatNumber.format(totalCost)}</td>
+                <td class="text-end">${numberFormat(quantity, 0)}</td>
+                <td class="text-end">${materialCost != 0 ? 'Rp ' + numberFormat(materialCost, 0) : '-'}</td>
+                <td class="text-end">${serviceCost != 0 ? 'Rp ' + numberFormat(serviceCost, 0) : '-'}</td>
+                <td class="text-end">${totalCost != 0 ? 'Rp ' + numberFormat(totalCost, 0) : '-'}</td>
             </tr>
         `;
                     });
 
+                    // Hitung total biaya dari semua item
                     const totalCost = items.reduce((total, item) => {
                         return total + (parseFloat(item.cost_material || 0) + parseFloat(item.cost_service ||
-                            0)) * parseFloat(item.quantity || 0);
+                            0));
                     }, 0);
 
+                    // Tambahkan footer tabel dengan total biaya
                     tableHtml += `
                 </tbody>
                 <tfoot class="table-light">
                     <tr>
-                        <th colspan="6" class="text-end">Total:</th>
-                        <th class="text-end">Rp ${formatNumber.format(totalCost)}</th>
+                        <th colspan="5" class="text-end">Total:</th>
+                        <th class="text-end">Rp ${numberFormat(totalCost, 0)}</th>
                     </tr>
                 </tfoot>
             </table>
