@@ -46,7 +46,6 @@ class DetailProjectController extends Controller
         $data = [
             'tittle' => 'Detail Project',
             'item' => Item::all(),
-            'service' => Service::all(),
             'types' => ProjectType::all(),
             'project' => Project::find($id)
         ];
@@ -62,6 +61,7 @@ class DetailProjectController extends Controller
             'description' => 'required',
             'item_id' => 'required|array',
             'service_id' => 'nullable|array',
+            'material' => 'nullable|array',
             'quantity' => 'required|array',
         ], [
             'type_id.required' => 'Tipe Projek Wajib di isi',
@@ -73,6 +73,8 @@ class DetailProjectController extends Controller
         DB::beginTransaction();
 
         try {
+            
+            // insert detail project
             $project = DetailProject::create([
                 'project_id' => $id,
                 'type_project_id' => $request->type_id,
@@ -82,21 +84,33 @@ class DetailProjectController extends Controller
 
             $items = $request->item_id;
             $services = $request->service_id ?? [];
+            $materials = $request->material ?? [];
             $quantities = $request->quantity;
+            
 
             foreach ($items as $index => $itemId) {
                 $itemall = Item::find($itemId);
 
-                // Default service to null
+
                 $serviceId = null;
                 $costService = 0;
+                $costMaterial = 0;
 
-                // Check if service is selected for this item
                 if (!empty($services[$index])) {
-                    $service = Service::find($services[$index]);
-                    if ($service) {
-                        $serviceId = $service->id;
-                        $costService = $service->price;
+                    $service = $services[$index];
+                    if ($service == "on") {
+                        $costService = $itemall->service_price;
+                    }else{
+                        $costService = 0;
+                    }
+                }
+
+                if (!empty($materials[$index])) {
+                    $material = $materials[$index];
+                    if ($material == "on") {
+                        $costMaterial = $itemall->material_price;
+                    }else{
+                        $costMaterial = 0;
                     }
                 }
 
@@ -106,7 +120,7 @@ class DetailProjectController extends Controller
                     'item_id' => $itemId,
                     'service_id' => $serviceId,
                     'quantity' => $quantities[$index],
-                    'cost_material' => $itemall->material_price * $quantities[$index],
+                    'cost_material' => $costMaterial * $quantities[$index],
                     'cost_service' => $costService * $quantities[$index]
                 ]);
             }
@@ -128,12 +142,12 @@ class DetailProjectController extends Controller
         $data = [
             'tittle' => 'Detail Project',
             'item' => Item::all(),
-            'service' => Service::all(),
             'types' => ProjectType::all(),
             'project' => Project::find($id),
             'detailproject' => $detail,
             'projectDetails' => $detail->detailitemporject
         ];
+        
 
         return view('pages.project.detail.edit', $data);
     }
@@ -175,16 +189,15 @@ class DetailProjectController extends Controller
             foreach ($items as $index => $itemId) {
                 $itemall = Item::find($itemId);
 
-                // Default service to null
                 $serviceId = null;
                 $costService = 0;
 
-                // Check if service is selected for this item
                 if (!empty($services[$index])) {
-                    $service = Service::find($services[$index]);
-                    if ($service) {
-                        $serviceId = $service->id;
-                        $costService = $service->price;
+                    $service = $services[$index];
+                    if ($service == 1) {
+                        $costService = $itemall->service_price;
+                    }else{
+                        $costService = 0;
                     }
                 }
 

@@ -12,7 +12,7 @@ class DetailItemProject extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['detail_id', 'item_id', 'quantity', 'cost_material', 'cost_service', 'service_id'];
+    protected $fillable = ['detail_id', 'item_id', 'quantity', 'cost_material', 'cost_service'];
     protected static function boot()
     {
         parent::boot();
@@ -31,9 +31,5 @@ class DetailItemProject extends Model
     public function item()
     {
         return $this->belongsTo(Item::class);
-    }
-    public function service()
-    {
-        return $this->belongsTo(Service::class);
     }
 }

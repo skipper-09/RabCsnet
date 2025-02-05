@@ -56,6 +56,7 @@
                                             <th>Type</th>
                                             <th>Unit</th>
                                             <th>Material Price</th>
+                                            <th>Service Price</th>
                                             <th>Deskripsi</th>
                                             @canany(['update-items', 'delete-items'])
                                                 <th>Action</th>
@@ -116,6 +117,10 @@
                         {
                             data: 'material_price',
                             name: 'material_price',
+                        },
+                        {
+                            data: 'service_price',
+                            name: 'service_price',
                         },
                         {
                             data: 'description',

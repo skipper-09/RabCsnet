@@ -47,6 +47,9 @@ class ItemController extends Controller
             ->editColumn('material_price', function ($data) {
                 return $data->material_price ? 'Rp ' . number_format($data->material_price, 2, ',', '.') : '-';
             })
+            ->editColumn('service_price', function ($data) {
+                return $data->service_price ? 'Rp ' . number_format($data->service_price, 2, ',', '.') : '-';
+            })
             ->addColumn('action', function ($data) {
                 $userauth = User::with('roles')->where('id', Auth::id())->first();
                 $button = '';
@@ -59,7 +62,7 @@ class ItemController extends Controller
                 }
                 return '<div class="d-flex gap-2">' . $button . '</div>';
             })
-            ->rawColumns(['action', 'type', 'unit'])
+            ->rawColumns(['action', 'type', 'unit','service_price'])
             ->make(true);
     }
 
@@ -89,6 +92,7 @@ class ItemController extends Controller
             'type_id' => 'required|exists:type_items,id',
             'unit_id' => 'required|exists:units,id',
             'material_price' => 'required|numeric',
+            'service_price' => 'required|numeric',
             'description' => 'nullable|string',
         ], [
             'name.required' => 'Nama wajib diisi.',
@@ -98,6 +102,8 @@ class ItemController extends Controller
             'unit_id.exists' => 'Satuan tidak valid.',
             'material_price.required' => 'Harga material wajib diisi.',
             'material_price.numeric' => 'Harga material harus berupa angka.',
+            'service_price.required' => 'Harga Jasa wajib diisi.',
+            'service_price.numeric' => 'Harga Jasa harus berupa angka.',
             'description.string' => 'Deskripsi wajib berupa string.',
         ]);
 
@@ -142,6 +148,7 @@ class ItemController extends Controller
             'type_id' => 'required|exists:type_items,id',
             'unit_id' => 'required|exists:units,id',
             'material_price' => 'required|numeric',
+            'service_price' => 'required|numeric',
             'description' => 'nullable|string',
         ], [
             'name.required' => 'Nama wajib diisi.',
@@ -151,6 +158,8 @@ class ItemController extends Controller
             'unit_id.exists' => 'Satuan tidak valid.',
             'material_price.required' => 'Harga material wajib diisi.',
             'material_price.numeric' => 'Harga material harus berupa angka.',
+            'service_price.required' => 'Harga Jasa wajib diisi.',
+            'service_price.numeric' => 'Harga Jasa harus berupa angka.',
             'description.string' => 'Deskripsi wajib berupa string.',
         ]);
 
@@ -162,9 +171,9 @@ class ItemController extends Controller
 
         // Log activity for company update
         activity()
-            ->causedBy(Auth::user()) // Logs who performed the action
-            ->performedOn($item) // The entity being changed
-            ->event('updated') // Event of the action
+            ->causedBy(Auth::user())
+            ->performedOn($item)
+            ->event('updated')
             ->withProperties([
                 'old' => $oldItem, // The data before update
                 'attributes' => $item->toArray() // The updated data

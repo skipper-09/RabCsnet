@@ -111,7 +111,7 @@
                                                             <th scope="row">{{ $index + 1 }}</th>
                                                             <td>
                                                                 <select name="item_id[]" class="form-control select2">
-                                                                    <option selected>Pilih Item Unit</option>
+                                                                    <option selected>Pilih Item</option>
                                                                     @foreach ($item as $unit)
                                                                         <option value="{{ $unit->id }}"
                                                                             {{ $detail->item_id == $unit->id ? 'selected' : '' }}>
@@ -120,18 +120,11 @@
                                                                     @endforeach
                                                                 </select>
                                                             </td>
-                                                           
                                                             <td>
                                                                 <select name="service_id[]" class="form-control select2">
                                                                     <option value="">Pilih Jasa</option>
-                                                                    @foreach ($service as $srv)
-                                                                        <option value="{{ $srv->id }}"
-                                                                            {{ $detail->service_id == $srv->id ? 'selected' : '' }}>
-                                                                            {{ $srv->name }} -
-                                                                            Rp.
-                                                                            {{ number_format($srv->price, 0, ',', '.') }}
-                                                                        </option>
-                                                                    @endforeach
+                                                                        <option value="1" {{ $detail->cost_service != 0 ? "selected" : "" }}>Ya</option>
+                                                                        <option value="0" {{ $detail->cost_service == 0 ? "selected" : "" }}>Tidak</option>
                                                                 </select>
                                                             </td>
                                                             <td>
@@ -194,7 +187,7 @@
                         <th scope="row">${rowIndex}</th>
                         <td>
                             <select name="item_id[]" class="form-control select2">
-                                <option selected>Pilih Item Unit</option>
+                                <option selected>Pilih Item</option>
                                 @foreach ($item as $unit)
                                 <option value="{{ $unit->id }}">{{ $unit->name }}</option>
                                 @endforeach
@@ -204,12 +197,8 @@
                         <td>
                             <select name="service_id[]" class="form-control select2">
                                 <option value="">Pilih Jasa</option>
-                                @foreach ($service as $srv)
-                                <option value="{{ $srv->id }}">
-                                    {{ $srv->name }} - 
-                                    Rp. {{ number_format($srv->price, 0, ',', '.') }}
-                                </option>
-                                @endforeach
+                                                                        <option value="1" >Ya</option>
+                                                                        <option value="0" >Tidak</option>
                             </select>
                         </td>
                         <td>
