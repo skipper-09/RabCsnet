@@ -89,7 +89,7 @@
                                                 <i class="mdi mdi-package me-2"></i>Project Items
                                             </h6>
                                             <button type="button" class="btn btn-primary" id="viewProjectDetails" disabled>
-                                                <i class="mdi mdi-eye me-1"></i>View Project Items
+                                                <i class="mdi mdi-eye me-1"></i>View Details
                                             </button>
                                         </div>
                                     </div>
@@ -439,7 +439,6 @@
                         <th>Quantity</th>
                         <th>Material Cost</th>
                         <th>Service Cost</th>
-                        <th>Service</th>
                         <th>Total Cost</th>
                     </tr>
                 </thead>
@@ -450,7 +449,7 @@
                         const materialCost = parseFloat(item.cost_material || 0);
                         const serviceCost = parseFloat(item.cost_service || 0);
                         const quantity = parseFloat(item.quantity || 0);
-                        const totalCost = (materialCost + serviceCost) * quantity;
+                        const totalCost = (materialCost + serviceCost);
 
                         tableHtml += `
             <tr>
@@ -464,7 +463,6 @@
                 <td class="text-end">${formatNumber.format(quantity)}</td>
                 <td class="text-end">Rp ${formatNumber.format(materialCost)}</td>
                 <td class="text-end">Rp ${formatNumber.format(serviceCost)}</td>
-                <td>${item.service_name}</td>
                 <td class="text-end">Rp ${formatNumber.format(totalCost)}</td>
             </tr>
         `;
@@ -472,14 +470,14 @@
 
                     const totalCost = items.reduce((total, item) => {
                         return total + (parseFloat(item.cost_material || 0) + parseFloat(item.cost_service ||
-                            0)) * parseFloat(item.quantity || 0);
+                            0));
                     }, 0);
 
                     tableHtml += `
                 </tbody>
                 <tfoot class="table-light">
                     <tr>
-                        <th colspan="6" class="text-end">Total:</th>
+                        <th colspan="5" class="text-end">Total:</th>
                         <th class="text-end">Rp ${formatNumber.format(totalCost)}</th>
                     </tr>
                 </tfoot>
