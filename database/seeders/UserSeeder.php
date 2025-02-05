@@ -56,8 +56,16 @@ class UserSeeder extends Seeder
         ])->assignRole('Project Manager');
 
         User::create([
+            'id'=>'6074ff4e-a9ae-40c8-b327-321324edd864',
+            'name' => 'WIBY ADITYA KURNIAWAN',
+            'username' => 'admin_pm',
+            'email' => 'adminpm@gmail.com',
+            'password' => Hash::make('admin_pm'),
+        ])->assignRole('Admin PM');
+
+        User::create([
             'id'=>'5a147d19-8002-4f37-afaf-8615ffb55b02',
-            'name' => 'Waspam',
+            'name' => 'RICO ARISANDI',
             'username' => 'waspam',
             'email' => 'waspam@gmail.com',
             'password' => Hash::make('waspam'),
