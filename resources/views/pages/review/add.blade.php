@@ -303,11 +303,12 @@
                     projectNameBadge.text(projectName);
 
                     // Format the total summary using JavaScript's Intl.NumberFormat
-                    const formatNumber = new Intl.NumberFormat('id-ID', {
-                        style: 'decimal',
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
+                    function numberFormat(value, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
+                        value = parseFloat(value).toFixed(decimals); // Pastikan value memiliki desimal yang benar
+                        const parts = value.toString().split('.');
+                        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+                        return parts.join(decimalSeparator);
+                    }
 
                     // Project File Details
                     if (projectFileData && (projectFileData.excel || projectFileData.kmz)) {
@@ -337,7 +338,7 @@
                         const numericSummary = parseFloat(cleanedSummary);
 
                         if (!isNaN(numericSummary)) {
-                            const formattedTotalSummary = formatNumber.format(numericSummary);
+                            const formattedTotalSummary = numberFormat(numericSummary);
 
                             let summaryDetailsHtml = `
                                             <div class="d-flex justify-content-between align-items-center">
@@ -358,7 +359,7 @@
                     // Pastikan nilai amount valid
                     if (!isNaN(numericAmount)) {
                         // Format angka ke dalam format yang diinginkan (contohnya format uang dengan ribuan)
-                        const formattedAmount = formatNumber.format(numericAmount);
+                        const formattedAmount = numberFormat(numericAmount);
 
                         // Buat HTML untuk menampilkan informasi project
                         const projectInfoHtml = `
