@@ -39,9 +39,9 @@ class ProjectController extends Controller
 
         if ($currentUserRole == 'Vendor') {
             $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview', 'responsibleperson', 'taskdata'])->where('start_status', 1)->where('vendor_id', $vendor->id)
-            ->orderByDesc('id')
-            ->get();
-        }else{
+                ->orderByDesc('id')
+                ->get();
+        } else {
             $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview'])
                 ->orderByDesc('id')
                 ->get();
@@ -70,7 +70,7 @@ class ProjectController extends Controller
                     // Check if Projectatp doesn't exist or is not active
                     $projectAtp = $data->Projectatp;
                     $buttons = [];
-                
+
                     // Enable ATP Upload button
                     if ((!$projectAtp || !$projectAtp->active) && $userauth->can('enable-atp-upload')) {
                         $buttons[] = '<a href="' . route('project.enable-atp-upload', $data->id) . '" 
@@ -83,7 +83,7 @@ class ProjectController extends Controller
                             <i class="fas fa-toggle-on"></i>
                         </a>';
                     }
-                
+
                     // If Projectatp exists and is active
                     if ($projectAtp && $projectAtp->active) {
                         // Disable ATP Upload button
@@ -98,7 +98,7 @@ class ProjectController extends Controller
                                 <i class="fas fa-toggle-off"></i>
                             </a>';
                         }
-                
+
                         // File-related buttons
                         if ($userauth->can('download-atp') && $projectAtp->file) {
                             $buttons[] = '<a href="' . route('project.download-atp', $data->id) . '" 
@@ -122,7 +122,7 @@ class ProjectController extends Controller
                             </a>';
                         }
                     }
-                
+
                     $button = implode('', $buttons);
                 }
 
@@ -137,7 +137,7 @@ class ProjectController extends Controller
                         <i class="fas fa-eye"></i>
                         </a>';
                     }
-                }else if($userauth->hasRole(['Developer', 'Owner'])){
+                } else if ($userauth->hasRole(['Developer', 'Owner'])) {
                     if ($userauth->can('update-projects')) {
                         $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
                         <i class="fas fa-pencil-alt"></i>
@@ -195,9 +195,9 @@ class ProjectController extends Controller
                 $review = ProjectReview::where('project_id', $data->id)->orderByDesc('id')->first();
                 return $review->reviewer->name ?? '-';
             })->editColumn('name', function ($data) {
-                return $data->vendor_id != null ? '<a href="' . route('report.project', ['project_id' => $data->id]) . '" class="text-primary "> '.$data->name.'</a>' : $data->name;
+                return $data->vendor_id != null ? '<a href="' . route('report.project', ['project_id' => $data->id]) . '" class="text-primary "> ' . $data->name . '</a>' : $data->name;
             })
-            ->rawColumns(['action', 'name','company', 'status', 'review', 'reviewer', 'status_pengajuan'])
+            ->rawColumns(['action', 'name', 'company', 'status', 'review', 'reviewer', 'status_pengajuan'])
             ->make(true);
     }
     public function detail($id)
@@ -376,7 +376,14 @@ class ProjectController extends Controller
     {
         $request->validate([
             'excel' => 'required|file|mimes:xlsx,xls,csv|max:10240',
-            'kmz' => 'required|file|mimes:kml,kmz,xml|max:10240',
+            // 'kmz' => 'required|file|mimes:kml,kmz,xml|max:10240',
+            'kmz' => [
+                'required',
+                'file',
+                'max:10240',
+                'mimes:kml,kmz,xml,zip',
+                'mimetypes:application/vnd.google-earth.kmz,application/vnd.google-earth.kml+xml,application/zip,application/xml,text/xml'
+            ],
             'total_material' => 'required|numeric|min:0',
             'total_service' => 'required|numeric|min:0',
             'ppn' => 'required|numeric|min:0',
@@ -403,7 +410,7 @@ class ProjectController extends Controller
             'total_with_ppn.numeric' => 'Total dengan PPN harus berupa angka.',
             'total_with_ppn.min' => 'Total dengan PPN tidak boleh kurang dari 0.',
         ]);
-        
+
 
         try {
             DB::beginTransaction();
@@ -412,7 +419,7 @@ class ProjectController extends Controller
             $project = Project::findOrFail($id);
 
             // Check if status is canceled and status_pengajuan is rejected
-            if ($project->status === 'canceled' && $project->status_pengajuan === 'rejected' ||$project->status === 'canceled' && $project->status_pengajuan === 'revision') {
+            if ($project->status === 'canceled' && $project->status_pengajuan === 'rejected' || $project->status === 'canceled' && $project->status_pengajuan === 'revision') {
                 // Update project status to pending
                 $project->update([
                     'status' => 'pending',

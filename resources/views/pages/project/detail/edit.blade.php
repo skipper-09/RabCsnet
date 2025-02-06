@@ -298,21 +298,21 @@
                 $('.select2').select2();
 
 
-//sumbit button handler
-               
-$("form").on("submit", function () {
-        $("input[type=checkbox]").each(function () {
-            if (!$(this).prop("checked")) {
-                $(this).after(
-                    $('<input>').attr({
-                        type: 'hidden',
-                        name: $(this).attr('name'),
-                        value: 'off'
-                    })
-                );
-            }
-        });
-    });
+                //sumbit button handler
+
+                $("form").on("submit", function() {
+                    $("input[type=checkbox]").each(function() {
+                        if (!$(this).prop("checked")) {
+                            $(this).after(
+                                $('<input>').attr({
+                                    type: 'hidden',
+                                    name: $(this).attr('name'),
+                                    value: 'off'
+                                })
+                            );
+                        }
+                    });
+                });
             });
         </script>
     @endpush
