@@ -376,12 +376,34 @@ class ProjectController extends Controller
     {
         $request->validate([
             'excel' => 'required|file|mimes:xlsx,xls,csv|max:10240',
-            'kmz' => 'required|file|mimetypes:application/vnd.google-earth.kmz,application/vnd.google-earth.kml+xml,application/zip|max:10240',
+            'kmz' => 'required|file|mimes:kml,kmz,xml|max:10240',
             'total_material' => 'required|numeric|min:0',
             'total_service' => 'required|numeric|min:0',
             'ppn' => 'required|numeric|min:0',
             'total_with_ppn' => 'required|numeric|min:0',
+        ], [
+            'excel.required' => 'File Excel wajib diunggah.',
+            'excel.file' => 'Yang diunggah harus berupa file.',
+            'excel.mimes' => 'File yang diunggah harus berformat xlsx, xls, atau csv.',
+            'excel.max' => 'Ukuran file tidak boleh lebih dari 10 MB.',
+            'kmz.required' => 'File KMZ/KML wajib diunggah.',
+            'kmz.file' => 'Yang diunggah harus berupa file.',
+            'kmz.mimes' => 'File yang diunggah harus berformat KML, KMZ, atau XML.',
+            'kmz.max' => 'Ukuran file tidak boleh lebih dari 10 MB.',
+            'total_material.required' => 'Total material wajib diisi.',
+            'total_material.numeric' => 'Total material harus berupa angka.',
+            'total_material.min' => 'Total material tidak boleh kurang dari 0.',
+            'total_service.required' => 'Total service wajib diisi.',
+            'total_service.numeric' => 'Total service harus berupa angka.',
+            'total_service.min' => 'Total service tidak boleh kurang dari 0.',
+            'ppn.required' => 'PPN wajib diisi.',
+            'ppn.numeric' => 'PPN harus berupa angka.',
+            'ppn.min' => 'PPN tidak boleh kurang dari 0.',
+            'total_with_ppn.required' => 'Total dengan PPN wajib diisi.',
+            'total_with_ppn.numeric' => 'Total dengan PPN harus berupa angka.',
+            'total_with_ppn.min' => 'Total dengan PPN tidak boleh kurang dari 0.',
         ]);
+        
 
         try {
             DB::beginTransaction();
