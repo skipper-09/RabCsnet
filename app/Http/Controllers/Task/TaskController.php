@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Task;
 
 use App\Http\Controllers\Controller;
+use App\Models\ReportImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -122,7 +123,7 @@ class TaskController extends Controller
 
                 // Periksa status tugas
                 $isInProgress = $data->status === 'in_progres'; // Tombol hanya akan tampil jika statusnya 'in_progress'
-
+    
                 // Show report task modal button only for role except Vendor
                 if ($currentUserRole !== 'Vendor') {
                     $report = ReportVendor::where('task_id', $data->id)->first();
@@ -213,11 +214,11 @@ class TaskController extends Controller
             $currentUser = Auth::user();
             $currentUserRole = $currentUser->roles->first()->name;
 
-            // Find the task
+            // Find the task with related project and vendor
             $task = Task::with(['project', 'vendor'])->findOrFail($id);
 
-            // Get the report for the task
-            $report = ReportVendor::where('task_id', $id)->first();
+            // Get the report for the task, with the associated images
+            $report = ReportVendor::with('reportImages')->where('task_id', $id)->first();
 
             if (!$report) {
                 return response()->json([
@@ -246,9 +247,11 @@ class TaskController extends Controller
                 'report' => [
                     'id' => $report->id,
                     'description' => $report->description,
-                    'image' => $report->image,
                     'submitted_at' => $report->created_at->format('d-m-Y H:i:s'),
-                    'issue' => $report->issue
+                    'issue' => $report->issue,
+                    'images' => $report->reportImages->map(function ($item) {
+                        return asset('storage/images/reportimages/' . $item->image); // Return full image URL
+                    })
                 ]
             ];
 
@@ -273,7 +276,8 @@ class TaskController extends Controller
                 'task_id' => 'required|exists:tasks,id',
                 'description' => 'required|string',
                 'issue' => 'nullable|string',
-                'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5048' // Single image, max 5MB
+                'images' => 'required|array', // Allow multiple images
+                'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:5048' // Array of images, max 5MB each
             ]);
 
             // Find the task
@@ -304,25 +308,6 @@ class TaskController extends Controller
                 'task_id' => $task->id
             ]);
 
-            // Determine the filename (use existing or default)
-            $filename = $reportVendor->image ?? 'default.png';
-
-            // Handle image upload
-            if ($request->hasFile('image')) {
-                $file = $request->file('image');
-                $filename = 'reportvendor_' . rand(0, 999999999) . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('storage/images/reportvendor/'), $filename);
-
-                // Delete old image if exists and is not default
-                if (
-                    $reportVendor->image &&
-                    $reportVendor->image !== 'default.png' &&
-                    file_exists(public_path('storage/images/reportvendor/' . $reportVendor->image))
-                ) {
-                    File::delete(public_path('storage/images/reportvendor/' . $reportVendor->image));
-                }
-            }
-
             // Update or create the report with new data
             $reportVendor->fill([
                 'project_id' => $task->project_id,
@@ -330,11 +315,38 @@ class TaskController extends Controller
                 'title' => $task->title,
                 'description' => $request->input('description', ''),
                 'issue' => $request->input('issue', ''),
-                'image' => $filename
             ]);
             $reportVendor->save();
 
-            $task->save();
+            // Handle image uploads: Delete old images first
+            if ($request->has('images')) {
+                // First, delete old images associated with the report
+                $oldImages = $reportVendor->reportImages;
+                foreach ($oldImages as $oldImage) {
+                    // Delete the image file from the storage
+                    $imagePath = public_path('storage/images/reportimages/' . $oldImage->image);
+                    if (file_exists($imagePath)) {
+                        unlink($imagePath); // Delete the file
+                    }
+
+                    // Delete the image record from the database
+                    $oldImage->delete();
+                }
+
+                // Now add the new images
+                foreach ($request->images as $imageFile) {
+                    // Handle image upload
+                    $filename = 'reportvendor_' . rand(0, 999999999) . '.' . $imageFile->getClientOriginalExtension();
+                    $imageFile->move(public_path('storage/images/reportimages/'), $filename);
+
+                    // Create a new ReportImage and associate it with the ReportVendor
+                    $reportImage = new ReportImage([
+                        'image' => $filename,
+                        'report_id' => $reportVendor->id // Associate image with the report
+                    ]);
+                    $reportImage->save();
+                }
+            }
 
             DB::commit();
 
@@ -353,6 +365,7 @@ class TaskController extends Controller
             ], 400);
         }
     }
+
 
     public function details($id)
     {

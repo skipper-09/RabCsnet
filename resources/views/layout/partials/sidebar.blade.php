@@ -141,7 +141,7 @@
                 @canany(['read-report-project', 'read-reportvendors'])
                     <li class="menu-title">Reports</li>
 
-                    @if (!Auth::user()->roles->contains('name', 'Vendor'))
+                    {{-- @if (!Auth::user()->roles->contains('name', 'Vendor'))
                     @can('read-reportvendors')
                         <li class="{{ request()->routeIs('report') ? 'mm-active' : '' }}">
                             <a href="{{ route('report') }}" class="waves-effect">
@@ -150,7 +150,7 @@
                             </a>
                         </li>
                     @endcan
-                    @endif
+                    @endif --}}
 
                     @can('read-report-project')
                         <li>
