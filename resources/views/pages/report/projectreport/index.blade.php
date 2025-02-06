@@ -168,7 +168,7 @@
                                                                             <strong>Excel File:</strong>
                                                                             <a class="btn btn-primary btn-sm"
                                                                                 href="{{ asset("
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                storage/files/excel/{$project->Projectfile->excel}") }}">Download</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                storage/files/excel/{$project->Projectfile->excel}") }}">Download</a>
                                                                         </li>
 
                                                                         <li class="mb-2">
@@ -176,7 +176,7 @@
                                                                             <strong>KMZ File:</strong>
                                                                             <a class="btn btn-primary btn-sm"
                                                                                 href="{{ asset("
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                storage/files/kmz/{$project->Projectfile->kmz}") }}">Download</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                storage/files/kmz/{$project->Projectfile->kmz}") }}">Download</a>
                                                                         </li>
                                                                     </ul>
                                                                 @else
@@ -630,7 +630,11 @@
                                     <p id="reportIssue" class="text-muted"></p>
                                 </div>
                             </div>
-                            <div class="row" id="reportImagesContainer">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h6>Report Image:</h6>
+                                    <div id="reportImagesContainer"></div>
+                                </div>
                                 <!-- Multiple images will be appended here -->
                             </div>
                         </div>
@@ -1135,7 +1139,13 @@
 
                                 // Populate report information
                                 $('#reportDescription').text(response.data.report.description);
-                                $('#reportIssue').text(response.data.report.issue);
+
+                                // Check if the issue is null and display appropriate text
+                                const issueText = response.data.report.issue ? response.data.report
+                                    .issue : 'Tidak ada kendala / masalah';
+                                $('#reportIssue').text(
+                                issueText); // Display issue or fallback message
+
                                 $('#submittedAt').text(response.data.report.submitted_at);
 
                                 // Handle image display
@@ -1145,9 +1155,9 @@
                                 if (response.data.report.images.length > 0) {
                                     response.data.report.images.forEach(image => {
                                         const imagePath =
-                                            image; // image URL returned from the backend
+                                        image; // image URL returned from the backend
                                         imageContainer.append(
-                                            `<img src="${imagePath}" class="img-fluid mb-3" style="max-height: 200px;" />`
+                                            `<img src="${imagePath}" class="img-fluid mb-3 rounded" style="max-height: 250px;" />`
                                         );
                                     });
                                 } else {
