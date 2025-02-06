@@ -137,6 +137,17 @@ class ProjectController extends Controller
                         <i class="fas fa-eye"></i>
                         </a>';
                     }
+                }else if($userauth->hasRole(['Developer', 'Owner'])){
+                    if ($userauth->can('update-projects')) {
+                        $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
+                        <i class="fas fa-pencil-alt"></i>
+                        </a>';
+                    }
+                    if ($userauth->can('read-detail-projects')) {
+                        $button .= '<a href="' . route('project.detail', $data->id) . '" class="btn btn-sm btn-warning action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
+                        <i class="fas fa-eye"></i>
+                        </a>';
+                    }
                 }
                 if ($userauth->can('delete-projects')) {
                     $button .= '<button class="btn btn-sm btn-danger action" data-id="' . $data->id . '" data-type="delete" data-route="' . route('project.delete', $data->id) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data">

@@ -100,8 +100,9 @@
                                                     <tr>
                                                         <th>No</th>
                                                         <th>Item</th>
-                                                        <th>Jumlah</th>
+                                                        <th>Material</th>
                                                         <th>Jasa</th>
+                                                        <th>Jumlah</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
