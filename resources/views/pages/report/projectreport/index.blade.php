@@ -168,7 +168,7 @@
                                                                             <strong>Excel File:</strong>
                                                                             <a class="btn btn-primary btn-sm"
                                                                                 href="{{ asset("
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                storage/files/excel/{$project->Projectfile->excel}") }}">Download</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                storage/files/excel/{$project->Projectfile->excel}") }}">Download</a>
                                                                         </li>
 
                                                                         <li class="mb-2">
@@ -176,7 +176,7 @@
                                                                             <strong>KMZ File:</strong>
                                                                             <a class="btn btn-primary btn-sm"
                                                                                 href="{{ asset("
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                storage/files/kmz/{$project->Projectfile->kmz}") }}">Download</a>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                storage/files/kmz/{$project->Projectfile->kmz}") }}">Download</a>
                                                                         </li>
                                                                     </ul>
                                                                 @else
@@ -630,12 +630,8 @@
                                     <p id="reportIssue" class="text-muted"></p>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-12">
-                                    <h6>Report Image:</h6>
-                                    <img id="reportImage" class="img-fluid" alt="Report Image"
-                                        style="max-width: 100%; max-height: 200px;">
-                                </div>
+                            <div class="row" id="reportImagesContainer">
+                                <!-- Multiple images will be appended here -->
                             </div>
                         </div>
                     </div>
@@ -646,6 +642,7 @@
             </div>
         </div>
     </div>
+
 
     @include('layout.component.modalreportproject')
 
@@ -960,55 +957,50 @@
                 $('#datatask').on('click', '.task-report-button', function() {
                     const taskId = $(this).data('id');
 
-                    // Create a modal with more detailed form
+                    // Create a modal with a more detailed form
                     Swal.fire({
                         title: 'Laporan Tugas',
                         html: `
-                            <form id="taskReportForm" class="text-start needs-validation" novalidate>
-                                <div class="form-group">
-                                    <label for="description" class="form-label required">Deskripsi Laporan (Wajib)</label>
-                                    <textarea 
-                                        id="description" 
-                                        name="description" 
-                                        class="form-control" 
-                                        placeholder="Masukkan deskripsi laporan" 
-                                        rows="4" 
-                                        required
-                                    ></textarea>
-                                    <div class="invalid-feedback">Deskripsi laporan wajib diisi</div>
-                                </div>
-                                <div class="form-group mt-3">
-                                    <label for="issue" class="form-label">Kendala/Masalah (Opsional)</label>
-                                    <textarea 
-                                        id="issue" 
-                                        name="issue" 
-                                        class="form-control" 
-                                        placeholder="Masukkan kendala atau masalah" 
-                                        rows="4"
-                                    ></textarea>
-                                </div>
-                                <div class="form-group mt-3">
-                                    <label for="image" class="form-label">Unggah Gambar</label>
-                                    <input 
-                                        type="file" 
-                                        name="image" 
-                                        id="image" 
-                                        class="form-control" 
-                                        accept="image/jpeg,image/png,image/jpg,image/gif"
-                                    >
-                                    <small class="text-muted">Format yang diterima: JPEG, PNG, JPG, GIF. Ukuran maksimal: 5MB</small>
-                                    <div class="preview-container mt-2" style="display:none;">
-                                        <img 
-                                            id="imagePreview" 
-                                            src="#" 
-                                            alt="Preview" 
-                                            class="img-fluid" 
-                                            style="max-height: 200px; display:none;"
-                                        >
-                                    </div>
-                                </div>
-                            </form>
-                            `,
+            <form id="taskReportForm" class="text-start needs-validation" novalidate>
+                <div class="form-group">
+                    <label for="description" class="form-label required">Deskripsi Laporan (Wajib)</label>
+                    <textarea 
+                        id="description" 
+                        name="description" 
+                        class="form-control" 
+                        placeholder="Masukkan deskripsi laporan" 
+                        rows="4" 
+                        required
+                    ></textarea>
+                    <div class="invalid-feedback">Deskripsi laporan wajib diisi</div>
+                </div>
+                <div class="form-group mt-3">
+                    <label for="issue" class="form-label">Kendala/Masalah (Opsional)</label>
+                    <textarea 
+                        id="issue" 
+                        name="issue" 
+                        class="form-control" 
+                        placeholder="Masukkan kendala atau masalah" 
+                        rows="4"
+                    ></textarea>
+                </div>
+                <div class="form-group mt-3">
+                    <label for="images" class="form-label">Unggah Gambar</label>
+                    <input 
+                        type="file" 
+                        name="images[]" 
+                        id="images" 
+                        class="form-control" 
+                        accept="image/jpeg,image/png,image/jpg,image/gif" 
+                        multiple
+                    >
+                    <small class="text-muted">Format yang diterima: JPEG, PNG, JPG, GIF. Ukuran maksimal: 5MB per gambar</small>
+                    <div class="preview-container mt-2" style="display:none;">
+                        <div id="imagePreviews"></div>
+                    </div>
+                </div>
+            </form>
+        `,
                         showCancelButton: true,
                         confirmButtonText: 'Kirim Laporan',
                         cancelButtonText: 'Batal',
@@ -1022,41 +1014,21 @@
                             }
 
                             const description = document.getElementById('description').value.trim();
-                            const imageFile = document.getElementById('image').files[0];
+                            const issue = document.getElementById('issue').value.trim();
+                            const imageFiles = document.getElementById('images').files;
 
                             // Create FormData for file upload
                             const formData = new FormData();
                             formData.append('task_id', taskId);
                             formData.append('description', description);
+                            formData.append('issue', issue);
 
-                            // Optional issue field
-                            const issue = document.getElementById('issue').value.trim();
-                            if (issue) {
-                                formData.append('issue', issue);
-                            }
+                            // Append images to the FormData object
+                            Array.from(imageFiles).forEach(file => {
+                                formData.append('images[]', file);
+                            });
 
                             formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
-
-                            // Image validation
-                            if (imageFile) {
-                                const validTypes = ['image/jpeg', 'image/png', 'image/jpg',
-                                    'image/gif'
-                                ];
-
-                                // Validate file type
-                                if (!validTypes.includes(imageFile.type)) {
-                                    Swal.showValidationMessage('Format gambar tidak valid');
-                                    return false;
-                                }
-
-                                // Validate file size (5MB)
-                                if (imageFile.size > 5 * 1024 * 1024) {
-                                    Swal.showValidationMessage('Ukuran gambar maksimal 5MB');
-                                    return false;
-                                }
-
-                                formData.append('image', imageFile);
-                            }
 
                             // AJAX submission with improved error handling
                             return $.ajax({
@@ -1090,23 +1062,29 @@
                         },
                         didRender: () => {
                             // Image preview functionality
-                            const imageInput = document.getElementById('image');
-                            const imagePreview = document.getElementById('imagePreview');
+                            const imageInput = document.getElementById('images');
+                            const imagePreviews = document.getElementById('imagePreviews');
                             const previewContainer = document.querySelector('.preview-container');
 
                             imageInput.addEventListener('change', function(e) {
-                                const file = e.target.files[0];
-                                if (file) {
-                                    const reader = new FileReader();
-                                    reader.onload = function(event) {
-                                        imagePreview.src = event.target.result;
-                                        imagePreview.style.display = 'block';
-                                        previewContainer.style.display = 'block';
-                                    };
-                                    reader.readAsDataURL(file);
+                                imagePreviews.innerHTML = '';
+                                const files = e.target.files;
+                                if (files.length > 0) {
+                                    previewContainer.style.display = 'block';
+                                    Array.from(files).forEach(file => {
+                                        const reader = new FileReader();
+                                        reader.onload = function(event) {
+                                            const img = document.createElement(
+                                                'img');
+                                            img.src = event.target.result;
+                                            img.style.maxHeight = '200px';
+                                            img.style.marginRight = '10px';
+                                            img.classList.add('img-fluid');
+                                            imagePreviews.appendChild(img);
+                                        };
+                                        reader.readAsDataURL(file);
+                                    });
                                 } else {
-                                    imagePreview.src = '#';
-                                    imagePreview.style.display = 'none';
                                     previewContainer.style.display = 'none';
                                 }
                             });
@@ -1161,14 +1139,20 @@
                                 $('#submittedAt').text(response.data.report.submitted_at);
 
                                 // Handle image display
-                                if (response.data.report.image) {
-                                    const imagePath =
-                                        `${window.location.origin}/storage/images/reportvendor/${response.data.report.image}`;
-                                    $('#reportImage')
-                                        .attr('src', imagePath)
-                                        .show();
+                                const imageContainer = $('#reportImagesContainer');
+                                imageContainer.empty(); // Clear previous images
+
+                                if (response.data.report.images.length > 0) {
+                                    response.data.report.images.forEach(image => {
+                                        const imagePath =
+                                            image; // image URL returned from the backend
+                                        imageContainer.append(
+                                            `<img src="${imagePath}" class="img-fluid mb-3" style="max-height: 200px;" />`
+                                        );
+                                    });
                                 } else {
-                                    $('#reportImage').hide();
+                                    imageContainer.append(
+                                        '<p>No images available for this report.</p>');
                                 }
                             } else {
                                 Swal.fire({
