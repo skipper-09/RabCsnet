@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Master;
 
 use App\Exports\ItemExport;
+use App\Exports\ItemExportPdf;
 use App\Http\Controllers\Controller;
 use App\Models\Item;
 use App\Models\TypeItem;
 use App\Models\Unit;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Exception;
 use Illuminate\Http\Request;
@@ -225,4 +227,11 @@ class ItemController extends Controller
         $now = now();
         return Excel::download(new ItemExport, "Item_$now.csv");
     }
+
+    public function exportItemsToPdf()
+    {
+        $itemExport = new ItemExportPdf();
+        return $itemExport->exportToPdf();
+    }
+
 }

@@ -41,11 +41,16 @@
                                     </div>
                                 @endcan
                                 @can('export-items')
-                                    <div class="align-self-end">
-                                        <a href="{{ route('item.export') }}" class="btn btn-success btn-sm">Export
-                                            {{ $tittle }}</a>
-                                    @endcan
+                               
+                                <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                                    <button id="btnGroupVerticalDrop1" type="button" class="btn btn-sm btn-success btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Export<i class="mdi mdi-chevron-down"></i>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="btnGroupVerticalDrop1">
+                                        <li><a class="dropdown-item" href="{{ route('item.exportpdf') }}">Export Pdf</a></li>
+                                        <li><a class="dropdown-item" href="{{ route('item.export') }}">Export Excel</a></li>
+                                    </ul>
                                 </div>
+                                        @endcan
                             </div>
                             <div class="table-responsive">
                                 <table id="datatable" class="table table-hover" style="width: 100%;">
