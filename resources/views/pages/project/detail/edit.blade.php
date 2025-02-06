@@ -114,23 +114,35 @@
                                                                 <select name="item_id[]" class="form-control select2 w-100">
                                                                     <option selected>Pilih Item</option>
                                                                     @foreach ($item as $unit)
-                                                                    <option value="{{ $unit->id }}" {{ $detail->item_id == $unit->id ? 'selected' : '' }} data-material-price="{{ $unit->material_price }}" data-service-price="{{ $unit->service_price }}">
-                                                                        {{ $unit->name }}
-                                                                    </option>
+                                                                        <option value="{{ $unit->id }}"
+                                                                            {{ $detail->item_id == $unit->id ? 'selected' : '' }}
+                                                                            data-material-price="{{ $unit->material_price }}"
+                                                                            data-service-price="{{ $unit->service_price }}">
+                                                                            {{ $unit->name }}
+                                                                        </option>
                                                                     @endforeach
                                                                 </select>
                                                             </td>
                                                             <td>
-                                                                <input class="form-check-input permission-checkbox material-checkbox"
-                                                                       type="checkbox" name="material[]" {{ $detail->cost_material != 0 ?  'checked' : ''  }}>
-                                                                <span class="material-price" style="display:none;">Rp 0</span> <!-- Menampilkan harga material -->
+                                                                {{-- <input type="hidden" name="material[]" value="off"> --}}
+                                                                <input
+                                                                    class="form-check-input permission-checkbox material-checkbox"
+                                                                    type="checkbox" name="material[]" value="on"
+                                                                    @checked($detail->cost_material != 0)>
+                                                                <span class="material-price" style="display:none;">Rp
+                                                                    0</span>
                                                             </td>
-                                                    
+
                                                             <td>
-                                                                <input class="form-check-input permission-checkbox service-checkbox"
-                                                                       type="checkbox" name="service_id[]" {{ $detail->cost_service != 0 ?  'checked' : ''  }}>
-                                                                <span class="service-price" style="display:none;">Rp 0</span> <!-- Menampilkan harga jasa -->
+                                                                {{-- <input type="hidden" name="service_id[]" value="off"> --}}
+                                                                <input
+                                                                    class="form-check-input permission-checkbox service-checkbox"
+                                                                    type="checkbox" name="service_id[]" value="on"
+                                                                    @checked($detail->cost_service != 0)>
+                                                                <span class="service-price" style="display:none;">Rp
+                                                                    0</span>
                                                             </td>
+
                                                             <td>
                                                                 <input type="text" name="quantity[]"
                                                                     value="{{ $detail->quantity }}" class="form-control"
@@ -182,35 +194,38 @@
 
         <script>
             $(document).ready(function() {
-                
+
                 function formatCurrency(amount) {
-        if (amount == 0) {
-            return "-";
-        }else{
-            return 'Rp ' + amount.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
-        }
-}
+                    if (amount == 0) {
+                        return "-";
+                    } else {
+                        return 'Rp ' + amount.toLocaleString('id-ID', {
+                            style: 'currency',
+                            currency: 'IDR'
+                        });
+                    }
+                }
 
                 function updatePrice(row) {
-        const selectedItem = $(row).find('select[name="item_id[]"] option:selected');
-        const materialPrice = selectedItem.data('material-price') || 0;
-        const servicePrice = selectedItem.data('service-price') || 0;
+                    const selectedItem = $(row).find('select[name="item_id[]"] option:selected');
+                    const materialPrice = selectedItem.data('material-price') || 0;
+                    const servicePrice = selectedItem.data('service-price') || 0;
 
-        const materialChecked = $(row).find('.material-checkbox').prop('checked');
-        const serviceChecked = $(row).find('.service-checkbox').prop('checked');
+                    const materialChecked = $(row).find('.material-checkbox').prop('checked');
+                    const serviceChecked = $(row).find('.service-checkbox').prop('checked');
 
-        if (materialChecked) {
-            $(row).find('.material-price').show().text(formatCurrency(materialPrice.toLocaleString()));
-        } else {
-            $(row).find('.material-price').hide();
-        }
+                    if (materialChecked) {
+                        $(row).find('.material-price').show().text(formatCurrency(materialPrice.toLocaleString()));
+                    } else {
+                        $(row).find('.material-price').hide();
+                    }
 
-        if (serviceChecked) {
-            $(row).find('.service-price').show().text(formatCurrency(servicePrice.toLocaleString()));
-        } else {
-            $(row).find('.service-price').hide();
-        }
-    }
+                    if (serviceChecked) {
+                        $(row).find('.service-price').show().text(formatCurrency(servicePrice.toLocaleString()));
+                    } else {
+                        $(row).find('.service-price').hide();
+                    }
+                }
                 // Tambah baris baru
                 $('#addRow').click(function() {
                     const tableBody = $('#myTable tbody');
@@ -265,22 +280,39 @@
                 }
 
                 $('#myTable').on('change', '.material-checkbox, .service-checkbox', function() {
-        const row = $(this).closest('tr');
-        updatePrice(row);
-    });
+                    const row = $(this).closest('tr');
+                    updatePrice(row);
+                });
 
-    // Ketika select item berubah, perbarui harga
-    $('#myTable').on('change', 'select[name="item_id[]"]', function() {
-        const row = $(this).closest('tr');
-        updatePrice(row);
-    });
+                // Ketika select item berubah, perbarui harga
+                $('#myTable').on('change', 'select[name="item_id[]"]', function() {
+                    const row = $(this).closest('tr');
+                    updatePrice(row);
+                });
 
-    // Inisialisasi harga untuk baris yang sudah ada
-    $('#myTable tbody tr').each(function() {
-        updatePrice($(this));
-    });
+                // Inisialisasi harga untuk baris yang sudah ada
+                $('#myTable tbody tr').each(function() {
+                    updatePrice($(this));
+                });
 
                 $('.select2').select2();
+
+
+//sumbit button handler
+               
+$("form").on("submit", function () {
+        $("input[type=checkbox]").each(function () {
+            if (!$(this).prop("checked")) {
+                $(this).after(
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: $(this).attr('name'),
+                        value: 'off'
+                    })
+                );
+            }
+        });
+    });
             });
         </script>
     @endpush

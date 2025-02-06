@@ -154,6 +154,7 @@ class DetailProjectController extends Controller
 
     public function update(Request $request, $id, $iddetail)
     {
+        // dd($request->all());
         $request->validate([
             'type_id' => 'required',
             'name' => 'required',
@@ -189,6 +190,7 @@ class DetailProjectController extends Controller
             $quantities = $request->quantity;
 
             foreach ($items as $index => $itemId) {
+                // dd($itemId);
                 $itemall = Item::find($itemId);
 
                 $serviceId = null;
