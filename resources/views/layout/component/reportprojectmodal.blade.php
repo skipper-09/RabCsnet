@@ -14,7 +14,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                 </button>
             </div>
-            <form action="{{ route('report.project') }}" method="GET">
+            <form action="{{ route('report.project') }}" class="modalreport" method="GET">
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-12">
@@ -52,8 +52,8 @@
     <script src="{{ asset('assets/js/custom.js') }}"></script>
     <script>
         $(document).ready(function() {
-            // Menambahkan event listener untuk ketika form disubmit
-            $('form').on('submit', function(event) {
+            
+            $('.modalreport').on('submit', function(event) {
                 var projectId = $('#select2modal').val(); // Mengambil nilai project_id
 
                 // Validasi apakah project_id dipilih
