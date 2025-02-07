@@ -27,7 +27,7 @@ class ProjectTypeController extends Controller
 
     public function getData(Request $request)
     {
-        $datatype = ProjectType::all();
+        $datatype = ProjectType::orderByDesc('id')->get();
 
         return DataTables::of($datatype)->addIndexColumn()->addColumn('action', function ($data) {
             $userauth = User::with('roles')->where('id', Auth::id())->first();

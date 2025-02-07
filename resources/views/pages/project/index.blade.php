@@ -39,23 +39,27 @@
                                         {{ $tittle }}</a>
                                 </div>
                             @endcan
-                            <table id="datatable" class="table table-responsive  table-hover" style="width: 100%;">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Kode</th>
-                                        <th>Name</th>
-                                        <th>Perusahaan</th>
-                                        <th>Status</th>
-                                        <th>Status Review</th>
-                                        <th>Review</th>
-                                        <th>Reviewer</th>
-                                        @canany(['update-projects', 'delete-projects', 'approval-projects', 'start-projects', 'read-detail-projects', 'enable-atp-upload', 'disable-atp-upload', 'upload-atp', 'download-atp'])
-                                        <th>Action</th>
-                                        @endcanany
-                                    </tr>
-                                </thead>
-                            </table>
+                            <div class=" table-responsive ">
+                                <table id="datatable" class="table table-hover" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Kode</th>
+                                            <th>Name</th>
+                                            <th>Perusahaan</th>
+                                            <th>Status</th>
+                                            <th>Status Review</th>
+                                            <th>Review</th>
+                                            <th>Reviewer</th>
+                                            @canany(['update-projects', 'delete-projects', 'approval-projects',
+                                                'start-projects', 'read-detail-projects', 'enable-atp-upload',
+                                                'disable-atp-upload', 'upload-atp', 'download-atp'])
+                                                <th>Action</th>
+                                            @endcanany
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
