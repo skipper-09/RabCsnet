@@ -30,174 +30,198 @@ class ProjectController extends Controller
 
     public function getData(Request $request)
     {
-
-
         $currentUser = Auth::user();
         $currentUserRole = $currentUser->roles->first()?->name;
-
         $vendor = Vendor::where('user_id', $currentUser->id)->first();
 
+
         if ($currentUserRole == 'Vendor') {
-            $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview', 'responsibleperson', 'taskdata'])->where('start_status', 1)->where('vendor_id', $vendor->id)
+            $dataType = Project::with([
+                'company',
+                'detailproject',
+                'Projectfile',
+                'ProjectReview',
+                'responsibleperson',
+                'taskdata'
+            ])->where('start_status', 1)
+                ->where('vendor_id', $vendor->id)
                 ->orderByDesc('id')
                 ->get();
         } else {
-            $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview'])
-                ->orderByDesc('id')
+            $dataType = Project::with([
+                'company',
+                'detailproject',
+                'Projectfile',
+                'ProjectReview',
+            ])->orderByDesc('id')
                 ->get();
         }
+
+
         return DataTables::of($dataType)
             ->addIndexColumn()
             ->addColumn('action', function ($data) {
                 $userauth = User::with('roles')->where('id', Auth::id())->first();
                 $button = '';
+                $projectReview = $data->ProjectReview()->latest()->first();
 
                 if ($data->detailproject->isNotEmpty() && !$data->Projectfile) {
                     if ($userauth->can('approval-projects')) {
                         $button .= '<a href="' . route('project.proses', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
-                            <i class="fas fa-upload"></i> Proses Pengajuan
-                        </a>';
+                        <i class="fas fa-upload"></i> Proses Pengajuan
+                    </a>';
                     }
                 }
-                if ($data->status_pengajuan == 'approved' && !$data->vendor_id) {
+
+                // Check project review status
+                if ($projectReview && $projectReview->status_review == 'approved' && !$data->vendor_id) {
                     if ($userauth->can('start-projects')) {
                         $button .= '<a href="' . route('project.start', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Start Project">
-                        <i class="fas fa-upload"></i> Start Project</a>';
+                    <i class="fas fa-upload"></i> Start Project</a>';
                     }
                 }
 
                 if ($data->start_status == 1) {
-                    // Check if Projectatp doesn't exist or is not active
                     $projectAtp = $data->Projectatp;
                     $buttons = [];
 
-                    // Enable ATP Upload button
                     if ((!$projectAtp || !$projectAtp->active) && $userauth->can('enable-atp-upload')) {
                         $buttons[] = '<a href="' . route('project.enable-atp-upload', $data->id) . '" 
-                            class="btn btn-sm btn-primary action mr-1" 
-                            data-id="' . $data->id . '" 
-                            data-type="enable-atp-upload" 
-                            data-toggle="tooltip" 
-                            data-placement="bottom" 
-                            title="Enable Vendor ATP Upload">
-                            <i class="fas fa-toggle-on"></i>
-                        </a>';
+                        class="btn btn-sm btn-primary action mr-1" 
+                        data-id="' . $data->id . '" 
+                        data-type="enable-atp-upload" 
+                        data-toggle="tooltip" 
+                        data-placement="bottom" 
+                        title="Enable Vendor ATP Upload">
+                        <i class="fas fa-toggle-on"></i>
+                    </a>';
                     }
 
-                    // If Projectatp exists and is active
                     if ($projectAtp && $projectAtp->active) {
-                        // Disable ATP Upload button
                         if ($userauth->can('disable-atp-upload')) {
                             $buttons[] = '<a href="' . route('project.disable-atp-upload', $data->id) . '" 
-                                class="btn btn-sm btn-primary action mr-1" 
-                                data-id="' . $data->id . '" 
-                                data-type="disable-atp-upload" 
-                                data-toggle="tooltip" 
-                                data-placement="bottom" 
-                                title="Disable ATP Upload">
-                                <i class="fas fa-toggle-off"></i>
-                            </a>';
+                            class="btn btn-sm btn-primary action mr-1" 
+                            data-id="' . $data->id . '" 
+                            data-type="disable-atp-upload" 
+                            data-toggle="tooltip" 
+                            data-placement="bottom" 
+                            title="Disable ATP Upload">
+                            <i class="fas fa-toggle-off"></i>
+                        </a>';
                         }
 
-                        // File-related buttons
                         if ($userauth->can('download-atp') && $projectAtp->file) {
                             $buttons[] = '<a href="' . route('project.download-atp', $data->id) . '" 
-                                class="btn btn-sm btn-primary action mr-1" 
-                                data-id="' . $data->id . '" 
-                                data-type="download-atp" 
-                                data-toggle="tooltip" 
-                                data-placement="bottom" 
-                                title="Download ATP File">
-                                <i class="fas fa-download"></i> Download ATP
-                            </a>';
+                            class="btn btn-sm btn-primary action mr-1" 
+                            data-id="' . $data->id . '" 
+                            data-type="download-atp" 
+                            data-toggle="tooltip" 
+                            data-placement="bottom" 
+                            title="Download ATP File">
+                            <i class="fas fa-download"></i> Download ATP
+                        </a>';
                         } elseif ($userauth->can('upload-atp') && !$projectAtp->file) {
                             $buttons[] = '<a href="' . route('project.upload-atp', $data->id) . '" 
-                                class="btn btn-sm btn-success action mr-1" 
-                                data-id="' . $data->id . '" 
-                                data-type="upload-atp" 
-                                data-toggle="tooltip" 
-                                data-placement="bottom" 
-                                title="Upload ATP File">
-                                <i class="fas fa-file-upload"></i> Upload ATP
-                            </a>';
+                            class="btn btn-sm btn-success action mr-1" 
+                            data-id="' . $data->id . '" 
+                            data-type="upload-atp" 
+                            data-toggle="tooltip" 
+                            data-placement="bottom" 
+                            title="Upload ATP File">
+                            <i class="fas fa-file-upload"></i> Upload ATP
+                        </a>';
                         }
                     }
 
-                    $button = implode('', $buttons);
+                    $button .= implode('', $buttons);
                 }
 
                 if ($data->start_status == 0 && !$data->Projectfile) {
                     if ($userauth->can('update-projects')) {
                         $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
-                        <i class="fas fa-pencil-alt"></i>
-                        </a>';
+                    <i class="fas fa-pencil-alt"></i>
+                    </a>';
                     }
                     if ($userauth->can('read-detail-projects')) {
                         $button .= '<a href="' . route('project.detail', $data->id) . '" class="btn btn-sm btn-warning action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
-                        <i class="fas fa-eye"></i>
-                        </a>';
+                    <i class="fas fa-eye"></i>
+                    </a>';
                     }
                 } else if ($userauth->hasRole(['Developer', 'Owner'])) {
                     if ($userauth->can('update-projects')) {
                         $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
-                        <i class="fas fa-pencil-alt"></i>
-                        </a>';
+                    <i class="fas fa-pencil-alt"></i>
+                    </a>';
                     }
                     if ($userauth->can('read-detail-projects')) {
                         $button .= '<a href="' . route('project.detail', $data->id) . '" class="btn btn-sm btn-warning action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
-                        <i class="fas fa-eye"></i>
-                        </a>';
+                    <i class="fas fa-eye"></i>
+                    </a>';
                     }
                 }
+
                 if ($userauth->can('delete-projects')) {
                     $button .= '<button class="btn btn-sm btn-danger action" data-id="' . $data->id . '" data-type="delete" data-route="' . route('project.delete', $data->id) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data">
-                    <i class="fas fa-trash-alt"></i>
-                    </button>';
+                <i class="fas fa-trash-alt"></i>
+                </button>';
                 }
+
                 return '<div class="d-flex gap-2">' . $button . '</div>';
-            })->editColumn('status', function ($data) {
+            })
+            ->editColumn('status', function ($data) {
                 $status = '';
-
-                if ($data->status == 'pending') {
-                    $status = '<span class="badge badge-pill badge-soft-primary font-size-13">Pending</span>';
-                } else if ($data->status == 'in_progres') {
-                    $status = '<span class="badge badge-pill badge-soft-info font-size-13">In Progress</span>';
-                } else if ($data->status == 'canceled') {
-                    $status = '<span class="badge badge-pill badge-soft-danger font-size-13">Canceled</span>';
-                } else {
-                    $status = '<span class="badge badge-pill badge-soft-success font-size-13">Selesai</span>';
+                switch ($data->status) {
+                    case 'pending':
+                        $status = '<span class="badge badge-pill badge-soft-primary font-size-13">Pending</span>';
+                        break;
+                    case 'in_progres':
+                        $status = '<span class="badge badge-pill badge-soft-info font-size-13">In Progress</span>';
+                        break;
+                    case 'canceled':
+                        $status = '<span class="badge badge-pill badge-soft-danger font-size-13">Canceled</span>';
+                        break;
+                    default:
+                        $status = '<span class="badge badge-pill badge-soft-success font-size-13">Selesai</span>';
                 }
-
                 return $status;
-            })->editColumn('status_pengajuan', function ($data) {
-                $status_pengajuan = '';
+            })
+            ->addColumn('status_review', function ($data) {
+                $review = $data->ProjectReview()->latest()->first();
 
-                if ($data->status_pengajuan == 'pending') {
-                    $status_pengajuan = '<span class="badge badge-pill badge-soft-primary font-size-13">Pending</span>';
-                } else if ($data->status_pengajuan == 'in_review') {
-                    $status_pengajuan = '<span class="badge badge-pill badge-soft-info font-size-13">In Review</span>';
-                } else if ($data->status_pengajuan == 'approved') {
-                    $status_pengajuan = '<span class="badge badge-pill badge-soft-success font-size-13">Approved</span>';
-                } else if ($data->status_pengajuan == 'revision') {
-                    $status_pengajuan = '<span class="badge badge-pill badge-soft-warning font-size-13">Revision</span>';
-                } else {
-                    $status_pengajuan = '<span class="badge badge-pill badge-soft-danger font-size-13">Rejected</span>';
+                if (!$review) {
+                    return '<span class="badge badge-pill badge-soft-secondary font-size-13">No Review</span>';
                 }
-                return $status_pengajuan;
+
+                $statusClasses = [
+                    'pending' => 'primary',
+                    'in_review' => 'info',
+                    'approved' => 'success',
+                    'revision' => 'warning',
+                    'rejected' => 'danger'
+                ];
+
+                $statusClass = $statusClasses[$review->status_review] ?? 'secondary';
+                $statusText = ucfirst(str_replace('_', ' ', $review->status_review));
+
+                return '<span class="badge badge-pill badge-soft-' . $statusClass . ' font-size-13">' . $statusText . '</span>';
             })
             ->editColumn('company', function ($data) {
                 return $data->company->name;
-            })->editColumn('review', function ($data) {
-                $review = ProjectReview::where('project_id', $data->id)->orderByDesc('id')->first();
-
-                return $review->review_note ?? '-';
-            })->editColumn('reviewer', function ($data) {
-                $review = ProjectReview::where('project_id', $data->id)->orderByDesc('id')->first();
-                return $review->reviewer->name ?? '-';
-            })->editColumn('name', function ($data) {
-                return $data->vendor_id != null ? '<a href="' . route('report.project', ['project_id' => $data->id]) . '" class="text-primary "> ' . $data->name . '</a>' : $data->name;
             })
-            ->rawColumns(['action', 'name', 'company', 'status', 'review', 'reviewer', 'status_pengajuan'])
+            ->editColumn('review', function ($data) {
+                $review = $data->ProjectReview()->latest()->first();
+                return $review ? $review->review_note : '-';
+            })
+            ->editColumn('reviewer', function ($data) {
+                $review = $data->ProjectReview()->latest()->first();
+                return $review && $review->reviewer ? $review->reviewer->name : '-';
+            })
+            ->editColumn('name', function ($data) {
+                return $data->vendor_id
+                    ? '<a href="' . route('report.project', ['project_id' => $data->id]) . '" class="text-primary">' . $data->name . '</a>'
+                    : $data->name;
+            })
+            ->rawColumns(['action', 'name', 'company', 'status', 'review', 'reviewer', 'status_review'])
             ->make(true);
     }
     public function detail($id)
@@ -376,7 +400,6 @@ class ProjectController extends Controller
     {
         $request->validate([
             'excel' => 'required|file|mimes:xlsx,xls,csv|max:10240',
-            // 'kmz' => 'required|file|mimes:kml,kmz,xml|max:10240',
             'kmz' => [
                 'required',
                 'file',
@@ -411,20 +434,42 @@ class ProjectController extends Controller
             'total_with_ppn.min' => 'Total dengan PPN tidak boleh kurang dari 0.',
         ]);
 
-
         try {
             DB::beginTransaction();
 
-            // Fetch the project to check its current status
-            $project = Project::findOrFail($id);
+            // Ambil proyek beserta review terbaru
+            $project = Project::with([
+                'ProjectReview' => function ($query) {
+                    $query->latest(); // Mengambil review terbaru berdasarkan waktu
+                }
+            ])->findOrFail($id);
 
-            // Check if status is canceled and status_pengajuan is rejected
-            if ($project->status === 'canceled' && $project->status_pengajuan === 'rejected' || $project->status === 'canceled' && $project->status_pengajuan === 'revision') {
-                // Update project status to pending
-                $project->update([
-                    'status' => 'pending',
-                    'status_pengajuan' => 'pending'
-                ]);
+            // Debugging untuk melihat status proyek dan review
+            \Log::info('Current Project Status: ' . $project->status);
+
+            // Cek status proyek sebelum mencoba untuk memperbarui
+            if ($project->status === 'pending') {
+                $latestReview = $project->ProjectReview->first(); // Mengambil review terbaru
+
+                // Log untuk melihat status review
+                \Log::info('Latest Review Status: ' . ($latestReview ? $latestReview->status_review : 'No review'));
+
+                // Jika ada review dan statusnya adalah 'rejected' atau 'revision'
+                if ($latestReview && in_array($latestReview->status_review, ['rejected', 'revision'])) {
+                    // Update status proyek ke 'pending' jika belum 'pending'
+                    if ($project->status !== 'pending') {
+                        $project->status = 'pending';
+                        $project->save(); // Menyimpan perubahan status proyek
+                        \Log::info('Project status updated to pending');
+                    }
+
+                    // Update status review ke 'pending' jika belum 'pending'
+                    if ($latestReview->status_review !== 'pending') {
+                        $latestReview->status_review = 'pending';
+                        $latestReview->save(); // Menyimpan perubahan status review
+                        \Log::info('Review status updated to pending');
+                    }
+                }
             }
 
             $fileexcel = '';
@@ -441,12 +486,14 @@ class ProjectController extends Controller
                 $file->move(public_path('storage/files/kmz/'), $filekmz);
             }
 
+            // Create project file record
             ProjectFile::create([
                 'project_id' => $id,
                 'excel' => $fileexcel,
                 'kmz' => $filekmz,
             ]);
 
+            // Create summary record
             Summary::create([
                 'project_id' => $id,
                 'total_material_cost' => $request->total_material,
@@ -459,11 +506,18 @@ class ProjectController extends Controller
             $project->update(['amount' => $request->total_with_ppn]);
 
             DB::commit();
-            return redirect()->route('project')->with(['status' => 'Success', 'message' => 'Pengajuan Berhasil Terkirim!']);
+            return redirect()->route('project')->with([
+                'status' => 'Success',
+                'message' => 'Pengajuan Berhasil Terkirim!'
+            ]);
+
         } catch (Exception $e) {
-            \Log::info("Error: $e");
+            \Log::error("Error in ProsesProjectStore: " . $e->getMessage());
             DB::rollBack();
-            return redirect()->back()->with(['status' => 'Error', 'message' => 'Gagal Proses Pengajuan!']);
+            return redirect()->back()->with([
+                'status' => 'Error',
+                'message' => 'Gagal Proses Pengajuan!'
+            ]);
         }
     }
 

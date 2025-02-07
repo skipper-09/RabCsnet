@@ -24,7 +24,9 @@ class DashboardController extends Controller
         $currentUserRole = $currentUser->roles->first()?->name;
 
         // Hitung jumlah proyek yang belum direview
-        $totalProjectsNotReviewed = Project::where('status_pengajuan', 'pending')->count();
+        $totalProjectsNotReviewed = Project::whereHas("ProjectReview", function ($query) {
+            $query->where("status_review", "pending");
+        })->count();
 
         // Hitung jumlah proyek yang sudah selesai
         $totalCompletedProjects = Project::where('status', 'finish')->count();
@@ -34,30 +36,31 @@ class DashboardController extends Controller
         switch ($currentUserRole) {
             case 'Developer':
                 // Developer memiliki akses penuh untuk melihat semua proyek yang perlu direview
-                $projectsToReview = Project::whereIn('status_pengajuan', ['pending', 'in_review'])->count();
+                $projectsToReview = Project::whereHas('ProjectReview', function ($query) {
+                    $query->whereIn('status_review', ['pending', 'in_review']);
+                })->count();
                 break;
-                
+
             case 'Accounting':
                 // Hitung proyek yang belum direview oleh Accounting
-                $projectsToReview = Project::where('status_pengajuan', 'pending')
-                    ->whereDoesntHave('ProjectReview', function ($query) {
-                        $query->whereHas('reviewer.roles', function ($roleQuery) {
-                            $roleQuery->where('name', 'Accounting');
+                $projectsToReview = Project::whereDoesntHave('ProjectReview', function ($query) {  // Pastikan memeriksa relasi ProjectReview
+                    $query->where('status_review', 'pending')  // Cek status review pada project_reviews
+                        ->whereHas('reviewer.roles', function ($roleQuery) {
+                            $roleQuery->where('name', 'Accounting');  // Pastikan reviewer adalah Accounting
                         });
-                    })->count();
+                })->count();
                 break;
-        
+
             case 'Owner':
                 // Hitung proyek yang belum direview oleh Owner
-                $projectsToReview = Project::whereIn('status_pengajuan', ['in_review', 'pending'])
-                    ->whereDoesntHave('ProjectReview', function ($query) {
-                        $query->whereHas('reviewer.roles', function ($q) {
-                            $q->where('name', 'Owner');
+                $projectsToReview = Project::whereDoesntHave('ProjectReview', function ($query) {  // Pastikan memeriksa relasi ProjectReview
+                    $query->whereIn('status_review', ['in_review', 'pending'])  // Cek status review pada project_reviews
+                        ->whereHas('reviewer.roles', function ($roleQuery) {
+                            $roleQuery->where('name', 'Owner');  // Pastikan reviewer adalah Owner
                         });
-                    })
-                    ->count();
+                })->count();
                 break;
-        
+
             default:
                 // Role lain tidak memiliki akses untuk menghitung proyek yang perlu direview
                 $projectsToReview = 0;
@@ -121,8 +124,12 @@ class DashboardController extends Controller
         }
 
         // Project Manager atau Waspam
-        else if ($currentUserRole == 'Project Manager' || $currentUserRole == 'Waspam') {
-            $projectCount = Project::where('status_pengajuan', 'approved')->whereHas('Projectfile')->count();
+        else if ($currentUserRole == 'Project Manager' || $currentUserRole == 'Waspam' || $currentUserRole == 'Admin PM') {
+            $projectCount = Project::whereHas('ProjectReview', function ($query) {
+                $query->where('status_review', 'approved');  // Memeriksa status_review di project_reviews
+            })->whereHas('Projectfile')  // Memeriksa apakah proyek memiliki file terkait
+            ->count();
+            
             $taskCounts = Task::selectRaw("COUNT(*) as total_tasks, 
                                       SUM(CASE WHEN status = 'in_progres' THEN 1 ELSE 0 END) as pending_tasks, 
                                       SUM(CASE WHEN status = 'complated' THEN 1 ELSE 0 END) as finished_tasks")
@@ -170,23 +177,7 @@ class DashboardController extends Controller
                 }
 
                 return $status;
-            })->editColumn('status_pengajuan', function ($data) {
-                $status_pengajuan = '';
-
-                if ($data->status_pengajuan == 'pending') {
-                    $status_pengajuan = '<span class="badge badge-pill badge-soft-primary font-size-13">Pending</span>';
-                } else if ($data->status_pengajuan == 'in_review') {
-                    $status_pengajuan = '<span class="badge badge-pill badge-soft-info font-size-13">In Review</span>';
-                } else if ($data->status_pengajuan == 'approved') {
-                    $status_pengajuan = '<span class="badge badge-pill badge-soft-success font-size-13">Approved</span>';
-                } else if ($data->status_pengajuan == 'revision') {
-                    $status_pengajuan = '<span class="badge badge-pill badge-soft-warning font-size-13">Revision</span>';
-                } else {
-                    $status_pengajuan = '<span class="badge badge-pill badge-soft-danger font-size-13">Rejected</span>';
-                }
-                return $status_pengajuan;
-            })
-            ->editColumn('company', function ($data) {
+            })->editColumn('company', function ($data) {
                 return $data->company->name;
             })->editColumn('end_date', function ($data) {
                 return Carbon::parse($data->end_date)->format('d-m-Y');

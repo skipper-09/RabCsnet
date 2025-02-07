@@ -129,8 +129,8 @@
                             }
                         },
                         {
-                            data: 'status_pengajuan',
-                            name: 'project.status_pengajuan',
+                            data: 'status_review',
+                            name: 'status_review',
                             className: 'align-middle text-center'
                         },
                         {
