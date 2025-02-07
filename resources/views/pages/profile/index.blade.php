@@ -5,6 +5,7 @@
     <link href="assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 
     <style>
         .image-preview {
@@ -159,8 +160,21 @@
         <script src="{{ asset('assets/js/pages/form-validation.init.js') }}"></script>
         <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
         <script src="{{ asset('assets/js/pages/form-advanced.init.js') }}"></script>
+        <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
+        {{-- custom swetaert --}}
+        <script src="{{ asset('assets/js/custom.js') }}"></script>
 
         <script>
+            @if (Session::has('message'))
+                Swal.fire({
+                    title: `{{ Session::get('status') }}`,
+                    text: `{{ Session::get('message') }}`,
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+                // Swal.fire(`{{ Session::get('status') }}`, `{{ Session::get('message') }}`, "success");
+            @endif
             // Image preview function
             function previewImage(input) {
                 const preview = document.getElementById('imagePreview');

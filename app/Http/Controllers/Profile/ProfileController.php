@@ -31,7 +31,7 @@ class ProfileController extends Controller
             $user = User::find($id);
 
             $request->validate([
-                'picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
                 'name' => 'nullable|string|max:255',
                 'email' => [
                     'nullable',
