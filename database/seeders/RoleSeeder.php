@@ -203,7 +203,6 @@ class RoleSeeder extends Seeder
         $accounting->givePermissionTo([
             'read-dashboard',
             'read-projects',
-            'read-detail-projects',
             'read-paymentvendors',
             'read-companies',
             'read-projectreviews',

@@ -60,7 +60,7 @@
 
                                     @php
                                         $statusOptions = [
-                                            'Accounting' => ['pending', 'in_review', 'revision'],
+                                            'Accounting' => ['in_review', 'revision'],
                                             'Owner' => ['pending', 'in_review', 'approved', 'rejected', 'revision'],
                                             'Developer' => ['pending', 'in_review', 'approved', 'rejected', 'revision'],
                                         ];

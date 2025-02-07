@@ -463,12 +463,12 @@ class ProjectController extends Controller
                         \Log::info('Project status updated to pending');
                     }
 
-                    // Update status review ke 'pending' jika belum 'pending'
-                    if ($latestReview->status_review !== 'pending') {
-                        $latestReview->status_review = 'pending';
-                        $latestReview->save(); // Menyimpan perubahan status review
-                        \Log::info('Review status updated to pending');
-                    }
+                    // // Update status review ke 'pending' jika belum 'pending'
+                    // if ($latestReview->status_review !== 'pending') {
+                    //     $latestReview->status_review = 'pending';
+                    //     $latestReview->save(); // Menyimpan perubahan status review
+                    //     \Log::info('Review status updated to pending');
+                    // }
                 }
             }
 

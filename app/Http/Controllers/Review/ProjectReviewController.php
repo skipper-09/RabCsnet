@@ -86,7 +86,7 @@ class ProjectReviewController extends Controller
                 );
             })
             ->editColumn('review_date', function ($data) {
-                return Carbon::parse($data->created_at)->format('d-m-Y');
+                return Carbon::parse($data->created_at)->format('d-M-Y H:i:s');
             })
             ->addColumn('action', function ($data) {
                 $userauth = User::with('roles')->where('id', Auth::id())->first();
@@ -175,6 +175,10 @@ class ProjectReviewController extends Controller
                 // ATAU proyek yang memiliki review dengan status pending/in_review
                 ->orWhereHas('ProjectReview', function ($q) {
                     $q->whereIn('status', ['pending', 'in_review']);
+                })
+                // Pastikan proyek tidak memiliki review dengan status_review tertentu
+                ->whereDoesntHave('ProjectReview', function ($q) {
+                    $q->where('status_review', 'approved'); // Ganti 'status_to_exclude' dengan nilai yang sesuai
                 });
         })
             // Pastikan proyek memiliki file terkait
@@ -200,6 +204,9 @@ class ProjectReviewController extends Controller
     private function getOwnerProjects()
     {
         return Project::whereHas('Projectfile')
+            ->whereDoesntHave('ProjectReview', function ($q) {
+                $q->where('status_review', 'approved'); // Ganti dengan status_review yang ingin dikecualikan
+            })
             ->with(['Projectfile', 'summary', 'ProjectReview.reviewer'])
             ->get()
             ->map(function ($project) {
@@ -213,6 +220,9 @@ class ProjectReviewController extends Controller
     private function getDeveloperProjects()
     {
         return Project::whereHas('Projectfile')
+            ->whereDoesntHave('ProjectReview', function ($q) {
+                $q->where('status_review', 'approved'); // Ganti dengan status_review yang ingin dikecualikan
+            })
             ->with(['Projectfile', 'summary', 'ProjectReview.reviewer'])
             ->get()
             ->map(function ($project) {
@@ -416,7 +426,7 @@ class ProjectReviewController extends Controller
      */
     private function handleRevisionStatus(Project $project, string $userRole)
     {
-        if (in_array($userRole, ['Owner', 'Developer'])) {
+        if (in_array($userRole, ['Owner', 'Developer', 'Accounting'])) {
             $project->status = 'pending';
             $project->start_status = 0;
 
