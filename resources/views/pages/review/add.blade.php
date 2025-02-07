@@ -2,187 +2,189 @@
 @section('tittle', $tittle)
 
 @push('css')
-<link href="{{ asset('assets/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
-<link href="{{ asset('assets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
-<link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
-<link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}"
-    rel="stylesheet" />
+    <link href="{{ asset('assets/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}"
+        rel="stylesheet" />
 @endpush
 
 @section('content')
-@if (session('status') && session('message'))
-<div class="alert alert-{{ strtolower(session('status')) == 'success' ? 'success' : 'danger' }} alert-dismissible fade show"
-    role="alert">
-    {{ session('message') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-@endif
-<!-- start page title -->
-<div class="page-title-box">
-    <div class="container-fluid">
-        <div class="row align-items-center">
-            <div class="col-sm-6">
-                <div class="page-title">
-                    <h4>Tambah {{ $tittle }}</h4>
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('review') }}">{{ $tittle }}</a></li>
-                        <li class="breadcrumb-item active">Tambah {{ $tittle }}</li>
-                    </ol>
+    @if (session('status') && session('message'))
+        <div class="alert alert-{{ strtolower(session('status')) == 'success' ? 'success' : 'danger' }} alert-dismissible fade show"
+            role="alert">
+            {{ session('message') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    <!-- start page title -->
+    <div class="page-title-box">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-sm-6">
+                    <div class="page-title">
+                        <h4>Tambah {{ $tittle }}</h4>
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('review') }}">{{ $tittle }}</a></li>
+                            <li class="breadcrumb-item active">Tambah {{ $tittle }}</li>
+                        </ol>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<!-- end page title -->
+    <!-- end page title -->
 
 
-<div class="container-fluid">
-    <div class="page-content-wrapper">
-        {{-- Project Details Section --}}
-        @if ($projects->isNotEmpty())
-        <!-- Project Details Container -->
-        <div id="projectDetailsContainer" class="row" style="display:none;">
-            <div class="col-12">
-                <div class="card border-primary shadow-lg rounded">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">
-                            <i class="mdi mdi-information-outline me-2"></i> Project Details
-                        </h5>
-                        <span class="badge bg-light text-primary p-2" id="projectNameBadge"></span>
+    <div class="container-fluid">
+        <div class="page-content-wrapper">
+            {{-- Project Details Section --}}
+            @if ($projects->isNotEmpty())
+                <!-- Project Details Container -->
+                <div id="projectDetailsContainer" class="row" style="display:none;">
+                    <div class="col-12">
+                        <div class="card border-primary shadow-lg rounded">
+                            <div
+                                class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">
+                                    <i class="mdi mdi-information-outline me-2"></i> Project Details
+                                </h5>
+                                <span class="badge bg-light text-primary p-2" id="projectNameBadge"></span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Project Information -->
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <h6 class="text-primary mb-3">
+                                                <i class="mdi mdi-chart-line me-2"></i> Project Information
+                                            </h6>
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th>Vendor</th>
+                                                            <td id="projectVendor"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Total Amount</th>
+                                                            <td id="projectAmount"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Reviewer</th>
+                                                            <td id="projectReviewer"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Review Note</th>
+                                                            <td id="projectReviewNote"></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Project Files -->
+                                    <div class="col-md-6">
+                                        <div id="projectFileDetails" class="mb-3">
+                                            <h6 class="text-primary mb-3">
+                                                <i class="mdi mdi-file-document-outline me-2"></i> Project Files
+                                            </h6>
+                                            <div id="fileDetailsContent" class="list-group shadow-sm"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div id="projectFileDetails" class="mb-3">
+                                            <h6 class="text-primary mb-3">
+                                                <i class="mdi mdi-location-enter me-2"></i> Detail Distribusi
+                                            </h6>
+                                            <div id="distribusi" class=" d-flex flex-column"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Project Summary -->
+                                    <div class="col-md-6">
+                                        <div id="projectSummaryDetails" class="mb-3">
+                                            <h6 class="text-primary mb-3">
+                                                <i class="mdi mdi-chart-line me-2"></i> Project Summary
+                                            </h6>
+                                            <div class="alert alert-info shadow-sm" id="summaryDetailsContent">
+                                                No summary available
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <!-- Project Information -->
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <h6 class="text-primary mb-3">
-                                        <i class="mdi mdi-chart-line me-2"></i> Project Information
-                                    </h6>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <tbody>
-                                                <tr>
-                                                    <th>Vendor</th>
-                                                    <td id="projectVendor"></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Total Amount</th>
-                                                    <td id="projectAmount"></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Reviewer</th>
-                                                    <td id="projectReviewer"></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Review Note</th>
-                                                    <td id="projectReviewNote"></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <!-- Project Files -->
-                            <div class="col-md-6">
-                                <div id="projectFileDetails" class="mb-3">
-                                    <h6 class="text-primary mb-3">
-                                        <i class="mdi mdi-file-document-outline me-2"></i> Project Files
-                                    </h6>
-                                    <div id="fileDetailsContent" class="list-group shadow-sm"></div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div id="projectFileDetails" class="mb-3">
-                                    <h6 class="text-primary mb-3">
-                                        <i class="mdi mdi-location-enter me-2"></i> Detail Distribusi
-                                    </h6>
-                                    <div id="distribusi" class=" d-flex flex-column"></div>
-                                </div>
-                            </div>
+                </div>
 
-                            <!-- Project Summary -->
-                            <div class="col-md-6">
-                                <div id="projectSummaryDetails" class="mb-3">
-                                    <h6 class="text-primary mb-3">
-                                        <i class="mdi mdi-chart-line me-2"></i> Project Summary
-                                    </h6>
-                                    <div class="alert alert-info shadow-sm" id="summaryDetailsContent">
-                                        No summary available
-                                    </div>
-                                </div>
+                <!-- Modal Template untuk setiap detail proyek -->
+                <div id="modalProjectDetailTemplate" class="modal" style="display: none;">
+                    <div class="modal-dialog modal-fullscreen">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title mt-0" id="modalProjectTitle"></h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                             </div>
-
-
+                            <div class="modal-body" id="modalProjectDetails">
+                                <table id="dataTableItemDetails" class="table table-bordered dt-responsive nowrap"
+                                    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Item Name</th>
+                                            <th>Qty</th>
+                                            <th>Material Cost</th>
+                                            <th>Service Cost</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="itemDetailsBody">
+                                        <!-- Data item akan dimuat disini -->
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-        </div>
-
-        <!-- Modal Template untuk setiap detail proyek -->
-        <div id="modalProjectDetailTemplate" class="modal" style="display: none;">
-            <div class="modal-dialog modal-fullscreen">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title mt-0" id="modalProjectTitle"></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" id="modalProjectDetails">
-                        <table id="dataTableItemDetails" class="table table-bordered dt-responsive nowrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>Qty</th>
-                                    <th>Material Cost</th>
-                                    <th>Service Cost</th>
-                                </tr>
-                            </thead>
-                            <tbody id="itemDetailsBody">
-                                <!-- Data item akan dimuat disini -->
-                            </tbody>
-                        </table>
-                    </div>
+            @else
+                <div class="alert alert-info" role="alert">
+                    No projects available for review at this moment.
                 </div>
-            </div>
-        </div>
-        @else
-        <div class="alert alert-info" role="alert">
-            No projects available for review at this moment.
-        </div>
-        @endif
-        {{-- Review Form --}}
-        @if ($projects->isNotEmpty())
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-body">
-                        <form action="{{ route('review.store') }}" method="POST" id="reviewForm"
-                            class="needs-validation" novalidate>
-                            @csrf
+            @endif
+            {{-- Review Form --}}
+            @if ($projects->isNotEmpty())
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form action="{{ route('review.store') }}" method="POST" id="reviewForm"
+                                    class="needs-validation" novalidate>
+                                    @csrf
 
-                            {{-- Project Selection --}}
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label for="project_id" class="form-label required">Project</label>
-                                        <select name="project_id" id="project_id"
-                                            class="form-control select2 @error('project_id') is-invalid @enderror"
-                                            required>
-                                            <option value="">Pilih Project</option>
-                                            @foreach ($projects as $project)
-                                            <option value="{{ $project->id }}"
-                                                data-project-file="{{ json_encode($project->Projectfile->first() ?? []) }}"
-                                                data-project-summary="{{ $project->formatted_total_summary ?? '0' }}"
-                                                data-project-vendor="{{ $project->vendor->name ?? 'Belum ditentukan' }}"
-                                                data-project-amount="{{ $project->amount ?? '0' }}"
-                                                data-project-reviewer="{{ $project->reviewed_by }}"
-                                                data-project-review-note="{{ $project->review_note }}"
-                                                data-project-details="{{ json_encode(
+                                    {{-- Project Selection --}}
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <label for="project_id" class="form-label required">Project</label>
+                                                <select name="project_id" id="project_id"
+                                                    class="form-control select2 @error('project_id') is-invalid @enderror"
+                                                    required>
+                                                    <option value="">Pilih Project</option>
+                                                    @foreach ($projects as $project)
+                                                        <option value="{{ $project->id }}"
+                                                            data-project-file="{{ json_encode($project->Projectfile->first() ?? []) }}"
+                                                            data-project-summary="{{ $project->formatted_total_summary ?? '0' }}"
+                                                            data-project-vendor="{{ $project->vendor->name ?? 'Belum ditentukan' }}"
+                                                            data-project-amount="{{ $project->amount ?? '0' }}"
+                                                            data-project-reviewer="{{ $project->reviewed_by }}"
+                                                            data-project-review-note="{{ $project->review_note }}"
+                                                            data-project-details="{{ json_encode(
                                                                 $project->detailproject->map(function ($detail) {
                                                                     return [
                                                                         'name' => $detail->name,
@@ -199,93 +201,105 @@
                                                                         }),
                                                                     ];
                                                                 }),
-                                                            ) }}" {{ old('project_id')==$project->id ? 'selected' : ''
-                                                }}>
-                                                {{ $project->name }} - {{ $project->code }}
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                        @error('project_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
+                                                            ) }}"
+                                                            {{ old('project_id') == $project->id ? 'selected' : '' }}>
+                                                            {{ $project->name }} - {{ $project->code }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('project_id')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
 
-                                {{-- Status Pengajuan for Developer and Owner --}}
-                                @if (in_array(auth()->user()->roles->first()->name, ['Developer', 'Owner']))
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label for="status_pengajuan" class="form-label required">
-                                            Review Status
-                                        </label>
-                                        <select name="status_pengajuan" id="status_pengajuan"
-                                            class="form-control select2" required>
-                                            @if (auth()->user()->roles->first()->name == 'Developer')
-                                            <option value="in_review">In Review</option>
-                                            <option value="approved">Approved</option>
-                                            <option value="rejected">Rejected</option>
-                                            <option value="revision">Revisi</option>
-                                            @else
-                                            <option value="approved">Approved</option>
-                                            <option value="rejected">Rejected</option>
-                                            <option value="revision">Revisi</option>
-                                            @endif
-                                        </select>
-                                    </div>
-                                </div>
-                                @endif
+                                        @php
+                                            $statusOptions = [
+                                                'Accounting' => ['in_review', 'revision'],
+                                                'Owner' => ['pending', 'in_review', 'approved', 'rejected', 'revision'],
+                                                'Developer' => [
+                                                    'pending',
+                                                    'in_review',
+                                                    'approved',
+                                                    'rejected',
+                                                    'revision',
+                                                ],
+                                            ];
 
-                                {{-- Review Note --}}
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label for="review_note" class="form-label">
-                                            Review Notes
-                                        </label>
-                                        <textarea id="review_note" name="review_note"
-                                            class="form-control @error('review_note') is-invalid @enderror"
-                                            maxlength="255" rows="4"
-                                            placeholder="Enter review notes (max 255 characters)">{{ old('review_note') }}</textarea>
-                                        @error('review_note')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                        <small class="text-muted form-text">
-                                            Characters remaining: <span id="charCount">255</span>
-                                        </small>
+                                            $statusLabels = [
+                                                'pending' => 'Pending',
+                                                'in_review' => 'In Review',
+                                                'approved' => 'Approved',
+                                                'rejected' => 'Rejected',
+                                                'revision' => 'Revisi',
+                                            ];
+
+                                            $userRole = auth()->user()->roles->first()->name;
+                                        @endphp
+
+                                        @if (isset($statusOptions[$userRole]))
+                                            <div class="col-md-12">
+                                                <div class="mb-3">
+                                                    <label for="status_review" class="form-label required">
+                                                        Review Status
+                                                    </label>
+                                                    <select name="status_review" id="status_review"
+                                                        class="form-control select2" required>
+                                                        @foreach ($statusOptions[$userRole] as $status)
+                                                            <option value="{{ $status }}">
+                                                                {{ $statusLabels[$status] }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        {{-- Review Note --}}
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <label for="review_note" class="form-label">
+                                                    Review Notes
+                                                </label>
+                                                <textarea id="review_note" name="review_note" class="form-control @error('review_note') is-invalid @enderror"
+                                                    maxlength="255" rows="4" placeholder="Enter review notes (max 255 characters)">{{ old('review_note') }}</textarea>
+                                                @error('review_note')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+
+                                    {{-- Form Actions --}}
+                                    <div class="d-flex justify-content-between">
+                                        <a href="{{ route('review') }}" class="btn btn-secondary">Back</a>
+                                        <button class="btn btn-primary" type="submit">Save Review</button>
+                                    </div>
+                                </form>
                             </div>
-
-                            {{-- Form Actions --}}
-                            <div class="d-flex justify-content-between">
-                                <a href="{{ route('review') }}" class="btn btn-secondary">Back</a>
-                                <button class="btn btn-primary" type="submit">Save Review</button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endif
         </div>
-        @endif
     </div>
-</div>
 
-@push('js')
-<!-- JAVASCRIPT -->
-<script src="{{ asset('assets/libs/jquery/jquery.min.js') }}"></script>
-<script src="{{ asset('assets/libs/metismenu/metisMenu.min.js') }}"></script>
-<script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
-<script src="{{ asset('assets/libs/node-waves/waves.min.js') }}"></script>
-<script src="{{ asset('assets/libs/parsleyjs/parsley.min.js') }}"></script>
-<script src="{{ asset('assets/js/pages/form-validation.init.js') }}"></script>
-<script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
-<script src="{{ asset('assets/js/pages/form-advanced.init.js') }}"></script>
-<script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
-<script src="{{ asset('assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
+    @push('js')
+        <!-- JAVASCRIPT -->
+        <script src="{{ asset('assets/libs/jquery/jquery.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/metismenu/metisMenu.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/node-waves/waves.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/parsleyjs/parsley.min.js') }}"></script>
+        <script src="{{ asset('assets/js/pages/form-validation.init.js') }}"></script>
+        <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
+        <script src="{{ asset('assets/js/pages/form-advanced.init.js') }}"></script>
+        <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
 
-<script>
-    function numberFormat(value, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
+        <script>
+            function numberFormat(value, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
                 value = parseFloat(value) || 0; // Pastikan angka valid
                 value = value.toFixed(decimals); // Tetapkan jumlah desimal yang benar
 
@@ -322,10 +336,10 @@
                     $('#projectReviewer').text(projectReviewer);
                     $('#projectReviewNote').text(projectReviewNote);
 
-                  
 
-        
-                    
+
+
+
                     let fileContent = "";
 
                     if (projectFile && typeof projectFile === "object") {
@@ -357,30 +371,32 @@
 
                     $('#distribusi').empty(); // Kosongkan sebelumnya
                     projectDetails.forEach(function(detail, index) {
-            $('#distribusi').append('<div id="detail-' + index + '" type="button" class=" distribusi-item text-uppercase alert alert-info shadow-sm" data-index="' + index + '">' + detail.name + '</div>');
-        });
+                        $('#distribusi').append('<div id="detail-' + index +
+                            '" type="button" class=" distribusi-item text-uppercase alert alert-info shadow-sm" data-index="' +
+                            index + '">' + detail.name + '</div>');
+                    });
 
-                     // Ketika item distribusi diklik, tampilkan detailnya dalam DataTable
-        $('.distribusi-item').click(function() {
-            let index = $(this).data('index'); // Ambil index unik
-            let selectedDetail = projectDetails[index]; // Ambil detail berdasarkan index
-            
-            // Tampilkan modal dengan detail proyek
-            showModalWithDetail(projectDetails[index]);
-        });
+                    // Ketika item distribusi diklik, tampilkan detailnya dalam DataTable
+                    $('.distribusi-item').click(function() {
+                        let index = $(this).data('index'); // Ambil index unik
+                        let selectedDetail = projectDetails[index]; // Ambil detail berdasarkan index
+
+                        // Tampilkan modal dengan detail proyek
+                        showModalWithDetail(projectDetails[index]);
+                    });
 
 
 
-        function showModalWithDetail(detail) {
-    // Clear any existing content in the modal and table body before appending new rows
-    $('#itemDetailsBody').empty();
-    $('#modalProjectTitle').text(detail.name);
+                    function showModalWithDetail(detail) {
+                        // Clear any existing content in the modal and table body before appending new rows
+                        $('#itemDetailsBody').empty();
+                        $('#modalProjectTitle').text(detail.name);
 
-    // Check if the items array is not empty
-    if (detail.items && detail.items.length > 0) {
-        let tableContent = '';
-        detail.items.forEach(item => {
-            tableContent += `
+                        // Check if the items array is not empty
+                        if (detail.items && detail.items.length > 0) {
+                            let tableContent = '';
+                            detail.items.forEach(item => {
+                                tableContent += `
                 <tr>
                     <td>${item.item_name}</td>
                     <td>${item.quantity}</td>
@@ -389,48 +405,49 @@
                     
                 </tr>
             `;
-        });
+                            });
 
-        // Add the newly created table rows to the table body
-        $('#itemDetailsBody').html(tableContent);
-    } else {
-        // If no items are available, display a message
-        $('#itemDetailsBody').html('<tr><td colspan="5">No items available for this project.</td></tr>');
-    }
+                            // Add the newly created table rows to the table body
+                            $('#itemDetailsBody').html(tableContent);
+                        } else {
+                            // If no items are available, display a message
+                            $('#itemDetailsBody').html(
+                                '<tr><td colspan="5">No items available for this project.</td></tr>');
+                        }
 
-    // Destroy the existing DataTable (if any) and reinitialize with the new content
-    if ($.fn.dataTable.isDataTable('#dataTableItemDetails')) {
-        $('#dataTableItemDetails').DataTable().clear().destroy();
-    }
-
-
-    $('#dataTableItemDetails').DataTable({
-        paging: true,  
-        searching: true,
-        ordering: true, 
-        info: true,  
-    });
-
-    // Show the modal after updating the content
-    $('#modalProjectDetailTemplate').fadeIn();
-}
+                        // Destroy the existing DataTable (if any) and reinitialize with the new content
+                        if ($.fn.dataTable.isDataTable('#dataTableItemDetails')) {
+                            $('#dataTableItemDetails').DataTable().clear().destroy();
+                        }
 
 
-        // Tutup modal
-        $('#modalProjectDetailTemplate .btn-close').click(function() {
-            if ($.fn.dataTable.isDataTable('#dataTableItemDetails')) {
-        $('#dataTableItemDetails').DataTable().clear().destroy();
-    }
-    
-    // Clear the modal content
-    $('#itemDetailsBody').empty();
-    $('#modalProjectTitle').empty();
+                        $('#dataTableItemDetails').DataTable({
+                            paging: true,
+                            searching: true,
+                            ordering: true,
+                            info: true,
+                        });
 
-            $('#modalProjectDetailTemplate').fadeOut();
-           
-        });
-        });
-    });
-</script>
-@endpush
+                        // Show the modal after updating the content
+                        $('#modalProjectDetailTemplate').fadeIn();
+                    }
+
+
+                    // Tutup modal
+                    $('#modalProjectDetailTemplate .btn-close').click(function() {
+                        if ($.fn.dataTable.isDataTable('#dataTableItemDetails')) {
+                            $('#dataTableItemDetails').DataTable().clear().destroy();
+                        }
+
+                        // Clear the modal content
+                        $('#itemDetailsBody').empty();
+                        $('#modalProjectTitle').empty();
+
+                        $('#modalProjectDetailTemplate').fadeOut();
+
+                    });
+                });
+            });
+        </script>
+    @endpush
 @endsection

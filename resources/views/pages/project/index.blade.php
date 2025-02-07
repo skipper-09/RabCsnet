@@ -113,8 +113,8 @@
                             name: 'status'
                         },
                         {
-                            data: 'status_pengajuan',
-                            name: 'status_pengajuan'
+                            data: 'status_review',
+                            name: 'status_review'
                         },
                         {
                             data: 'review',

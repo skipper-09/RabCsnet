@@ -13,7 +13,7 @@ class ProjectReview extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     // protected $fillable = ['project_id','reviewer_id','review_note','review_date','status'];
-    protected $fillable = ['project_id','reviewer_id','review_note','review_date', 'status_pengajuan'];
+    protected $fillable = ['project_id','reviewer_id','review_note','review_date', 'status_review'];
     protected static function boot()
     {
         parent::boot();

@@ -17,10 +17,10 @@ return new class extends Migration
             $table->foreignUuid('reviewer_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->longText('review_note');
             $table->date('review_date');
-            $table->enum('status_pengajuan', ['pending', 'in_review', 'approved','rejected','revision'])->default('pending');
-            // $table->enum('status',['pending','approved'])->default('pending');
+            $table->enum('status_review', ['pending', 'in_review', 'approved', 'rejected', 'revision'])->nullable();  // Make status_review nullable
             $table->timestamps();
         });
+        
     }
 
     /**
