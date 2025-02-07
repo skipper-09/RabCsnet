@@ -12,7 +12,7 @@ class Project extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['name', 'start_status', 'company_id', 'vendor_id', 'responsible_person', 'start_date', 'end_date', 'description', 'status', 'code', 'amount', 'status_pengajuan'];
+    protected $fillable = ['name', 'start_status', 'company_id', 'vendor_id', 'responsible_person', 'start_date', 'end_date', 'description', 'status', 'code', 'amount'];
 
 
     protected static function boot()
