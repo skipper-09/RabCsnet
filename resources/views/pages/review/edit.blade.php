@@ -40,23 +40,23 @@
 
                                 {{-- Project Details Section --}}
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    {{-- <div class="col-md-12">
                                         <div class="mb-3">
                                             <label class="form-label">Project</label>
                                             <input type="text" class="form-control" value="{{ $review->project->name }}"
                                                 readonly>
                                             <input type="hidden" name="project_id" value="{{ $review->project->id }}">
                                         </div>
-                                    </div>
+                                    </div> --}}
 
                                     {{-- Project Summary Details --}}
-                                    <div class="col-md-12">
+                                    {{-- <div class="col-md-12">
                                         <div class="mb-3">
                                             <label class="form-label">Total Project Summary</label>
                                             <input type="text" class="form-control"
                                                 value="{{ $review->project->formatted_total_summary ?? 'N/A' }}" readonly>
                                         </div>
-                                    </div>
+                                    </div> --}}
 
                                     @php
                                         $statusOptions = [
@@ -113,7 +113,7 @@
                                     </div>
 
                                     {{-- Review Metadata --}}
-                                    <div class="col-md-12">
+                                    {{-- <div class="col-md-12">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="mb-3">
@@ -130,7 +130,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </div>
 
                                 {{-- Action Buttons --}}

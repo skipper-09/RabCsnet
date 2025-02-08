@@ -459,8 +459,6 @@ class ProjectReviewController extends Controller
             // Fetch project review with relations
             $projectReview = ProjectReview::with([
                 'project',
-                'project.Projectfile',
-                'project.summary',
                 'reviewer'
             ])->findOrFail($id);
 

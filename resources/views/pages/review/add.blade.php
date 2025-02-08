@@ -95,7 +95,15 @@
                                             <div id="fileDetailsContent" class="list-group shadow-sm"></div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
+                                        <div id="projectLisence" class="mb-3">
+                                            <h6 class="text-primary mb-3">
+                                                <i class="mdi mdi-file-alert me-2"></i> Perijinan Project
+                                            </h6>
+                                            <div id="lisence" class=" d-flex flex-column"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
                                         <div id="projectFileDetails" class="mb-3">
                                             <h6 class="text-primary mb-3">
                                                 <i class="mdi mdi-location-enter me-2"></i> Detail Distribusi
@@ -105,7 +113,7 @@
                                     </div>
 
                                     <!-- Project Summary -->
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div id="projectSummaryDetails" class="mb-3">
                                             <h6 class="text-primary mb-3">
                                                 <i class="mdi mdi-chart-line me-2"></i> Project Summary
@@ -199,6 +207,15 @@
                                                                                 'service_name' => $item->service->name ?? 'N/A',
                                                                             ];
                                                                         }),
+                                                                    ];
+                                                                }),
+                                                            ) }}"
+                                                            data-project-lisence="{{ json_encode(
+                                                                $project->projectlisence->map(function ($lisence) {
+                                                                    return [
+                                                                        'name' => $lisence->name,
+                                                                        'price' => $lisence->price,
+                                                                        'perijinan_file' => $lisence->perijinan_file,
                                                                     ];
                                                                 }),
                                                             ) }}"
@@ -322,6 +339,7 @@
                     let projectReviewer = selectedOption.data('project-reviewer') || 'Not reviewed';
                     let projectReviewNote = selectedOption.data('project-review-note') || 'No review note';
                     let projectDetails = selectedOption.data('project-details') || [];
+                    let projectLisence = selectedOption.data('project-lisence') || [];
 
                     // Remove any existing formatting and convert to a valid number
                     const cleanedSummary = projectSummary.replace(/\./g, '').replace(',', '.');
@@ -368,7 +386,22 @@
                     }
 
 
+                    $('#lisence').empty(); // Kosongkan sebelumnya
+                    projectLisence.forEach(function(detail, index) {
+                        const formattedPrice = new Intl.NumberFormat('id-ID').format(detail.price);
+                        const rupiahPrice = 'Rp ' + formattedPrice;
 
+                        $('#lisence').append(`
+                            <div class="text-uppercase alert alert-info shadow-sm">
+                                <a href="{{ asset('storage/files/perijinan/${detail.perijinan_file}') }}" download="${detail.name}" class="text-dark">
+                                    ${detail.name} (${rupiahPrice})
+                                </a>
+                            </div>
+                        `);
+                    });
+
+
+                    //distribusi
                     $('#distribusi').empty(); // Kosongkan sebelumnya
                     projectDetails.forEach(function(detail, index) {
                         $('#distribusi').append('<div id="detail-' + index +
