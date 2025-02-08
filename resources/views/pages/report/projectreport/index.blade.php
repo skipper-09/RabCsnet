@@ -33,6 +33,7 @@
             font-weight: bold;
             font-size: 16px
         }
+        
     </style>
 @endpush
 
@@ -156,8 +157,7 @@
                                                     <div class="col-md-6">
                                                         <div id="projectFileDetails" class="mb-3">
                                                             <h6 class="text-primary mb-3">
-                                                                <i class="mdi mdi-file-document-outline me-2"></i>Project
-                                                                Files
+                                                                <i class="mdi mdi-file-document-outline me-2"></i>Project Files
                                                             </h6>
                                                             <div class="alert alert-soft-primary">
                                                                 @if ($project->Projectfile)
@@ -166,17 +166,15 @@
                                                                             <i
                                                                                 class="mdi mdi-file-excel text-success me-2"></i>
                                                                             <strong>Excel File:</strong>
-                                                                            <a class="btn btn-primary btn-sm"
-                                                                                href="{{ asset("
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                storage/files/excel/{$project->Projectfile->excel}") }}">Download</a>
+                                                                            <a class="text-primary"
+                                                                                href="{{ asset("storage/files/excel/{$project->Projectfile->excel}") }}">Download</a>
                                                                         </li>
 
                                                                         <li class="mb-2">
                                                                             <i class="mdi mdi-map text-danger me-2"></i>
                                                                             <strong>KMZ File:</strong>
-                                                                            <a class="btn btn-primary btn-sm"
-                                                                                href="{{ asset("
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                storage/files/kmz/{$project->Projectfile->kmz}") }}">Download</a>
+                                                                            <a class="text-primary"
+                                                                                href="{{ asset("storage/files/kmz/{$project->Projectfile->kmz}") }}">Download</a>
                                                                         </li>
                                                                     </ul>
                                                                 @else
@@ -242,6 +240,26 @@
                                                                     </div>
                                                                 @else
                                                                     No summary available
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <div id="projectLisenceDetails" class="mb-3">
+                                                            <h6 class="text-primary">
+                                                                <i class="mdi mdi-file-alert me-2"></i>Perijinan File
+                                                            </h6>
+                                                            <div class="alert alert-soft-success">
+                                                                @if ($project->projectlisence)
+                                                                    @foreach ($project->projectlisence as $item)
+                                                                    <div class="text-uppercase alert alert-info shadow-sm">
+                                                                        <a href="{{ asset('storage/files/perijinan/' . $item->perijinan_file) }}" download="{{ $item->name }}" class="text-dark">
+                                                                            {{ $item->name }} ({{"Rp. ". number_format($item->price, 0, ',', '.') }})
+                                                                        </a><br>
+                                                                    </div>
+                                                                    @endforeach
+                                                                @else
+                                                                    No Perijinan available
                                                                 @endif
                                                             </div>
                                                         </div>
