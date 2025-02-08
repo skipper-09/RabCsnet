@@ -126,26 +126,28 @@
                                                             $isVendor &&
                                                             $subtask->status === 'in_progres' &&
                                                             $task->status === 'in_progres';
-                                                    @endphp
-
-                                                    @if ($canReportSubtask)
-                                                        <button class="btn btn-sm btn-primary task-report-button"
-                                                            data-id="{{ $subtask->id }}">
-                                                            Report
-                                                        </button>
-                                                    @elseif (!$isVendor)
-                                                        <input type="checkbox" class="task-completion-checkbox"
-                                                            data-id="{{ $subtask->id }}"
-                                                            {{ $subtask->status === 'complated' ? 'checked' : '' }}>
-                                                    @endif
-
-                                                    {{-- Vendor Report View Button --}}
-                                                    @php
                                                         $subtaskReport = ReportVendor::where(
                                                             'task_id',
                                                             $subtask->id,
                                                         )->first();
                                                     @endphp
+
+                                                    {{-- Report Button --}}
+                                                    @if ($canReportSubtask)
+                                                        <button class="btn btn-sm btn-primary task-report-button"
+                                                            data-id="{{ $subtask->id }}">
+                                                            Report
+                                                        </button>
+                                                    @endif
+
+                                                    {{-- Task Completion Checkbox --}}
+                                                    @if (!$isVendor)
+                                                        <input type="checkbox" class="task-completion-checkbox"
+                                                            data-id="{{ $subtask->id }}"
+                                                            {{ $subtask->status === 'complated' ? 'checked' : '' }}>
+                                                    @endif
+
+                                                    {{-- View Report Button (Terpisah dari kondisi di atas) --}}
                                                     @if ($subtaskReport)
                                                         <div class="mt-2">
                                                             <button type="button" class="btn btn-sm btn-info"
@@ -325,40 +327,46 @@
         <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
 
         <script>
+            window.taskRoutes = {
+                report: '{{ route('tasks.report') }}',
+                toggleCompletion: '{{ route('tasks.toggle-completion', ':id') }}'
+            };
             $(document).ready(function() {
-                // Image preview function
-                function previewImage(input) {
-                    const preview = document.getElementById('imagePreview');
-                    const previewContainer = preview.closest('.preview-container');
+                // Initialize datatable if exists
+                const dataTable = $('#datatable').DataTable();
 
-                    if (input.files && input.files[0]) {
-                        const reader = new FileReader();
+                // Image preview function with multiple file support
+                function handleImagePreview(files, previewContainer) {
+                    previewContainer.innerHTML = '';
 
-                        reader.onload = function(e) {
-                            preview.src = e.target.result;
-                            preview.style.display = 'block';
-                            previewContainer.style.display = 'block';
-                        }
+                    if (files && files.length > 0) {
+                        Array.from(files).forEach(file => {
+                            // Validate file size
+                            const fileSize = file.size / 1024 / 1024; // Convert to MB
+                            if (fileSize > 5) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Ukuran File Terlalu Besar',
+                                    text: `File ${file.name} melebihi batas 5MB`
+                                });
+                                return;
+                            }
 
-                        reader.readAsDataURL(input.files[0]);
-
-                        // Validate file size
-                        const fileSize = input.files[0].size / 1024 / 1024; // in MB
-                        if (fileSize > 5) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Ukuran File Terlalu Besar',
-                                text: 'Ukuran gambar maksimal 5MB'
-                            });
-                            input.value = ''; // Clear the file input
-                            preview.src = '#';
-                            preview.style.display = 'none';
-                            previewContainer.style.display = 'none';
-                        }
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.style.maxHeight = '200px';
+                                img.style.marginRight = '10px';
+                                img.style.marginBottom = '10px';
+                                img.classList.add('img-fluid');
+                                previewContainer.appendChild(img);
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                        previewContainer.closest('.preview-container').style.display = 'block';
                     } else {
-                        preview.src = '#';
-                        preview.style.display = 'none';
-                        previewContainer.style.display = 'none';
+                        previewContainer.closest('.preview-container').style.display = 'none';
                     }
                 }
 
@@ -366,234 +374,262 @@
                 $('#datatable').on('click', '.task-report-button', function() {
                     const taskId = $(this).data('id');
 
-                    // Create a modal with a more detailed form
                     Swal.fire({
                         title: 'Laporan Tugas',
                         html: `
-            <form id="taskReportForm" class="text-start needs-validation" novalidate>
-                <div class="form-group">
-                    <label for="description" class="form-label required">Deskripsi Laporan (Wajib)</label>
-                    <textarea 
-                        id="description" 
-                        name="description" 
-                        class="form-control" 
-                        placeholder="Masukkan deskripsi laporan" 
-                        rows="4" 
-                        required
-                    ></textarea>
-                    <div class="invalid-feedback">Deskripsi laporan wajib diisi</div>
-                </div>
-                <div class="form-group mt-3">
-                    <label for="issue" class="form-label">Kendala/Masalah (Opsional)</label>
-                    <textarea 
-                        id="issue" 
-                        name="issue" 
-                        class="form-control" 
-                        placeholder="Masukkan kendala atau masalah" 
-                        rows="4"
-                    ></textarea>
-                </div>
-                <div class="form-group mt-3">
-                    <label for="images" class="form-label">Unggah Gambar</label>
-                    <input 
-                        type="file" 
-                        name="images[]" 
-                        id="images" 
-                        class="form-control" 
-                        accept="image/jpeg,image/png,image/jpg,image/gif" 
-                        multiple
-                    >
-                    <small class="text-muted">Format yang diterima: JPEG, PNG, JPG, GIF. Ukuran maksimal: 5MB per gambar</small>
-                    <div class="preview-container mt-2" style="display:none;">
-                        <div id="imagePreviews"></div>
+                <form id="taskReportForm" class="text-start needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="description" class="form-label required">Deskripsi Laporan (Wajib)</label>
+                        <textarea 
+                            id="description" 
+                            name="description" 
+                            class="form-control" 
+                            placeholder="Masukkan deskripsi laporan" 
+                            rows="4" 
+                            required
+                        ></textarea>
+                        <div class="invalid-feedback">Deskripsi laporan wajib diisi</div>
                     </div>
-                </div>
-            </form>
-        `,
+                    <div class="form-group mt-3">
+                        <label for="issue" class="form-label">Kendala/Masalah (Opsional)</label>
+                        <textarea 
+                            id="issue" 
+                            name="issue" 
+                            class="form-control" 
+                            placeholder="Masukkan kendala atau masalah" 
+                            rows="4"
+                        ></textarea>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="images" class="form-label">Unggah Gambar</label>
+                        <input 
+                            type="file" 
+                            name="images[]" 
+                            id="images" 
+                            class="form-control" 
+                            accept="image/jpeg,image/png,image/jpg,image/gif" 
+                            multiple
+                        >
+                        <small class="text-muted">Format yang diterima: JPEG, PNG, JPG, GIF. Ukuran maksimal: 5MB per gambar</small>
+                        <div class="preview-container mt-2" style="display:none;">
+                            <div id="imagePreviews" class="d-flex flex-wrap"></div>
+                        </div>
+                    </div>
+                </form>
+            `,
                         showCancelButton: true,
                         confirmButtonText: 'Kirim Laporan',
                         cancelButtonText: 'Batal',
-                        preConfirm: () => {
-                            const form = document.getElementById('taskReportForm');
+                        width: '600px',
+                        didOpen: () => {
+                            // Handle image preview
+                            const imageInput = document.querySelector('#images');
+                            const previewContainer = document.querySelector('#imagePreviews');
 
-                            // HTML5 form validation
+                            if (imageInput && previewContainer) {
+                                imageInput.addEventListener('change', function(e) {
+                                    previewContainer.innerHTML = '';
+                                    const files = e.target.files;
+
+                                    if (files && files.length > 0) {
+                                        Array.from(files).forEach(file => {
+                                            // Validate file size
+                                            const fileSize = file.size / 1024 /
+                                                1024; // to MB
+                                            if (fileSize > 5) {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Ukuran File Terlalu Besar',
+                                                    text: `File ${file.name} melebihi batas 5MB`
+                                                });
+                                                return;
+                                            }
+
+                                            const reader = new FileReader();
+                                            reader.onload = function(e) {
+                                                const img = document
+                                                    .createElement('img');
+                                                img.src = e.target.result;
+                                                img.style.maxHeight = '200px';
+                                                img.style.marginRight = '10px';
+                                                img.style.marginBottom = '10px';
+                                                img.classList.add('img-fluid');
+                                                previewContainer.appendChild(
+                                                    img);
+                                            };
+                                            reader.readAsDataURL(file);
+                                        });
+                                        previewContainer.closest('.preview-container').style
+                                            .display = 'block';
+                                    } else {
+                                        previewContainer.closest('.preview-container').style
+                                            .display = 'none';
+                                    }
+                                });
+                            }
+
+                            // Focus on description
+                            const descriptionField = document.querySelector('#description');
+                            if (descriptionField) {
+                                descriptionField.focus();
+                            }
+                        },
+                        preConfirm: async () => {
+                            const form = document.querySelector('#taskReportForm');
+                            if (!form) return false;
+
                             if (!form.checkValidity()) {
                                 form.classList.add('was-validated');
                                 return false;
                             }
 
-                            const description = document.getElementById('description').value.trim();
-                            const issue = document.getElementById('issue').value.trim();
-                            const imageFiles = document.getElementById('images').files;
-
-                            // Create FormData for file upload
                             const formData = new FormData();
                             formData.append('task_id', taskId);
-                            formData.append('description', description);
-                            formData.append('issue', issue);
+                            formData.append('description', document.querySelector('#description')
+                                .value.trim());
+                            formData.append('issue', document.querySelector('#issue').value.trim());
 
-                            // Append images to the FormData object
+                            const imageFiles = document.querySelector('#images').files;
                             Array.from(imageFiles).forEach(file => {
                                 formData.append('images[]', file);
                             });
 
                             formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
 
-                            // AJAX submission with improved error handling
-                            return $.ajax({
-                                url: '{{ route('tasks.report') }}',
-                                method: 'POST',
-                                data: formData,
-                                processData: false,
-                                contentType: false,
-                                dataType: 'json',
-                                xhr: function() {
-                                    const xhr = new window.XMLHttpRequest();
-                                    xhr.upload.addEventListener('progress', function(
-                                        evt) {
-                                        if (evt.lengthComputable) {
-                                            const percentComplete = evt.loaded /
-                                                evt.total * 100;
-                                            Swal.update({
-                                                title: 'Mengunggah...',
-                                                html: `Progress: ${Math.round(percentComplete)}%`
+                            try {
+                                const response = await $.ajax({
+                                    url: window.taskRoutes.report,
+                                    method: 'POST',
+                                    data: formData,
+                                    processData: false,
+                                    contentType: false,
+                                    xhr: function() {
+                                        const xhr = new window.XMLHttpRequest();
+                                        xhr.upload.addEventListener('progress',
+                                            function(evt) {
+                                                if (evt.lengthComputable) {
+                                                    const percentComplete = (evt
+                                                            .loaded / evt.total) *
+                                                        100;
+                                                    Swal.update({
+                                                        title: 'Mengunggah...',
+                                                        html: `Progress: ${Math.round(percentComplete)}%`
+                                                    });
+                                                }
                                             });
-                                        }
-                                    }, false);
-                                    return xhr;
-                                }
-                            }).fail(function(xhr) {
+                                        return xhr;
+                                    }
+                                });
+                                return response;
+                            } catch (error) {
                                 Swal.showValidationMessage(
-                                    xhr.responseJSON?.message ||
+                                    error.responseJSON?.message ||
                                     'Terjadi kesalahan saat melaporkan tugas'
                                 );
-                            });
-                        },
-                        didRender: () => {
-                            // Image preview functionality
-                            const imageInput = document.getElementById('images');
-                            const imagePreviews = document.getElementById('imagePreviews');
-                            const previewContainer = document.querySelector('.preview-container');
-
-                            imageInput.addEventListener('change', function(e) {
-                                imagePreviews.innerHTML = '';
-                                const files = e.target.files;
-                                if (files.length > 0) {
-                                    previewContainer.style.display = 'block';
-                                    Array.from(files).forEach(file => {
-                                        const reader = new FileReader();
-                                        reader.onload = function(event) {
-                                            const img = document.createElement(
-                                                'img');
-                                            img.src = event.target.result;
-                                            img.style.maxHeight = '200px';
-                                            img.style.marginRight = '10px';
-                                            img.classList.add('img-fluid');
-                                            imagePreviews.appendChild(img);
-                                        };
-                                        reader.readAsDataURL(file);
-                                    });
-                                } else {
-                                    previewContainer.style.display = 'none';
-                                }
-                            });
-
-                            // Ensure description textarea is focused
-                            document.getElementById('description').focus();
-                        },
-                        allowOutsideClick: () => !Swal.isLoading()
+                            }
+                        }
                     }).then((result) => {
-                        if (result.isConfirmed && result.value.success) {
+                        if (result.isConfirmed && result.value?.success) {
                             Swal.fire({
                                 toast: true,
                                 position: 'top-end',
                                 icon: 'success',
                                 title: result.value.message,
                                 showConfirmButton: false,
-                                timer: 3000
+                                timer: 1500
+                            }).then(() => {
+                                window.location.reload();
                             });
-
-                            // Safely reload the table if it exists
-                            if (typeof table !== 'undefined' && table.ajax) {
-                                table.ajax.reload(null, false);
-                            }
                         }
                     });
                 });
 
-                // Add some CSS to improve preview styling
-                const style = document.createElement('style');
-                style.innerHTML = `
-                    .preview-container {
-                        margin-top: 10px;
-                        text-align: center;
-                    }
-                    .image-preview {
-                        max-height: 200px;
-                        max-width: 100%;
-                        object-fit: contain;
-                        display: none;
-                    }
-                    `;
-                document.head.appendChild(style);
+                // Task completion toggle handler
+                $('.task-completion-checkbox').on('change', function() {
+                    const taskId = $(this).data('id');
+                    const isChecked = $(this).is(':checked');
+                    const checkbox = $(this);
 
-                // Task completion toggle for non-vendors
-                @if (!$isVendor)
-                    $('.task-completion-checkbox').on('change', function() {
-                        const taskId = $(this).data('id');
-                        const isChecked = $(this).is(':checked');
-                        const checkbox = $(this);
-
-                        $.ajax({
-                            url: `{{ route('tasks.toggle-completion', ':id') }}`.replace(':id',
-                                taskId),
-                            type: 'POST',
-                            data: {
-                                _token: $('meta[name="csrf-token"]').attr('content'),
-                                status: isChecked ? 'complated' : 'pending'
-                            },
-                            success: function(response) {
-                                if (response.status === 'success') {
-                                    Swal.fire({
-                                        toast: true,
-                                        position: 'top-end',
-                                        icon: 'success',
-                                        title: response.message,
-                                        showConfirmButton: false,
-                                        timer: 1000
-                                    }).then(() => {
-                                        window.location.reload();
-                                    });
-                                } else {
-                                    // Revert checkbox if failed
+                    Swal.fire({
+                        title: 'Mengubah Status',
+                        text: `Apakah Anda yakin ingin mengubah status tugas menjadi ${isChecked ? 'selesai' : 'belum selesai'}?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: window.taskRoutes.toggleCompletion.replace(':id', taskId),
+                                type: 'POST',
+                                data: {
+                                    _token: $('meta[name="csrf-token"]').attr('content'),
+                                    status: isChecked ? 'complated' : 'pending'
+                                },
+                                success: function(response) {
+                                    if (response.status === 'success') {
+                                        Swal.fire({
+                                            toast: true,
+                                            position: 'top-end',
+                                            icon: 'success',
+                                            title: response.message,
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        }).then(() => {
+                                            window.location.reload();
+                                        });
+                                    } else {
+                                        checkbox.prop('checked', !isChecked);
+                                        Swal.fire({
+                                            toast: true,
+                                            position: 'top-end',
+                                            icon: 'error',
+                                            title: response.message,
+                                            showConfirmButton: false,
+                                            timer: 3000
+                                        });
+                                    }
+                                },
+                                error: function(xhr) {
                                     checkbox.prop('checked', !isChecked);
-
                                     Swal.fire({
                                         toast: true,
                                         position: 'top-end',
                                         icon: 'error',
-                                        title: response.message,
+                                        title: xhr.responseJSON?.message ||
+                                            'Gagal mengubah status tugas',
                                         showConfirmButton: false,
                                         timer: 3000
                                     });
                                 }
-                            },
-                            error: function() {
-                                // Revert checkbox if failed
-                                checkbox.prop('checked', !isChecked);
-
-                                Swal.fire({
-                                    toast: true,
-                                    position: 'top-end',
-                                    icon: 'error',
-                                    title: 'Failed to update task status',
-                                    showConfirmButton: false,
-                                    timer: 3000
-                                });
-                            }
-                        });
+                            });
+                        } else {
+                            checkbox.prop('checked', !isChecked);
+                        }
                     });
-                @endif
+                });
+                // Add CSS styles
+                const style = document.createElement('style');
+                style.innerHTML = `
+        .preview-container {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .preview-container img {
+            max-height: 200px;
+            margin: 5px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .swal2-content {
+            text-align: left;
+        }
+        .required:after {
+            content: " *";
+            color: red;
+        }
+    `;
+                document.head.appendChild(style);
             });
         </script>
     @endpush
