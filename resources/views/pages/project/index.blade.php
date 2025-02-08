@@ -122,7 +122,7 @@
                                 data: 'company',
                                 name: 'company'
                             },
-                            @canany(['update-projects', 'delete-projects', 'approval-projects', 'start-projects', 'read-detail-projects', 'enable-atp-upload', 'disable-atp-upload', 'upload-atp', 'download-atp'])
+                            @canany(['update-projects', 'delete-projects', 'approval-projects', 'start-projects', 'finish-projects', 'read-detail-projects', 'enable-atp-upload', 'disable-atp-upload', 'upload-atp', 'download-atp'])
                                 {
                                     data: 'action',
                                     name: 'action',
@@ -159,7 +159,7 @@
                                 data: 'reviewer',
                                 name: 'reviewer'
                             },
-                            @canany(['update-projects', 'delete-projects', 'approval-projects', 'start-projects', 'read-detail-projects', 'enable-atp-upload', 'disable-atp-upload', 'upload-atp', 'download-atp'])
+                            @canany(['update-projects', 'delete-projects', 'approval-projects', 'start-projects', 'finish-projects', 'read-detail-projects', 'enable-atp-upload', 'disable-atp-upload', 'upload-atp', 'download-atp'])
                                 {
                                     data: 'action',
                                     name: 'action',
