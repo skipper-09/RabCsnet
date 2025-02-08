@@ -17,7 +17,7 @@
                                 <p class="text-muted">Untuk mereset password Anda, harap hubungi admin kami.</p>
 
                                 <div class="mt-4">
-                                    <a href="mailto:admin@domain.com" class="btn btn-primary">
+                                    <a href="mailto:teamIT@myinternusa.com" class="btn btn-primary">
                                         Hubungi Admin
                                     </a>
                                 </div>
