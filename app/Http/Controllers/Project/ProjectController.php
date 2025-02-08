@@ -448,7 +448,7 @@ class ProjectController extends Controller
             \Log::info('Current Project Status: ' . $project->status);
 
             // Cek status proyek sebelum mencoba untuk memperbarui
-            if ($project->status === 'pending') {
+            if ($project->status === 'pending' || $project->status === 'canceled') {
                 $latestReview = $project->ProjectReview->first(); // Mengambil review terbaru
 
                 // Log untuk melihat status review
