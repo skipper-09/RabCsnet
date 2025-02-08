@@ -7,11 +7,12 @@
             <div class="dropdown">
                 <div class="user-img">
                     @if (Auth::user()->picture == null)
-                    <img src="{{ asset('assets/images/avataaars.png') }}" alt="" class="rounded-circle">
-                    <span class="avatar-online bg-success"></span>        
+                        <img src="{{ asset('assets/images/avataaars.png') }}" alt="" class="rounded-circle">
+                        <span class="avatar-online bg-success"></span>
                     @else
-                    <img src="{{ asset('storage/images/user/' . Auth::user()->picture) }}" alt="" class="rounded-circle">
-                    <span class="avatar-online bg-success"></span>
+                        <img src="{{ asset('storage/images/user/' . Auth::user()->picture) }}" alt=""
+                            class="rounded-circle">
+                        <span class="avatar-online bg-success"></span>
                     @endif
                 </div>
                 <div class="user-info">
@@ -66,7 +67,8 @@
                 @endcanany
 
                 {{-- Master Data --}}
-                @canany(['read-itemtypes', 'read-companies', 'read-units', 'read-items', 'read-projecttypes', 'read-services'])
+                @canany(['read-itemtypes', 'read-companies', 'read-units', 'read-items', 'read-projecttypes',
+                    'read-services'])
                     <li class="menu-title">Master Data</li>
                     <li>
                         <a href="javascript:void(0);" class="has-arrow waves-effect">
@@ -94,9 +96,9 @@
                                 <li><a href="{{ route('projecttype') }}">Project Types</a></li>
                             @endcan
 
-                            @can('read-services')
+                            {{-- @can('read-services')
                                 <li><a href="{{ route('service') }}">Services</a></li>
-                            @endcan
+                            @endcan --}}
                         </ul>
                     </li>
                 @endcanany
@@ -115,7 +117,15 @@
                 {{-- Task Management --}}
                 @canany(['read-tasks', 'read-project-timeline'])
                     <li class="menu-title">Task Management</li>
-                    <li>
+                    @can('read-tasks')
+                        <li class="{{ request()->routeIs('review') ? 'mm-active' : '' }}">
+                            <a href="{{ route('tasks') }}" class="waves-effect">
+                                <i class="dripicons-suitcase"></i>
+                                <span>Task</span>
+                            </a>
+                        </li>
+                    @endcan
+                    {{-- <li>
                         <a href="javascript:void(0);" class="has-arrow waves-effect">
                             <i class="dripicons-suitcase"></i>
                             <span>Task Data</span>
@@ -125,7 +135,7 @@
                                 <li><a href="{{ route('tasks') }}">Tasks</a></li>
                             @endcan
                         </ul>
-                    </li>
+                    </li> --}}
 
                     {{-- @can('read-project-timeline')
                         <li class="{{ request()->routeIs('timeline') ? 'mm-active' : '' }}">
