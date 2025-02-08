@@ -48,6 +48,11 @@
                                                 <th>Kode</th>
                                                 <th>Name</th>
                                                 <th>Perusahaan</th>
+                                                @canany(['update-projects', 'delete-projects', 'approval-projects',
+                                                    'start-projects', 'read-detail-projects', 'enable-atp-upload',
+                                                    'disable-atp-upload', 'upload-atp', 'download-atp'])
+                                                    <th>Action</th>
+                                                @endcanany
                                             @else
                                                 <th>No</th>
                                                 <th>Kode</th>
@@ -116,7 +121,15 @@
                             }, {
                                 data: 'company',
                                 name: 'company'
-                            }
+                            },
+                            @canany(['update-projects', 'delete-projects', 'approval-projects', 'start-projects', 'read-detail-projects', 'enable-atp-upload', 'disable-atp-upload', 'upload-atp', 'download-atp'])
+                                {
+                                    data: 'action',
+                                    name: 'action',
+                                    orderable: false,
+                                    searchable: false
+                                }
+                            @endcanany
                         @else
                             {
                                 data: 'DT_RowIndex',
