@@ -22,8 +22,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $projects = Project::where('start_status', 1)->get();
-    
-        View::share('projects', $projects);
+        View::composer('*', function ($view) {
+            if (auth()->check() && auth()->user()->hasRole('Vendor')) {
+                $projectss = Project::whereHas('vendor',function($query){
+$query->with('user_id',auth()->user()->id);
+                })->get();
+            } else {
+                $projectss = Project::whereHas('ProjectReview', function($query) {
+                    $query->where('status_review', 'approved');
+                })
+                ->get();
+            }
+            // dd($projectss);
+
+            // Pass the projects data to all views
+            $view->with('projectss', $projectss);
+        });
     }
 }

@@ -56,7 +56,7 @@
             <!-- End Page-content -->
 
             {{-- footer --}}
-            @include('layout.component.reportprojectmodal',$projects)
+            @include('layout.component.reportprojectmodal')
             @include('layout.partials.footer')
         </div>
         <!-- end main content-->

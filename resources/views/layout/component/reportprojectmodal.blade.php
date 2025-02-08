@@ -25,7 +25,7 @@
                                 <select name="project_id" id="select2modal"
                                     class="form-control @error('project_id') is-invalid @enderror">
                                     <option value="">Pilih Project</option>
-                                    @foreach ($projects as $dt)
+                                    @foreach ($projectss as $dt)
                                         <option value="{{ $dt->id }}">{{ $dt->name }}</option>
                                     @endforeach
                                 </select>
