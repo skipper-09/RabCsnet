@@ -43,19 +43,26 @@
                                 <table id="datatable" class="table table-hover" style="width: 100%;">
                                     <thead>
                                         <tr>
-                                            <th>No</th>
-                                            <th>Kode</th>
-                                            <th>Name</th>
-                                            <th>Perusahaan</th>
-                                            <th>Status</th>
-                                            <th>Status Review</th>
-                                            <th>Review</th>
-                                            <th>Reviewer</th>
-                                            @canany(['update-projects', 'delete-projects', 'approval-projects',
-                                                'start-projects', 'read-detail-projects', 'enable-atp-upload',
-                                                'disable-atp-upload', 'upload-atp', 'download-atp'])
-                                                <th>Action</th>
-                                            @endcanany
+                                            @if (auth()->user()->hasRole('Vendor'))
+                                                <th>No</th>
+                                                <th>Kode</th>
+                                                <th>Name</th>
+                                                <th>Perusahaan</th>
+                                            @else
+                                                <th>No</th>
+                                                <th>Kode</th>
+                                                <th>Name</th>
+                                                <th>Perusahaan</th>
+                                                <th>Status</th>
+                                                <th>Status Review</th>
+                                                <th>Review</th>
+                                                <th>Reviewer</th>
+                                                @canany(['update-projects', 'delete-projects', 'approval-projects',
+                                                    'start-projects', 'read-detail-projects', 'enable-atp-upload',
+                                                    'disable-atp-upload', 'upload-atp', 'download-atp'])
+                                                    <th>Action</th>
+                                                @endcanany
+                                            @endif
                                         </tr>
                                     </thead>
                                 </table>
@@ -93,49 +100,61 @@
                     processing: true,
                     serverSide: true,
                     ajax: '{{ route('project.getdata') }}',
-                    columns: [{
-                            data: 'DT_RowIndex',
-                            orderable: false,
-                            searchable: false,
-                            class: 'text-center',
-
-                        },
-                        {
-                            data: 'code',
-                            name: 'code'
-                        },
-                        {
-                            data: 'name',
-                            name: 'name'
-                        },
-                        {
-                            data: 'company',
-                            name: 'company'
-                        },
-                        {
-                            data: 'status',
-                            name: 'status'
-                        },
-                        {
-                            data: 'status_review',
-                            name: 'status_review'
-                        },
-                        {
-                            data: 'review',
-                            name: 'review'
-                        },
-                        {
-                            data: 'reviewer',
-                            name: 'reviewer'
-                        },
-                        @canany(['update-projects', 'delete-projects', 'approval-projects', 'start-projects', 'read-detail-projects', 'enable-atp-upload', 'disable-atp-upload', 'upload-atp', 'download-atp'])
+                    columns: [
+                        @if (auth()->user()->hasRole('Vendor'))
                             {
-                                data: 'action',
-                                name: 'action',
+                                data: 'DT_RowIndex',
                                 orderable: false,
-                                searchable: false
+                                searchable: false,
+                                class: 'text-center',
+                            }, {
+                                data: 'code',
+                                name: 'code'
+                            }, {
+                                data: 'name',
+                                name: 'name'
+                            }, {
+                                data: 'company',
+                                name: 'company'
                             }
-                        @endcanany
+                        @else
+                            {
+                                data: 'DT_RowIndex',
+                                orderable: false,
+                                searchable: false,
+                                class: 'text-center',
+
+                            }, {
+                                data: 'code',
+                                name: 'code'
+                            }, {
+                                data: 'name',
+                                name: 'name'
+                            }, {
+                                data: 'company',
+                                name: 'company'
+                            }, {
+                                data: 'status',
+                                name: 'status'
+                            }, {
+                                data: 'status_review',
+                                name: 'status_review'
+                            }, {
+                                data: 'review',
+                                name: 'review'
+                            }, {
+                                data: 'reviewer',
+                                name: 'reviewer'
+                            },
+                            @canany(['update-projects', 'delete-projects', 'approval-projects', 'start-projects', 'read-detail-projects', 'enable-atp-upload', 'disable-atp-upload', 'upload-atp', 'download-atp'])
+                                {
+                                    data: 'action',
+                                    name: 'action',
+                                    orderable: false,
+                                    searchable: false
+                                }
+                            @endcanany
+                        @endif
                     ],
                 });
                 $(".dataTables_length select").addClass("form-select form-select-sm");
