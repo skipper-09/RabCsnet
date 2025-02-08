@@ -118,7 +118,7 @@
                 @canany(['read-tasks', 'read-project-timeline'])
                     <li class="menu-title">Task Management</li>
                     @can('read-tasks')
-                        <li class="{{ request()->routeIs('review') ? 'mm-active' : '' }}">
+                        <li class="{{ request()->routeIs('tasks') ? 'mm-active' : '' }}">
                             <a href="{{ route('tasks') }}" class="waves-effect">
                                 <i class="dripicons-suitcase"></i>
                                 <span>Task</span>
