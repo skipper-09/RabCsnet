@@ -33,39 +33,52 @@ class DashboardController extends Controller
 
         // Tentukan proyek yang perlu direview berdasarkan role
         $projectsToReview = 0; // Default 0
-        switch ($currentUserRole) {
-            case 'Developer':
-                // Developer memiliki akses penuh untuk melihat semua proyek yang perlu direview
-                $projectsToReview = Project::whereHas('ProjectReview', function ($query) {
-                    $query->whereIn('status_review', ['pending', 'in_review']);
-                })->count();
-                break;
 
-            case 'Accounting':
-                // Hitung proyek yang belum direview oleh Accounting
-                $projectsToReview = Project::whereDoesntHave('ProjectReview', function ($query) {  // Pastikan memeriksa relasi ProjectReview
-                    $query->where('status_review', 'pending')  // Cek status review pada project_reviews
-                        ->whereHas('reviewer.roles', function ($roleQuery) {
-                            $roleQuery->where('name', 'Accounting');  // Pastikan reviewer adalah Accounting
-                        });
-                })->count();
-                break;
+switch ($currentUserRole) {
+    case 'Developer':
+        // Developer memiliki akses penuh untuk melihat semua proyek yang perlu direview
+        $projectsToReview = Project::whereHas('ProjectReview', function ($query) {
+            $query->whereIn('status_review', ['pending', 'in_review']);
+        })->whereDoesntHave('ProjectReview', function ($query) {
+            $query->where('status_review', 'approved');  // Exclude projects that are approved
+        })->count();
+        break;
 
-            case 'Owner':
-                // Hitung proyek yang belum direview oleh Owner
-                $projectsToReview = Project::whereDoesntHave('ProjectReview', function ($query) {  // Pastikan memeriksa relasi ProjectReview
-                    $query->whereIn('status_review', ['in_review', 'pending'])  // Cek status review pada project_reviews
-                        ->whereHas('reviewer.roles', function ($roleQuery) {
-                            $roleQuery->where('name', 'Owner');  // Pastikan reviewer adalah Owner
-                        });
-                })->count();
-                break;
+    case 'Accounting':
+        // Hitung proyek yang belum direview oleh Accounting dan sudah tidak berstatus approved
+        $projectsToReview = Project::whereDoesntHave('ProjectReview', function ($query) {  // Pastikan memeriksa relasi ProjectReview
+            $query->where('status_review', 'pending')  // Cek status review pada project_reviews
+                ->whereHas('reviewer.roles', function ($roleQuery) {
+                    $roleQuery->where('name', 'Accounting');  // Pastikan reviewer adalah Accounting
+                });
+        })
+        ->whereDoesntHave('ProjectReview', function ($query) {
+            $query->where('status_review', 'approved');  // Exclude projects that are approved
+        })
+        ->count();
+        break;
 
-            default:
-                // Role lain tidak memiliki akses untuk menghitung proyek yang perlu direview
-                $projectsToReview = 0;
-                break;
-        }
+    case 'Owner':
+        // Hitung proyek yang belum direview oleh Owner dan sudah tidak berstatus approved
+        $projectsToReview = Project::whereDoesntHave('ProjectReview', function ($query) {  // Pastikan memeriksa relasi ProjectReview
+            $query->whereIn('status_review', ['in_review', 'pending'])  // Cek status review pada project_reviews
+                ->whereHas('reviewer.roles', function ($roleQuery) {
+                    $roleQuery->where('name', 'Owner');  // Pastikan reviewer adalah Owner
+                });
+        })
+        ->whereDoesntHave('ProjectReview', function ($query) {
+            $query->where('status_review', 'approved');  // Exclude projects that are approved
+        })
+        ->count();
+        break;
+
+    default:
+        // Role lain tidak memiliki akses untuk menghitung proyek yang perlu direview
+        $projectsToReview = 0;
+        break;
+}
+
+
 
         // Ambil data proyek dengan status 'in_progres'
         $projectTableDt = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview'])
@@ -156,8 +169,8 @@ class DashboardController extends Controller
 
     public function getData(Request $request)
     {
-        $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview', 'responsibleperson', 'taskdata'])->where('status', 'in_progres')
-            ->orderByDesc('id')->limit(4)
+        $dataType = Project::with(['company', 'detailproject', 'Projectfile', 'ProjectReview', 'responsibleperson', 'taskdata'])->where('status', 'in_progres')->where('vendor_id','!=',null)
+            ->orderByDesc('id')->limit(5)
             ->get();
 
 

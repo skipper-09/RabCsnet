@@ -98,7 +98,7 @@
                 <div class="col-md-8">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="header-title mb-4 float-sm-start">Project Summary</h4>
+                            <h4 class="header-title mb-4 float-sm-start">Progress Project</h4>
                             <div class="clearfix"></div>
                             <div class="row align-items-center">
                                 <div class="col-12 table-responsive">
