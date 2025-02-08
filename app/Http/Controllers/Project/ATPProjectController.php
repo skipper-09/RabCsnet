@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\AtpProject;
 use App\Models\Project;
+use Illuminate\Support\Facades\Storage;
 
 class ATPProjectController extends Controller
 {
@@ -72,51 +73,63 @@ class ATPProjectController extends Controller
     public function storeAtpFile(Request $request, Project $project)
     {
         $request->validate([
-            'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx|max:10240' // 10MB max
+            'file' => 'required|file|mimes:zip,rar|max:20240' // Only .zip and .rar, 10MB max
         ]);
-
+    
+        // Find active ATP Project for the given project
         $atpProject = AtpProject::where('project_id', $project->id)
             ->where('active', true)
             ->first();
-
+    
         if (!$atpProject) {
             abort(403, 'ATP Upload is not enabled for this project');
         }
-
-        // Store file
+    
         $filename = '';
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $filename = 'atpproject_' . rand(0, 999999999) . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('storage/files/atpproject/'), $filename);
+    
+            $path = Storage::disk('s3')->putFileAs('atpprojects', $file, $filename, 'public'); // Using 'public' visibility
+
+            Storage::disk('s3')->put($path, fopen($file, 'r'), [
+                'ACL' => 'public-read'  // Explicitly set the ACL to 'public-read'
+            ]);
+            $fileUrl = Storage::disk('s3')->url($path);
         }
 
-        // Update ATP Project
+    
         $atpProject->update([
-            'vendor_id' => $project->vendor_id, // Assuming vendor user has vendor_id
-            'file' => $filename,
-            // 'active' => false // Disable further uploads after successful upload
+            'vendor_id' => $project->vendor_id,
+            'file' => $fileUrl,
         ]);
-
+    
+        // Redirect with success message
         return redirect()->route('project')->with(['status' => 'Success', 'message' => 'Berhasil Mengupload ATP!']);
     }
+    
+    
 
     public function downloadAtpFile(Project $project)
-    {
-        $atpProject = AtpProject::where('project_id', $project->id)
-            ->where('active', true)
-            ->first();
+{
+    $atpProject = AtpProject::where('project_id', $project->id)
+        ->where('active', true)
+        ->first();
 
-        if (!$atpProject || !$atpProject->file) {
-            abort(404, 'ATP File not found');
-        }
-
-        $filePath = public_path('storage/files/atpproject/' . $atpProject->file);
-
-        if (!file_exists($filePath)) {
-            abort(404, 'File does not exist');
-        }
-
-        return response()->download($filePath);
+    if (!$atpProject || !$atpProject->file) {
+        abort(404, 'ATP File not found');
     }
+
+    $fileUrl = $atpProject->file;
+
+    return response()->stream(function () use ($fileUrl) {
+        $fileContent = file_get_contents($fileUrl);
+        echo $fileContent;
+    }, 200, [
+        'Content-Type' => 'application/octet-stream', // Change this depending on file type
+        'Content-Disposition' => 'attachment; filename="' . basename($fileUrl) . '"',
+        'Content-Length' => strlen(file_get_contents($fileUrl)),
+    ]);
+}
+
 }
