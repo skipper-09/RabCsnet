@@ -115,6 +115,7 @@ class ProjectController extends Controller
                             class="btn btn-sm btn-primary action mr-1" 
                             data-id="' . $data->id . '" 
                             data-type="download-atp" 
+                            download
                             data-toggle="tooltip" 
                             data-placement="bottom" 
                             title="Download ATP File">

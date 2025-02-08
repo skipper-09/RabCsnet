@@ -35,9 +35,9 @@
                                 <div class="mb-3">
                                     <label for="file" class="form-label required">ATP File</label>
                                     <input type="file" class="form-control @error('file') is-invalid @enderror"
-                                        id="file" name="file" required accept=".pdf,.doc,.docx,.xls,.xlsx">
+                                        id="file" name="file" required accept=".zip,.rar">
                                     <small class="form-text text-muted">
-                                        Allowed file types: PDF, DOC, DOCX, XLS, XLSX (Max 10MB)
+                                        Allowed file types: ZIP, RAR (Max 20MB)
                                     </small>
                                     @error('file')
                                         <div class="invalid-feedback">
