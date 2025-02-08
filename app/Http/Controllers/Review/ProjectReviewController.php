@@ -380,7 +380,6 @@ class ProjectReviewController extends Controller
             case 'approved':
                 if (in_array($userRole, ['Owner', 'Developer'])) {
                     $project->status = 'in_progres';
-                    $project->start_status = 1;
                 }
                 break;
 
@@ -405,7 +404,7 @@ class ProjectReviewController extends Controller
     private function handleRejectedStatus(Project $project)
     {
         $project->status = 'canceled';
-        $project->start_status = 0;
+        $project->start_status = false;
 
         // Delete related records
         if ($project->Projectfile) {
@@ -428,7 +427,7 @@ class ProjectReviewController extends Controller
     {
         if (in_array($userRole, ['Owner', 'Developer', 'Accounting'])) {
             $project->status = 'pending';
-            $project->start_status = 0;
+            $project->start_status = false;
 
             // Delete related records
             if ($project->Projectfile) {
@@ -640,7 +639,7 @@ class ProjectReviewController extends Controller
     private function cancelProject($project)
     {
         $project->status = 'canceled';
-        $project->start_status = 0;
+        $project->start_status = false;
 
         // Delete related records
         ProjectFile::where('project_id', $project->id)->delete();

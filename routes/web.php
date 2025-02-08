@@ -64,6 +64,10 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::get('/start/{id}', [ProjectController::class, 'StartProject'])->name('project.start')->middleware('can:start-projects');
         Route::put('/prosesstart/{id}', [ProjectController::class, 'ProjectStart'])->name('project.prosesstart');
 
+        Route::get('/{project}/finish', [ProjectController::class, 'finishProject'])
+            ->name('project.finish')
+            ->middleware('can:finish-projects');
+        
         Route::get('/enable-atp-upload/{project}', [ATPProjectController::class, 'enableAtpUpload'])
             ->name('project.enable-atp-upload')
             ->middleware('can:enable-atp-upload');

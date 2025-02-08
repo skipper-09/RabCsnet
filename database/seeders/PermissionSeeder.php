@@ -23,6 +23,7 @@ class PermissionSeeder extends Seeder
             'read-detail-projects',
             'approval-projects',
             'start-projects',
+            'finish-projects',
             'enable-atp-upload',
             'disable-atp-upload',
             'upload-atp',

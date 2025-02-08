@@ -43,7 +43,7 @@ class ProjectController extends Controller
                 'ProjectReview',
                 'responsibleperson',
                 'taskdata'
-            ])->where('start_status', 1)
+            ])->where('start_status', true)
                 ->where('vendor_id', $vendor->id)
                 ->orderByDesc('id')
                 ->get();
@@ -67,47 +67,61 @@ class ProjectController extends Controller
 
                 if ($data->detailproject->isNotEmpty() && !$data->Projectfile) {
                     if ($userauth->can('approval-projects')) {
-                        $button .= '<a href="' . route('project.proses', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
-                        <i class="fas fa-upload"></i> Proses Pengajuan
-                    </a>';
+                        $button .= '<a href="' . route('project.proses', $data->id) . '" class="btn btn-sm btn-success action d-inline-flex align-items-center mb-2 me-2" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Proses Pengajuan">
+                    <i class="fas fa-upload me-1"></i> <span class="d-none d-sm-inline">Proses Pengajuan</span>
+                </a>';
                     }
                 }
 
                 // Check project review status
                 if ($projectReview && $projectReview->status_review == 'approved' && !$data->vendor_id) {
                     if ($userauth->can('start-projects')) {
-                        $button .= '<a href="' . route('project.start', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Start Project">
-                    <i class="fas fa-upload"></i> Start Project</a>';
+                        $button .= '<a href="' . route('project.start', $data->id) . '" class="btn btn-sm btn-success action d-inline-flex align-items-center mb-2 me-2" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Start Project">
+                    <i class="fas fa-upload me-1"></i> <span class="d-none d-sm-inline">Start Project</span>
+                </a>';
                     }
                 }
 
-                if ($data->start_status == 1) {
+                if ($data->start_status == true) {
                     $projectAtp = $data->Projectatp;
                     $buttons = [];
 
+                    // Add finish project button for Developer and Owner
+                    if ($userauth->hasRole(['Developer', 'Owner']) && $data->status !== 'finish') {
+                        $buttons[] = '<a href="' . route('project.finish', $data->id) . '" 
+                    class="btn btn-sm btn-info action d-inline-flex align-items-center mb-2 me-2" 
+                    data-id="' . $data->id . '" 
+                    data-type="finish-project" 
+                    data-toggle="tooltip" 
+                    data-placement="bottom" 
+                    title="Finish Project">
+                    <i class="fas fa-check-circle me-1"></i> <span class="d-none d-sm-inline">Finish</span>
+                </a>';
+                    }
+
                     if ((!$projectAtp || !$projectAtp->active) && $userauth->can('enable-atp-upload')) {
                         $buttons[] = '<a href="' . route('project.enable-atp-upload', $data->id) . '" 
-                        class="btn btn-sm btn-primary action mr-1" 
-                        data-id="' . $data->id . '" 
-                        data-type="enable-atp-upload" 
-                        data-toggle="tooltip" 
-                        data-placement="bottom" 
-                        title="Enable Vendor ATP Upload">
-                        <i class="fas fa-toggle-on"></i>
-                    </a>';
+                    class="btn btn-sm btn-primary action d-inline-flex align-items-center mb-2 me-2" 
+                    data-id="' . $data->id . '" 
+                    data-type="enable-atp-upload" 
+                    data-toggle="tooltip" 
+                    data-placement="bottom" 
+                    title="Enable Vendor ATP Upload">
+                    <i class="fas fa-toggle-on me-1"></i> <span class="d-none d-sm-inline">Enable ATP</span>
+                </a>';
                     }
 
                     if ($projectAtp && $projectAtp->active) {
                         if ($userauth->can('disable-atp-upload')) {
                             $buttons[] = '<a href="' . route('project.disable-atp-upload', $data->id) . '" 
-                            class="btn btn-sm btn-primary action mr-1" 
-                            data-id="' . $data->id . '" 
-                            data-type="disable-atp-upload" 
-                            data-toggle="tooltip" 
-                            data-placement="bottom" 
-                            title="Disable ATP Upload">
-                            <i class="fas fa-toggle-off"></i>
-                        </a>';
+                        class="btn btn-sm btn-primary action d-inline-flex align-items-center mb-2 me-2" 
+                        data-id="' . $data->id . '" 
+                        data-type="disable-atp-upload" 
+                        data-toggle="tooltip" 
+                        data-placement="bottom" 
+                        title="Disable ATP Upload">
+                        <i class="fas fa-toggle-off me-1"></i> <span class="d-none d-sm-inline">Disable ATP</span>
+                    </a>';
                         }
 
                         if ($userauth->can('download-atp') && $projectAtp->file) {
@@ -123,51 +137,51 @@ class ProjectController extends Controller
                         </a>';
                         } elseif ($userauth->can('upload-atp') && !$projectAtp->file) {
                             $buttons[] = '<a href="' . route('project.upload-atp', $data->id) . '" 
-                            class="btn btn-sm btn-success action mr-1" 
-                            data-id="' . $data->id . '" 
-                            data-type="upload-atp" 
-                            data-toggle="tooltip" 
-                            data-placement="bottom" 
-                            title="Upload ATP File">
-                            <i class="fas fa-file-upload"></i> Upload ATP
-                        </a>';
+                        class="btn btn-sm btn-success action d-inline-flex align-items-center mb-2 me-2" 
+                        data-id="' . $data->id . '" 
+                        data-type="upload-atp" 
+                        data-toggle="tooltip" 
+                        data-placement="bottom" 
+                        title="Upload ATP File">
+                        <i class="fas fa-file-upload me-1"></i> <span class="d-none d-sm-inline">Upload ATP</span>
+                    </a>';
                         }
                     }
 
                     $button .= implode('', $buttons);
                 }
 
-                if ($data->start_status == 0 && !$data->Projectfile) {
+                if ($data->start_status == false && !$data->Projectfile) {
                     if ($userauth->can('update-projects')) {
-                        $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
-                    <i class="fas fa-pencil-alt"></i>
-                    </a>';
+                        $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action d-inline-flex align-items-center mb-2 me-2" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
+                    <i class="fas fa-pencil-alt me-1"></i> <span class="d-none d-sm-inline">Edit</span>
+                </a>';
                     }
                     if ($userauth->can('read-detail-projects')) {
-                        $button .= '<a href="' . route('project.detail', $data->id) . '" class="btn btn-sm btn-warning action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
-                    <i class="fas fa-eye"></i>
-                    </a>';
+                        $button .= '<a href="' . route('project.detail', $data->id) . '" class="btn btn-sm btn-warning action d-inline-flex align-items-center mb-2 me-2" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="View Details">
+                    <i class="fas fa-eye me-1"></i> <span class="d-none d-sm-inline">View</span>
+                </a>';
                     }
                 } else if ($userauth->hasRole(['Developer', 'Owner'])) {
                     if ($userauth->can('update-projects')) {
-                        $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
-                    <i class="fas fa-pencil-alt"></i>
-                    </a>';
+                        $button .= '<a href="' . route('project.edit', $data->id) . '" class="btn btn-sm btn-success action d-inline-flex align-items-center mb-2 me-2" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
+                    <i class="fas fa-pencil-alt me-1"></i> <span class="d-none d-sm-inline">Edit</span>
+                </a>';
                     }
                     if ($userauth->can('read-detail-projects')) {
-                        $button .= '<a href="' . route('project.detail', $data->id) . '" class="btn btn-sm btn-warning action mr-1" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="Edit Data">
-                    <i class="fas fa-eye"></i>
-                    </a>';
+                        $button .= '<a href="' . route('project.detail', $data->id) . '" class="btn btn-sm btn-warning action d-inline-flex align-items-center mb-2 me-2" data-id="' . $data->id . '" data-type="edit" data-toggle="tooltip" data-placement="bottom" title="View Details">
+                    <i class="fas fa-eye me-1"></i> <span class="d-none d-sm-inline">View</span>
+                </a>';
                     }
                 }
 
                 if ($userauth->can('delete-projects')) {
-                    $button .= '<button class="btn btn-sm btn-danger action" data-id="' . $data->id . '" data-type="delete" data-route="' . route('project.delete', $data->id) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data">
-                <i class="fas fa-trash-alt"></i>
-                </button>';
+                    $button .= '<button class="btn btn-sm btn-danger action d-inline-flex align-items-center mb-2" data-id="' . $data->id . '" data-type="delete" data-route="' . route('project.delete', $data->id) . '" data-toggle="tooltip" data-placement="bottom" title="Delete Data">
+                <i class="fas fa-trash-alt me-1"></i> <span class="d-none d-sm-inline">Delete</span>
+            </button>';
                 }
 
-                return '<div class="d-flex gap-2">' . $button . '</div>';
+                return '<div class="d-flex flex-wrap gap-1">' . $button . '</div>';
             })
             ->editColumn('status', function ($data) {
                 $status = '';
@@ -397,6 +411,12 @@ class ProjectController extends Controller
         return view('pages.project.proses', $data);
     }
 
+    public function finishProject(Project $project)
+    {
+        $project->update(['status' => 'finish']);
+        return redirect()->back()->with('success', 'Project status updated to finished');
+    }
+
     public function ProsesProjectStore(Request $request, $id)
     {
         $request->validate([
@@ -553,7 +573,7 @@ class ProjectController extends Controller
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'status' => 'in_progres',
-                'start_status' => 1,
+                'start_status' => true,
             ]);
             return redirect()->route('project')->with(['status' => 'Success', 'message' => 'Project Berhasil Di Start!']);
         } catch (Exception $e) {
