@@ -21,7 +21,7 @@ class PaymentVendorController extends Controller
         $data = [
             'tittle' => 'Payment Vendor', // Corrected 'tittle' to 'title'
             'vendor' => Vendor::all(),
-            'project' => Project::where('start_status', 1)->get(),
+            'project' => Project::all(),
         ];
 
         return view('pages.payment.index', $data);
@@ -29,96 +29,75 @@ class PaymentVendorController extends Controller
 
     public function getData(Request $request)
     {
-        // Get the authenticated user
         $currentUser = Auth::user();
-
         $currentUserRole = $currentUser->roles->first()->name;
+        $vendor = $currentUserRole === 'Vendor'
+            ? Vendor::where('user_id', $currentUser->id)->firstOrFail()
+            : null;
 
-        $vendor = Vendor::where('user_id', $currentUser->id)->first();
+        // Initialize base query with eager loading
+        $query = PaymentVendor::with(['project', 'vendor']);
 
-        // Base query for payments
-        $querypayment = $request->query('project_id');
-        if ($request->query('project_id') === null) {
-            $query = PaymentVendor::with(['project', 'vendor']);
-        } else {
-            $query = PaymentVendor::with(['project', 'vendor'])->where('project_id', $querypayment);
+        // Apply project ID filter if provided
+        if ($request->filled('project_id')) {
+            $query->where('project_id', $request->query('project_id'));
         }
 
-        // Filter tasks based on user role
-        if ($currentUserRole !== 'Vendor') {
-            $query->whereHas('project', function ($projectQuery) {
-                $projectQuery->where('start_status', 1);
-            });
-
-            // Vendor filter
-            if ($request->has('vendor_filter') && !empty($request->input('vendor_filter'))) {
-                $query->where('vendor_id', $request->input('vendor_filter'));
-            }
-
-            // Project filter
-            if ($request->has('project_filter') && !empty($request->input('project_filter'))) {
-                $query->where('project_id', $request->input('project_filter'));
-            }
-        } else {
-            // Owner role: filter by their vendor
-            $query->where('vendor_id', $vendor->id)
-                ->whereHas('project', function ($projectQuery) {
-                    $projectQuery->where('start_status', 1);
-                });
+        if ($currentUserRole === 'Vendor') {
+            return $query->where('vendor_id', $vendor->id);
         }
 
-        // Always order by most recent
+        // Apply filters for non-vendor roles
+        if ($request->filled('vendor_filter')) {
+            $query->where('vendor_id', $request->input('vendor_filter'));
+        }
+
+        if ($request->filled('project_filter')) {
+            $query->where('project_id', $request->input('project_filter'));
+        }
+
+        // Apply common filters and ordering
         $query->orderBy('created_at', 'desc');
 
         return DataTables::of($query)
             ->addIndexColumn()
-            ->addColumn(
-                'project',
-                fn($item) =>
-                $item->project?->name ?? '-'
-            )
-            ->addColumn(
-                'vendor',
-                fn($item) =>
-                $item->vendor?->name ?? '-'
-            )
-            ->editColumn(
-                'amount',
-                fn($data) =>
-                'Rp ' . number_format($data->amount, 0, ',', '.')
-            )
-            ->editColumn(
-                'payment_date',
-                fn($data) =>
-                Carbon::parse($data->payment_date)->format('Y-m-d')
-            )
+            ->addColumn('project', fn($item) => $item->project?->name ?? '-')
+            ->addColumn('vendor', fn($item) => $item->vendor?->name ?? '-')
+            ->editColumn('amount', fn($data) => 'Rp ' . number_format($data->amount, 0, ',', '.'))
+            ->editColumn('payment_date', fn($data) => Carbon::parse($data->payment_date)->format('Y-m-d'))
             ->addColumn('action', function ($data) {
                 $userAuth = User::with('roles')->find(Auth::id());
                 $buttons = [];
 
                 if ($userAuth->can('update-paymentvendors')) {
-                    $buttons[] = '<a href="' . route('payment.edit', $data->id) . '" 
-                    class="btn btn-sm btn-success action mr-1" 
-                    data-id="' . $data->id . '" 
-                    data-type="edit" 
-                    data-toggle="tooltip" 
-                    data-placement="bottom" 
-                    title="Edit Data">
-                    <i class="fas fa-pencil-alt"></i>
-                </a>';
+                    $buttons[] = sprintf(
+                        '<a href="%s" class="btn btn-sm btn-success action mr-1" 
+                data-id="%d" 
+                data-type="edit" 
+                data-toggle="tooltip" 
+                data-placement="bottom" 
+                title="Edit Data">
+                <i class="fas fa-pencil-alt"></i>
+            </a>',
+                        route('payment.edit', $data->id),
+                        $data->id
+                    );
                 }
 
                 if ($userAuth->can('delete-paymentvendors')) {
-                    $buttons[] = '<button 
-                    class="btn btn-sm btn-danger action" 
-                    data-id="' . $data->id . '" 
-                    data-type="delete" 
-                    data-route="' . route('payment.delete', $data->id) . '" 
-                    data-toggle="tooltip" 
-                    data-placement="bottom" 
-                    title="Delete Data">
-                    <i class="fas fa-trash-alt"></i>
-                </button>';
+                    $buttons[] = sprintf(
+                        '<button class="btn btn-sm btn-danger action" 
+                data-id="%d" 
+                data-type="delete" 
+                data-route="%s" 
+                data-toggle="tooltip" 
+                data-placement="bottom" 
+                title="Delete Data">
+                <i class="fas fa-trash-alt"></i>
+            </button>',
+                        $data->id,
+                        route('payment.delete', $data->id)
+                    );
                 }
 
                 return '<div class="d-flex gap-2">' . implode('', $buttons) . '</div>';

@@ -129,8 +129,7 @@
                 placeholder: "Pilih Project",
             });
 
-            // Initialize DataTable
-            const table = $("#datatable").DataTable({
+            $("#datatable").DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -195,6 +194,7 @@
                     @endcanany
                 ],
             });
+
 
             // Handle vendor filter change
             $('#FilterVendor').on('change', function() {
