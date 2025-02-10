@@ -34,7 +34,7 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::get('/php-info', [PhpInfoController::class, 'showInfo']);
+// Route::get('/php-info', [PhpInfoController::class, 'showInfo']);
 
 Route::prefix('auth')->group(function () {
     Route::get('login', [AuthController::class, 'index'])->name('login')->middleware('guest');

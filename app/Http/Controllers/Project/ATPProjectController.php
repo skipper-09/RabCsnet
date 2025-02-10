@@ -73,12 +73,16 @@ class ATPProjectController extends Controller
     public function storeAtpFile(Request $request, Project $project)
     {
         $request->validate([
-            'file' => 'required|file|mimes:zip,rar|max:20240'
+            'file' => 'required|file|mimes:zip,rar|max:153600',
+        ], [
+            'file.required' => 'File wajib diunggah.',
+            'file.file' => 'Yang Anda unggah bukan file.',
+            'file.mimes' => 'File yang diunggah harus berformat zip atau rar.',
+            'file.max' => 'Ukuran file maksimal adalah 150MB.',
         ]);
-    
-            $atpProject = AtpProject::where('project_id', $project->id)
-            ->where('active', true)
-            ->first();
+        $atpProject = AtpProject::where('project_id', $project->id)
+        ->where('active', true)
+        ->first();
     
         if (!$atpProject) {
             abort(403, 'ATP Upload is not enabled for this project');
