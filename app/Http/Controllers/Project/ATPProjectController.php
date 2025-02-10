@@ -73,11 +73,10 @@ class ATPProjectController extends Controller
     public function storeAtpFile(Request $request, Project $project)
     {
         $request->validate([
-            'file' => 'required|file|mimes:zip,rar|max:20240' // Only .zip and .rar, 10MB max
+            'file' => 'required|file|mimes:zip,rar|max:20240'
         ]);
     
-        // Find active ATP Project for the given project
-        $atpProject = AtpProject::where('project_id', $project->id)
+            $atpProject = AtpProject::where('project_id', $project->id)
             ->where('active', true)
             ->first();
     
@@ -90,10 +89,10 @@ class ATPProjectController extends Controller
             $file = $request->file('file');
             $filename = 'atpproject_' . rand(0, 999999999) . '.' . $file->getClientOriginalExtension();
     
-            $path = Storage::disk('s3')->putFileAs('atpprojects', $file, $filename, 'public'); // Using 'public' visibility
+            $path = Storage::disk('s3')->putFileAs('atpprojects', $file, $filename, 'public');
 
             Storage::disk('s3')->put($path, fopen($file, 'r'), [
-                'ACL' => 'public-read'  // Explicitly set the ACL to 'public-read'
+                'ACL' => 'public-read'
             ]);
             $fileUrl = Storage::disk('s3')->url($path);
         }
@@ -104,7 +103,6 @@ class ATPProjectController extends Controller
             'file' => $fileUrl,
         ]);
     
-        // Redirect with success message
         return redirect()->route('project')->with(['status' => 'Success', 'message' => 'Berhasil Mengupload ATP!']);
     }
     

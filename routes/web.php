@@ -8,6 +8,7 @@ use App\Http\Controllers\Master\ProjectTypeController;
 use App\Http\Controllers\Master\UnitController;
 use App\Http\Controllers\Master\ItemController;
 use App\Http\Controllers\Master\ServiceController;
+use App\Http\Controllers\PhpInfoController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Project\DetailProjectController;
 use App\Http\Controllers\Project\PerijinanProjectController;
@@ -32,6 +33,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+Route::get('/php-info', [PhpInfoController::class, 'showInfo']);
 
 Route::prefix('auth')->group(function () {
     Route::get('login', [AuthController::class, 'index'])->name('login')->middleware('guest');
