@@ -53,8 +53,8 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="material_price" class="form-label required">Material Price</label>
-                                        <input type="number" name="material_price"
-                                            value="{{ old('material_price', $item->material_price) }}"
+                                        <input type="text" inputmode="numeric" name="material_price"
+                                            value="{{ number_format( $item->material_price,'0','','') }}"
                                             class="form-control @error('material_price') is-invalid @enderror"
                                             id="material_price">
                                         @error('material_price')
@@ -69,7 +69,7 @@
                                         <label for="validationCustom01" class="form-label required">Service
                                             Price</label>
                                         <input type="text" inputmode="numeric" name="service_price"
-                                            value="{{ old('service_price', $item->service_price) }}"
+                                            value="{{ number_format( $item->service_price,'0','','') }}"
                                             class="form-control @error('service_price') is-invalid @enderror"
                                             id="validationCustom01">
                                         @error('service_price')
