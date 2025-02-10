@@ -195,15 +195,14 @@
         <script>
             $(document).ready(function() {
 
-                function formatCurrency(amount) {
-                    if (amount == 0) {
-                        return "-";
-                    } else {
-                        return 'Rp ' + amount.toLocaleString('id-ID', {
-                            style: 'currency',
-                            currency: 'IDR'
-                        });
-                    }
+                function numberFormat(value, decimals = 0, decimalSeparator = ',', thousandSeparator = '.') {
+                    value = parseFloat(value) || 0; // Pastikan angka valid
+                    value = value.toFixed(decimals); // Tetapkan jumlah desimal yang benar
+
+                    const parts = value.toString().split('.');
+                    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+
+                    return 'Rp ' + parts.join(decimalSeparator); // Tambahkan "Rp" di depan hasil format
                 }
 
                 function updatePrice(row) {
@@ -215,13 +214,13 @@
                     const serviceChecked = $(row).find('.service-checkbox').prop('checked');
 
                     if (materialChecked) {
-                        $(row).find('.material-price').show().text(formatCurrency(materialPrice.toLocaleString()));
+                        $(row).find('.material-price').show().text(numberFormat(materialPrice.toLocaleString()));
                     } else {
                         $(row).find('.material-price').hide();
                     }
 
                     if (serviceChecked) {
-                        $(row).find('.service-price').show().text(formatCurrency(servicePrice.toLocaleString()));
+                        $(row).find('.service-price').show().text(numberFormat(servicePrice.toLocaleString()));
                     } else {
                         $(row).find('.service-price').hide();
                     }
