@@ -1,5 +1,5 @@
 @extends('layout.base')
-@section('title', $tittle)
+@section('tittle', $tittle)
 
 @push('css')
     <link href="{{ asset('assets/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
