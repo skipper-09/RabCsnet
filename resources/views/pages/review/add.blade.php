@@ -372,7 +372,7 @@
                         }
 
                         if (fileKMZ) {
-                            fileContent += `<a href="{{ asset('storage/files/kmz/${fileKMZ}') }}}" download class="list-group-item list-group-item-action d-flex align-items-center">
+                            fileContent += `<a href="{{ asset('storage/files/kmz/${fileKMZ}') }}" download class="list-group-item list-group-item-action d-flex align-items-center">
                                     <i class="mdi mdi-map-marker-radius me-2 fs-5 text-warning"></i>
                                     <span class="file-name">Kmz File</span>
                                 </a>`;

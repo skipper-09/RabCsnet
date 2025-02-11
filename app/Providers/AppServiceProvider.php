@@ -28,10 +28,11 @@ class AppServiceProvider extends ServiceProvider
 $query->with('user_id',auth()->user()->id);
                 })->get();
             } else {
-                $projectss = Project::whereHas('ProjectReview', function($query) {
-                    $query->where('status_review', 'approved');
-                })
-                ->get();
+                // $projectss = Project::whereHas('ProjectReview', function($query) {
+                //     $query->where('status_review', 'approved');
+                // })
+                // ->get();
+                $projectss = Project::whereNotNull('vendor_id')->get();
             }
             // dd($projectss);
 
