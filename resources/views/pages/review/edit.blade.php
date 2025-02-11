@@ -38,27 +38,8 @@
                                 @csrf
                                 @method('PUT')
 
-                                {{-- Project Details Section --}}
                                 <div class="row">
-                                    {{-- <div class="col-md-12">
-                                        <div class="mb-3">
-                                            <label class="form-label">Project</label>
-                                            <input type="text" class="form-control" value="{{ $review->project->name }}"
-                                                readonly>
-                                            <input type="hidden" name="project_id" value="{{ $review->project->id }}">
-                                        </div>
-                                    </div> --}}
-
-                                    {{-- Project Summary Details --}}
-                                    {{-- <div class="col-md-12">
-                                        <div class="mb-3">
-                                            <label class="form-label">Total Project Summary</label>
-                                            <input type="text" class="form-control"
-                                                value="{{ $review->project->formatted_total_summary ?? 'N/A' }}" readonly>
-                                        </div>
-                                    </div> --}}
-
-                                    @php
+                                    {{-- @php
                                         $statusOptions = [
                                             'Accounting' => ['in_review', 'revision'],
                                             'Owner' => ['pending', 'in_review', 'approved', 'rejected', 'revision'],
@@ -82,8 +63,8 @@
                                                 <label for="status_review" class="form-label required">
                                                     Status Review
                                                 </label>
-                                                <select name="status_review" id="status_review" class="form-control select2"
-                                                    {{ $canEdit ? '' : 'disabled' }}>
+                                                <select name="status_review" id="status_review"
+                                                    class="form-control select2">
                                                     @foreach ($statusOptions[$userRole] as $status)
                                                         <option value="{{ $status }}"
                                                             {{ $review->status_review == $status ? 'selected' : '' }}>
@@ -93,7 +74,7 @@
                                                 </select>
                                             </div>
                                         </div>
-                                    @endif
+                                    @endif --}}
 
                                     {{-- Review Note --}}
                                     <div class="col-md-12">
@@ -102,8 +83,7 @@
                                                 Catatan Review
                                             </label>
                                             <textarea id="review_note" name="review_note" class="form-control @error('review_note') is-invalid @enderror"
-                                                maxlength="255" rows="4" placeholder="Masukkan catatan review (maksimal 255 karakter)"
-                                                {{ $canEdit ? '' : 'readonly' }}>{{ old('review_note', $review->review_note) }}</textarea>
+                                                maxlength="255" rows="4" placeholder="Masukkan catatan review (maksimal 255 karakter)">{{ old('review_note', $review->review_note) }}</textarea>
                                             @error('review_note')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
@@ -111,34 +91,12 @@
                                             @enderror
                                         </div>
                                     </div>
-
-                                    {{-- Review Metadata --}}
-                                    {{-- <div class="col-md-12">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Reviewer</label>
-                                                    <input type="text" class="form-control"
-                                                        value="{{ $review->reviewer->name }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Review Date</label>
-                                                    <input type="text" class="form-control"
-                                                        value="{{ $review->created_at->format('Y-m-d H:i:s') }}" readonly>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div> --}}
                                 </div>
 
                                 {{-- Action Buttons --}}
                                 <div class="d-flex justify-content-between">
                                     <a href="{{ route('review') }}" class="btn btn-secondary">Kembali</a>
-                                    @if ($canEdit)
-                                        <button class="btn btn-primary" type="submit">Simpan Perubahan</button>
-                                    @endif
+                                    <button class="btn btn-primary" type="submit">Simpan Perubahan</button>
                                 </div>
                             </form>
                         </div>

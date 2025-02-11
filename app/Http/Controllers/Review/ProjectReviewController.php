@@ -441,58 +441,87 @@ class ProjectReviewController extends Controller
         // For Accounting role, revision doesn't change project status or delete files
     }
 
-
     public function show($id)
     {
+        // Pastikan user sudah login
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Anda harus login terlebih dahulu.');
+        }
+
+        // Dapatkan user yang sedang login
+        $currentUser = Auth::user();
+
+        // Pastikan user memiliki role
+        if (!$currentUser->roles->first()) {
+            return redirect()->back()->with('error', 'User tidak memiliki role yang valid.');
+        }
+
+        // Dapatkan role user saat ini
+        $currentUserRole = $currentUser->roles->first()->name;
+
         try {
-            $this->validateUserAccess();
-
-            $currentUser = Auth::user();
-            $currentUserRole = $currentUser->roles->first()->name;
-
-            // Check role permissions
-            if (!$this->hasViewPermission($currentUserRole)) {
-                return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk melihat detail review.');
-            }
-
-            // Fetch project review with relations
+            // Fetch project review dengan relasi yang dibutuhkan
             $projectReview = ProjectReview::with([
-                'project',
+                'project.Projectfile',
+                'project.summary',
+                'project.ProjectReview.reviewer',
                 'reviewer'
             ])->findOrFail($id);
 
-            $project = $this->prepareProjectData($projectReview->project);
+            // Format data project
+            $project = $this->formatProjectData($projectReview->project);
 
-            return view('pages.review.edit', [
-                'tittle' => 'Detail Project Review',
-                'review' => $projectReview,
-                'project' => $project,
-                'canEdit' => $this->canEditReview($currentUserRole)
-            ]);
+            // Validasi akses berdasarkan role
+            switch ($currentUserRole) {
+                case 'Accounting':
+                case 'Owner':
+                case 'Developer':
+                    $data = [
+                        'tittle' => 'Edit Project Review',
+                        'project' => $project,
+                        'review' => $projectReview
+                    ];
+                    return view('pages.review.edit', $data);
+
+                default:
+                    return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk melihat review project.');
+            }
 
         } catch (Exception $e) {
-            return $this->handleException($e);
+            return redirect()->back()->with([
+                'status' => 'Error',
+                'message' => 'Terjadi kesalahan saat mengambil detail review. Silakan coba lagi.'
+            ]);
         }
     }
 
     public function update(Request $request, $id)
     {
+        $validated = $request->validate([
+            'review_note' => 'nullable|string|max:255',
+        ], [
+            'review_note.max' => 'Catatan review tidak boleh lebih dari 255 karakter.',
+        ]);
+
         try {
+            // Begin transaction
             DB::beginTransaction();
 
-            $validated = $this->validateUpdateRequest($request);
-
             $currentUser = Auth::user();
-            $currentUserRole = $this->validateUserRole($currentUser);
+            $currentUserRole = $currentUser->roles->first()?->name;
 
-            $projectReview = ProjectReview::findOrFail($id);
-            $project = Project::findOrFail($projectReview->project_id);
-
-            if (!$this->hasUpdatePermission($currentUserRole)) {
-                throw new Exception('Anda tidak memiliki izin untuk mengubah review.');
+            if (!$currentUserRole) {
+                throw ValidationException::withMessages([
+                    'role' => 'User tidak memiliki role yang valid.'
+                ]);
             }
 
-            $this->processReviewUpdate($projectReview, $project, $validated, $currentUserRole);
+            // Get project review
+            $projectReview = ProjectReview::findOrFail($id);
+
+            // Update review note
+            $projectReview->review_note = $validated['review_note'];
+            $projectReview->save();
 
             DB::commit();
 
@@ -500,15 +529,23 @@ class ProjectReviewController extends Controller
                 ->route('review')
                 ->with([
                     'status' => 'Success',
-                    'message' => 'Berhasil memperbarui review project!'
+                    'message' => 'Berhasil memperbarui catatan review!'
                 ]);
 
         } catch (ValidationException $e) {
             DB::rollBack();
-            return redirect()->back()->withErrors($e->errors())->withInput();
+            return redirect()
+                ->back()
+                ->withErrors($e->errors())
+                ->withInput();
         } catch (Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with(['status' => 'Error', 'message' => $e->getMessage()]);
+            return redirect()
+                ->back()
+                ->with([
+                    'status' => 'Error',
+                    'message' => 'Terjadi kesalahan saat memperbarui catatan review. Silakan coba lagi.'
+                ]);
         }
     }
 
