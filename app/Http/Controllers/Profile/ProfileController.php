@@ -27,42 +27,39 @@ class ProfileController extends Controller
 
     public function update(Request $request, $id)
     {
-        try {
-            $user = User::find($id);
 
-            $request->validate([
-                'picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-                'name' => 'nullable|string|max:255',
-                'email' => [
-                    'nullable',
-                    'email',
-                    Rule::unique('users', 'email')->ignore($user->id), // Abaikan pengguna saat ini berdasarkan ID
-                ],
-                'username' => [
-                    'nullable',
-                    'string',
-                    Rule::unique('users', 'username')->ignore($user->id), // Abaikan pengguna saat ini berdasarkan ID
-                ],
-                'password' => [
-                    'nullable',
-                    'string',
-                    'min:8',
-                    'confirmed',
-                    'regex:/[A-Z]/',
-                    'regex:/[a-z]/',
-                    'regex:/[0-9]/',
-                ],
-            ], [
-                'picture.image' => 'File harus berupa gambar.',
-                'picture.mimes' => 'Format gambar tidak valid.',
-                'picture.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
-                'email.email' => 'Format email tidak valid.',
-                'email.unique' => 'Email sudah digunakan.',
-                'username.unique' => 'Username sudah digunakan.',
-                'password.min' => 'Password harus memiliki minimal :min karakter.',
-                'password.confirmed' => 'Konfirmasi password tidak cocok.',
-                'password.regex' => 'Password harus mengandung huruf besar, huruf kecil, angka, dan simbol (@$!%*?&).',
-            ]);
+        $user = User::find($id);
+        $request->validate([
+            'picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'name' => 'nullable|string|max:255',
+            'email' => [
+                'nullable',
+                'email',
+                Rule::unique('users', 'email')->ignore($user->id), // Abaikan pengguna saat ini berdasarkan ID
+            ],
+            'username' => [
+                'nullable',
+                'string',
+                Rule::unique('users', 'username')->ignore($user->id), // Abaikan pengguna saat ini berdasarkan ID
+            ],
+            'password' => 'nullable|string|min:8|confirmed',
+            'password_confirmation' => 'nullable|string|min:8|same:password',
+        ], [
+            'picture.image' => 'File harus berupa gambar.',
+            'picture.mimes' => 'Format gambar yang diperbolehkan adalah jpeg, png, atau jpg.',
+            'picture.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email ini sudah digunakan.',
+            'username.unique' => 'Username ini sudah digunakan.',
+            'password.min' => 'Password harus memiliki minimal :min karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'password_confirmation.min' => 'Password harus memiliki minimal :min karakter.',
+            'password_confirmation.same' => 'Konfirmasi password tidak cocok.',
+            
+        ]);
+        
+        
+        try {
 
             $filename = $user->picture;
 
