@@ -186,7 +186,7 @@
                                                     <option value="">Pilih Project</option>
                                                     @foreach ($projects as $project)
                                                         <option value="{{ $project->id }}"
-                                                            data-project-file="{{ json_encode($project->Projectfile->first() ?? []) }}"
+                                                            data-project-file="{{ json_encode($project->Projectfile ?? []) }}"
                                                             data-project-summary="{{ $project->formatted_total_summary ?? '0' }}"
                                                             data-project-vendor="{{ $project->vendor->name ?? 'Belum ditentukan' }}"
                                                             data-project-amount="{{ $project->amount ?? '0' }}"
