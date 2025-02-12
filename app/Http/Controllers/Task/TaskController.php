@@ -61,7 +61,7 @@ class TaskController extends Controller
         if ($request->query('project_id') === null) {
             $query = Task::with(['project', 'vendor', 'subTasks'])->whereNull('parent_id');
         } else {
-            $query = Task::with(['project', 'vendor', 'subTasks'])->whereNull('parent_id')->where('project_id', $querytask);
+            $query = Task::with(['project', 'vendor', 'subTasks'])->where('project_id', $querytask);
         }
 
         // Calculate progress for each main task
