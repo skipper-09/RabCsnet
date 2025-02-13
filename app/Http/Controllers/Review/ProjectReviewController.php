@@ -465,11 +465,21 @@ class ProjectReviewController extends Controller
                 'project.Projectfile',
                 'project.summary',
                 'project.ProjectReview.reviewer',
+                'project.detailproject.detailitemporject.item', // Load relasi item
+                'project.vendor',
                 'reviewer'
             ])->findOrFail($id);
 
-            // Format data project
-            $project = $this->formatProjectData($projectReview->project);
+            // Format data project dengan memastikan relasi-relasi ter-load
+            $project = $projectReview->project;
+
+            // Load detail project dengan item
+            $project->load([
+                'detailproject.detailitemporject.item',
+                'vendor',
+                'Projectfile',
+                'projectlisence'
+            ]);
 
             // Validasi akses berdasarkan role
             switch ($currentUserRole) {
